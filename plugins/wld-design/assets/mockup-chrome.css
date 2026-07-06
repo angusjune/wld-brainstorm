@@ -1,0 +1,155 @@
+/* =============================================================================
+   WLD Presentation Chrome — WeChat Mini-Program Preview Shell
+   Requires tokens.css to be loaded first.
+
+   These styles are for HTML mockups only. They reproduce WeChat status/navbar
+   chrome around a WLD screen, but they are not WLD production components.
+   Use <wld-wechat-chrome variant="home|inner" title="..."></wld-wechat-chrome>
+   in brainstorm HTML; server.cjs expands it from assets/snippets/.
+   ============================================================================= */
+
+:root {
+  --wld-chrome-black: #000000;
+  --wld-chrome-capsule-border: rgba(0, 0, 0, 0.15);
+  --wld-chrome-capsule-bg: rgba(255, 255, 255, 0.6);
+  --wld-chrome-capsule-dot: rgba(0, 0, 0, 0.7);
+}
+
+/* --- Full Navbar (88px = status bar + title bar) --- */
+.wld-navbar {
+  height: 88px;
+  background: var(--wld-surface);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+/* Status bar — fake iOS status indicators */
+.wld-statusbar {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  font-family: "SF Pro Text", -apple-system, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--wld-chrome-black);
+}
+.wld-statusbar-time {
+  width: 54px;
+  text-align: center;
+}
+.wld-statusbar-icons {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.wld-statusbar-icons svg {
+  display: block;
+}
+
+/* Title bar — back button, title, WeChat capsule */
+.wld-titlebar {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding: 0 0 0 6px;
+  position: relative;
+  color: var(--wld-chrome-black);
+}
+
+/* Back button (hidden on home screens, visible on inner pages) */
+.wld-navbar-back {
+  width: 32px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--wld-chrome-black);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+.wld-navbar-back svg {
+  width: 12px;
+  height: 20px;
+}
+.wld-navbar--home .wld-navbar-back {
+  visibility: hidden;
+}
+
+/* Centered title */
+.wld-navbar-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 17px;
+  font-weight: var(--wld-font-weight-semibold);
+  color: var(--wld-chrome-black);
+  white-space: nowrap;
+}
+
+/* WeChat capsule button (···⊙) — always on the right */
+.wld-capsule {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  height: 32px;
+  border: 0.5px solid var(--wld-chrome-capsule-border);
+  border-radius: 16px;
+  padding: 0 2px;
+  gap: 0;
+  background: var(--wld-chrome-capsule-bg);
+  backdrop-filter: blur(4px);
+}
+.wld-capsule-dots {
+  width: 36px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+.wld-capsule-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--wld-chrome-capsule-dot);
+}
+.wld-capsule-divider {
+  width: 0.5px;
+  height: 18px;
+  background: var(--wld-chrome-capsule-border);
+}
+.wld-capsule-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wld-capsule-close-ring {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid var(--wld-black-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wld-capsule-close-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--wld-black-700);
+}

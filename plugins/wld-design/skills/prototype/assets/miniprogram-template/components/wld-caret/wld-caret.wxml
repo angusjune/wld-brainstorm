@@ -1,0 +1,1 @@
+<view class="caret" style="height: {{height}}; background: {{color}}" hidden="{{hidden}}"></view>

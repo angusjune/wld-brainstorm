@@ -1,0 +1,8 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "INSTRUCTIONS.md",
+    "plugins/wld-design/assets/DESIGN.md",
+    "plugins/wld-design/assets/product-memory.md"
+  ]
+}

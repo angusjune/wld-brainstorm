@@ -1,0 +1,64 @@
+[
+  {
+    "prompt": "/brainstorm 帮我设计一个微粒贷的新用户引导页，首次打开时推荐借款额度，先给我三个方案",
+    "expectedSkill": "brainstorm",
+    "expectedBehaviors": [
+      "Asks one clarifying question at a time about intent (core action, number of screens, which data to show)",
+      "Reads the closest production template from assets/screens/ as a base",
+      "Generates three distinct HTML option directions",
+      "Auto-invokes simplify to clean up the generated screens",
+      "Starts a local hot-reload server and tells the PM the browser URL to preview"
+    ],
+    "mustNotTrigger": ["prototype", "find-missing-states"]
+  },
+  {
+    "prompt": "我想给\"提前还清\"页面加一个分期选择，你先给我三个方向看看，边看边改",
+    "expectedSkill": "brainstorm",
+    "expectedBehaviors": [
+      "Clarifies the core action and which screens are involved before generating",
+      "Produces multiple option directions rather than a single fixed design",
+      "Sets up live browser preview with hot reload so the PM can iterate"
+    ],
+    "mustNotTrigger": ["simplify", "prototype"]
+  },
+  {
+    "prompt": "做一个微粒贷的信用分展示页，要突出额度和利率，我还没有线框图，想边看浏览器边调",
+    "expectedSkill": "brainstorm",
+    "expectedBehaviors": [
+      "Recognizes there is no existing design and starts from a product template",
+      "Generates HTML screens shown in a live local server with hot reload",
+      "Emphasizes the requested data (amount, interest rate) in the layout"
+    ],
+    "mustNotTrigger": ["find-missing-states"]
+  },
+  {
+    "prompt": "Help me brainstorm three WLD loan-amount entry screens with a live preview in the browser so I can tweak them as we go",
+    "expectedSkill": "brainstorm",
+    "expectedBehaviors": [
+      "Treats the request as exploratory ideation, generating three browser-previewable HTML options",
+      "Runs a hot-reload dev server and reports the preview URL",
+      "Iterates on edits with instant browser feedback"
+    ],
+    "mustNotTrigger": ["prototype"]
+  },
+  {
+    "prompt": "输入金额页流程已经定了，帮我出三个视觉方向看看，主要想探索更有设计感的样式",
+    "expectedSkill": "brainstorm",
+    "expectedBehaviors": [
+      "Infers Visual Exploration mode because the flow is fixed and the PM asks for visual directions",
+      "Keeps the same core structure while varying visual treatment, density, hierarchy, and emphasis",
+      "Labels each option with a visual hypothesis rather than forcing three different UX flows"
+    ],
+    "mustNotTrigger": ["prototype", "find-missing-states"]
+  },
+  {
+    "prompt": "给微粒贷首页做三个视觉可能性，用户路径不用变，我想比较更原生、更高级、更紧凑这几种感觉",
+    "expectedSkill": "brainstorm",
+    "expectedBehaviors": [
+      "Uses Visual Exploration mode because the user explicitly asks to keep the path unchanged",
+      "Generates three visual variants that stay within WLD tokens and production template structure",
+      "Avoids treating the request as a missing-states or Mini Program implementation task"
+    ],
+    "mustNotTrigger": ["prototype", "find-missing-states"]
+  }
+]

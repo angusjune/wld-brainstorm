@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>更换还款卡</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/mockup-chrome.css">
+<style>body { margin: 0; background: #fff; }</style>
+</head>
+<body>
+<!--
+  WLD Screen: 更换还款卡 (Change Repayment Card)
+  Pick which bank card auto-deducts the monthly repayment.
+  Layout: Preview chrome (back, no title) → page header → current card (selected) → alternative cards + add new → centered CTA
+  Background: #F5F5F5
+-->
+
+<div class="wld-page">
+
+  <!-- ===== WECHAT CHROME (Presentation-only) ===== -->
+  <nav class="wld-navbar">
+  <div class="wld-statusbar">
+    <span class="wld-statusbar-time">9:41</span>
+    <div class="wld-statusbar-icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" aria-hidden="true">
+        <rect x="0" y="3" width="3" height="9" rx="0.5" fill="currentColor"/>
+        <rect x="4.5" y="2" width="3" height="10" rx="0.5" fill="currentColor"/>
+        <rect x="9" y="0.5" width="3" height="11.5" rx="0.5" fill="currentColor"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="currentColor"/>
+      </svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" aria-hidden="true">
+        <path d="M8 3.6C10.2 3.6 12.1 4.5 13.4 6L15 4.4C13.3 2.7 10.8 1.6 8 1.6S2.7 2.7 1 4.4L2.6 6C3.9 4.5 5.8 3.6 8 3.6Z" fill="currentColor"/>
+        <path d="M8 7.2C9.3 7.2 10.5 7.7 11.4 8.6L8 12L4.6 8.6C5.5 7.7 6.7 7.2 8 7.2Z" fill="currentColor"/>
+      </svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" aria-hidden="true">
+        <rect x="0" y="0.5" width="22" height="11" rx="2" stroke="currentColor" stroke-width="1" fill="none"/>
+        <rect x="23" y="3.5" width="1.5" height="5" rx="0.5" fill="currentColor"/>
+        <rect x="2" y="2.5" width="18" height="7" rx="1" fill="currentColor"/>
+      </svg>
+    </div>
+  </div>
+  <div class="wld-titlebar">
+    <button class="wld-navbar-back" aria-label="返回">
+      <svg viewBox="0 0 12 20" fill="none" aria-hidden="true">
+        <path d="M10 2L2 10L10 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="wld-navbar-title"></span>
+    <div class="wld-capsule" aria-hidden="true">
+      <div class="wld-capsule-dots">
+        <span class="wld-capsule-dot"></span>
+        <span class="wld-capsule-dot"></span>
+        <span class="wld-capsule-dot"></span>
+      </div>
+      <div class="wld-capsule-divider"></div>
+      <div class="wld-capsule-close">
+        <div class="wld-capsule-close-ring">
+          <div class="wld-capsule-close-dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <!-- ===== PAGE BODY ===== -->
+  <div class="wld-page-body">
+
+    <!-- Page header -->
+    <div class="wld-changecard-header">
+      <div class="wld-changecard-title">更换还款卡</div>
+      <div class="wld-changecard-sub">每月还款日优先从该卡自动还款</div>
+    </div>
+
+    <!-- Current card (selected) -->
+    <div class="wld-card-list">
+      <div class="wld-card-row wld-card-row--selected">
+        <span class="wld-card-bank">
+          <img src="assets/icons/logo-icbc.svg" alt="工商银行" width="24" height="24">
+        </span>
+        <div class="wld-card-row-stack">
+          <span class="wld-card-row-label">工商银行 储蓄卡 (1853)</span>
+          <span class="wld-card-row-sub">当前还款卡</span>
+        </div>
+        <svg class="wld-card-row-check" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M4 10.5l4 4 8-8.5" stroke="#DBAE31" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Alternative cards + add new -->
+    <div class="wld-card-list">
+      <div class="wld-card-row">
+        <span class="wld-card-bank">
+          <img src="assets/icons/logo-boc.svg" alt="中国银行" width="24" height="24">
+        </span>
+        <span class="wld-card-row-label">中国银行 储蓄卡 (4489)</span>
+      </div>
+      <div class="wld-card-divider"></div>
+
+      <div class="wld-card-row">
+        <span class="wld-card-bank">
+          <img src="assets/icons/logo-cbc.svg" alt="建设银行" width="24" height="24">
+        </span>
+        <span class="wld-card-row-label">建设银行 储蓄卡 (2707)</span>
+      </div>
+      <div class="wld-card-divider"></div>
+
+      <div class="wld-card-row">
+        <span class="wld-card-bank wld-card-bank--add">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <path d="M11 4v14M4 11h14" stroke="#DBAE31" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="wld-card-row-label">使用新银行卡</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== BOTTOM ACTION ===== -->
+  <div class="wld-changecard-bottom">
+    <button class="wld-btn wld-btn-primary wld-btn-m" disabled>确认</button>
+  </div>
+
+</div>
+
+<style>
+  /* Page header */
+  .wld-changecard-header {
+    padding: 5px var(--wld-page-padding) 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .wld-changecard-title {
+    font-size: 22px;
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-text-primary);
+    line-height: 1.2;
+  }
+  .wld-changecard-sub {
+    font-size: var(--wld-text-body2);
+    color: var(--wld-text-secondary);
+  }
+
+  /* Card list (white rounded container holding rows) */
+  .wld-card-list {
+    background: var(--wld-surface);
+    border-radius: 12px;
+    margin: 0 var(--wld-page-padding) 12px;
+    overflow: hidden;
+  }
+
+  /* Selected variant — slight gold tint border */
+  .wld-card-row--selected {
+    /* keep same bg as default; selection signalled by the right-side checkmark */
+  }
+
+  /* Row */
+  .wld-card-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    min-height: 60px;
+  }
+  .wld-card-row-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .wld-card-row-label {
+    font-size: var(--wld-text-body1);
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-text-primary);
+  }
+  .wld-card-row-sub {
+    font-size: var(--wld-text-caption);
+    color: var(--wld-text-secondary);
+  }
+  .wld-card-row-check {
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  /* Bank icon — round white chip holding the bank's brand logo */
+  .wld-card-bank {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 0.5px solid var(--wld-divider);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: var(--wld-surface);
+    overflow: hidden;
+  }
+  .wld-card-bank img {
+    width: 24px;
+    height: 24px;
+  }
+  .wld-card-bank--add {
+    color: var(--wld-theme-600);
+    border: 1px dashed var(--wld-theme-600);
+  }
+
+  /* Divider between rows */
+  .wld-card-divider {
+    height: 0.5px;
+    background: var(--wld-divider);
+    margin-left: 64px;
+  }
+
+  /* Bottom action — small centered button */
+  .wld-changecard-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: var(--wld-page-width);
+    padding: 16px 30px;
+    padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    justify-content: center;
+  }
+</style>
+
+</body>
+</html>

@@ -1,0 +1,171 @@
+/* =============================================================================
+   WLD Design System — Phone Mockup Frame
+   Wraps POC demo screens in a realistic iPhone frame for presentations.
+
+   Usage:
+     <div class="phone-mockup">
+       <div class="phone-screen">
+         <!-- Your WLD screen goes here -->
+       </div>
+     </div>
+
+   Optional: Add multiple phones side-by-side in a gallery:
+     <div class="phone-gallery">
+       <div class="phone-slide">
+         <div class="phone-mockup">...</div>
+         <div class="phone-caption">Screen 1: Home</div>
+       </div>
+       <div class="phone-slide">
+         <div class="phone-mockup">...</div>
+         <div class="phone-caption">Screen 2: Amount Input</div>
+       </div>
+     </div>
+   ============================================================================= */
+
+/* --- Phone Device Frame --- */
+.phone-mockup {
+  background: #1a1a1a;
+  border-radius: 40px;
+  /* Shrink to the 375px screen even as a bare block child — without this,
+     a .phone-mockup outside a flex gallery stretches to the container width
+     and renders a wide black slab beside the screen. */
+  width: fit-content;
+  padding: 12px 10px;
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.1),
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    0 8px 20px rgba(0, 0, 0, 0.15);
+  position: relative;
+  margin: 0 auto;
+}
+/* Screen container */
+.phone-screen {
+  width: 375px;
+  height: 812px;
+  background: var(--wld-bg, #F5F5F5);
+  border-radius: 36px;
+  overflow: hidden;
+  overflow-y: auto;
+  position: relative;
+  /* Hide scrollbar for cleaner presentation */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.phone-screen::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ensure WLD page fills the screen */
+.phone-screen .wld-page {
+  width: 375px;
+  min-height: 812px;
+  border-radius: 0;
+}
+
+/* Fix bottom bar positioning inside mockup */
+.phone-screen .wld-bottom-bar {
+  position: absolute;
+  left: 0;
+  width: 375px;
+  transform: none;
+}
+
+
+/* --- Phone Gallery (multiple screens side by side) --- */
+.phone-gallery {
+  display: flex;
+  gap: 40px;
+  padding: 40px;
+  overflow-x: auto;
+  align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap;
+  min-height: 100vh;
+  background: #f0f0f0;
+}
+
+.phone-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.phone-caption {
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #666;
+  text-align: center;
+  max-width: 300px;
+}
+
+.phone-caption .phone-caption-sub {
+  font-weight: 400;
+  color: #999;
+  font-size: 12px;
+  display: block;
+  margin-top: 4px;
+}
+
+
+/* --- Presentation Page Shell --- */
+/* Use this to wrap the entire HTML page for a clean presentation background */
+.presentation {
+  min-height: 100vh;
+  background: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+}
+
+.presentation-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.presentation-subtitle {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+
+/* --- Dark background variant (for screenshots on dark slides) --- */
+.presentation--dark {
+  background: #1a1a1a;
+}
+.presentation--dark .presentation-title { color: #fff; }
+.presentation--dark .presentation-subtitle { color: #888; }
+.presentation--dark .phone-caption { color: #aaa; }
+.presentation--dark .phone-caption .phone-caption-sub { color: #666; }
+.presentation--dark .phone-gallery { background: #1a1a1a; }
+
+
+/* --- Single phone, centered (for one-screen demos) --- */
+.presentation--single {
+  justify-content: center;
+}
+
+
+/* --- Flow arrows between phones --- */
+.phone-gallery--flow {
+  gap: 20px;
+}
+.phone-flow-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #ccc;
+  flex-shrink: 0;
+  align-self: center;
+  padding-bottom: 40px; /* align with phone center, accounting for caption */
+}

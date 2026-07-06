@@ -1,0 +1,32 @@
+[
+  {
+    "id": "cashier-redesign",
+    "prompt": "重新设计收银台页面，突出还款金额，让银行卡还款和转账还款两种方式更容易理解和切换",
+    "probes": "Template discoverability: 收银台.html exists in assets/screens/ but is not listed in the SKILL.md screen tables"
+  },
+  {
+    "id": "me-tab-service",
+    "prompt": "在\"我的\"页面加一个在线客服入口，顺便把整体布局优化一下",
+    "probes": "Template discoverability: 我的Tab.html unlisted; account-tab background nuance (#F5F5F5 page with home-variant chrome)"
+  },
+  {
+    "id": "loan-input-visual",
+    "prompt": "输入金额页流程已经定了，帮我出三个视觉方向，想要更高级、更平静的感觉",
+    "probes": "Control case: listed template (输入金额.html) + Visual Exploration mode + 3-solution gallery quality"
+  },
+  {
+    "id": "home-repay-reminder",
+    "prompt": "首页要能提醒用户最近7天内要还的钱，给我三个方案看看",
+    "probes": "Listed home variants (个人中心-有借款.html) + solution diversity in UX mode + home background rule"
+  },
+  {
+    "id": "overdue-flow",
+    "prompt": "设计一个逾期还款的提醒和处理流程，大概两三个屏幕",
+    "probes": "No matching template exists — combine-sections rule; urgency-copy temptation on overdue messaging"
+  },
+  {
+    "id": "early-repay-partial",
+    "prompt": "提前还清页面想支持部分还款，用户可以只还一部分金额，先出三个方案",
+    "probes": "Listed template adaptation (提前还清.html) + receipt-row and action-bar correctness"
+  }
+]

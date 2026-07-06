@@ -1,0 +1,46 @@
+[
+  {
+    "prompt": "/push-to-figma 把刚才 brainstorm 选中的方案 B 画到这个 Figma 页面：https://figma.com/design/xxxx",
+    "expectedSkill": "push-to-figma",
+    "expectedBehaviors": [
+      "Confirms both an approved brainstorm source and a user-provided target Figma page before drawing",
+      "Reads the shared Figma MCP guide and prefers the local desktop MCP for PingFang SC support",
+      "Searches the target file and WLD component library before creating primitives",
+      "Creates editable Figma frames rather than using screenshot images as the deliverable",
+      "Reports the Figma link, frames created, MCP type, font status, and any primitive fallbacks"
+    ],
+    "mustNotTrigger": ["prototype", "brainstorm", "find-missing-states", "fix-details"]
+  },
+  {
+    "prompt": "这个 .wld-brainstorm 目录里的借款流程已经确认了，推到我的 Figma 页面：[URL]，尽量用 WLD 组件库",
+    "expectedSkill": "push-to-figma",
+    "expectedBehaviors": [
+      "Loads the approved .wld-brainstorm flow and sibling screens before creating frames",
+      "Maps HTML elements to WLD Figma components first, with fallback primitives only for missing components",
+      "Keeps loan amounts, rates, coupons, repayment copy, and Chinese text unchanged",
+      "Includes a fallback mapping in the final report for every primitive layer group"
+    ],
+    "mustNotTrigger": ["prototype", "simplify", "fix-details"]
+  },
+  {
+    "prompt": "帮我把这个已确认的 WLD brainstorm screen push to Figma as editable frames, but I only have the HTML source right now and no Figma page link yet",
+    "expectedSkill": "push-to-figma",
+    "expectedBehaviors": [
+      "Stops before drawing because the target Figma page link is missing",
+      "Asks for the target Figma Design URL instead of creating a screenshot-only substitute",
+      "Does not start prototype or Mini Program work"
+    ],
+    "mustNotTrigger": ["prototype", "brainstorm"]
+  },
+  {
+    "prompt": "Use the local Figma MCP to draw the approved WLD brainstorm flow into editable Figma frames; if a coupon card component is missing, make a primitive but tell me exactly what was primitive",
+    "expectedSkill": "push-to-figma",
+    "expectedBehaviors": [
+      "Prefers local Figma desktop MCP unless unavailable or explicitly overridden",
+      "Uses component instances for available WLD chrome, buttons, cells, cards, and fixed footers",
+      "Names primitive fallback layers clearly so designers can replace them later",
+      "Reports each primitive fallback with the brainstorm element, searched component name, and reason for fallback"
+    ],
+    "mustNotTrigger": ["prototype", "fix-details", "find-missing-states"]
+  }
+]

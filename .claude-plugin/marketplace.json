@@ -1,0 +1,18 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "wld-design",
+  "metadata": {
+    "description": "Toolkit for WLD (WeBank Weilidai) mobile interface design."
+  },
+  "owner": {
+    "name": "anguszhu"
+  },
+  "plugins": [
+    {
+      "name": "wld-design",
+      "source": "./",
+      "version": "1.1.1",
+      "category": "design"
+    }
+  ]
+}

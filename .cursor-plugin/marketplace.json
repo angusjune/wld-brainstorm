@@ -1,0 +1,17 @@
+{
+  "name": "wld-design-marketplace",
+  "owner": {
+    "name": "anguszhu"
+  },
+  "metadata": {
+    "description": "Marketplace for WLD Design plugin",
+    "version": "1.1.1"
+  },
+  "plugins": [
+    {
+      "name": "wld-design",
+      "source": "./plugins/wld-design",
+      "description": "微粒贷设计工具箱"
+    }
+  ]
+}

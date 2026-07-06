@@ -1,0 +1,50 @@
+---
+interface Props { command: string }
+const { command } = Astro.props
+---
+<div class="copy-command">
+  <code>{command}</code>
+  <button type="button" data-command={command}>复制</button>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.copy-command button').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(btn.dataset.command ?? '')
+        btn.textContent = '已复制'
+        setTimeout(() => (btn.textContent = '复制'), 1500)
+      } catch {
+        btn.textContent = '复制失败'
+        setTimeout(() => (btn.textContent = '复制'), 1500)
+      }
+    })
+  })
+</script>
+
+<style>
+  .copy-command {
+    display: flex;
+    width: fit-content;
+    margin: 8px 0;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 12px 16px;
+    backdrop-filter: blur(8px);
+  }
+  .copy-command code { font-size: 14px; color: inherit; }
+  .copy-command button {
+    border: 0;
+    border-radius: 8px;
+    padding: 6px 14px;
+    background: var(--gold);
+    color: rgba(0, 0, 0, 0.9);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .copy-command button:hover { background: var(--gold-deep); }
+</style>

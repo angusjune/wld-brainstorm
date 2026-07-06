@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>欢迎页</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/mockup-chrome.css">
+<style>body { margin: 0; background: #fff; }</style>
+</head>
+<body>
+<!--
+  WLD Screen: 欢迎页 (Welcome / Landing)
+  First-run entry into 微粒贷 — pitches the value prop with 3 feature icons + a primary CTA.
+  Layout: Preview chrome (centered 微粒贷, no back) → centered title + 3-feature row → primary CTA → footer credit
+  Background: #FFFFFF
+-->
+
+<div class="wld-page" style="background: var(--wld-surface);">
+
+  <!-- ===== WECHAT CHROME (Presentation-only) ===== -->
+  <nav class="wld-navbar wld-navbar--home">
+  <div class="wld-statusbar">
+    <span class="wld-statusbar-time">9:41</span>
+    <div class="wld-statusbar-icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" aria-hidden="true">
+        <rect x="0" y="3" width="3" height="9" rx="0.5" fill="currentColor"/>
+        <rect x="4.5" y="2" width="3" height="10" rx="0.5" fill="currentColor"/>
+        <rect x="9" y="0.5" width="3" height="11.5" rx="0.5" fill="currentColor"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="currentColor"/>
+      </svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" aria-hidden="true">
+        <path d="M8 3.6C10.2 3.6 12.1 4.5 13.4 6L15 4.4C13.3 2.7 10.8 1.6 8 1.6S2.7 2.7 1 4.4L2.6 6C3.9 4.5 5.8 3.6 8 3.6Z" fill="currentColor"/>
+        <path d="M8 7.2C9.3 7.2 10.5 7.7 11.4 8.6L8 12L4.6 8.6C5.5 7.7 6.7 7.2 8 7.2Z" fill="currentColor"/>
+      </svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" aria-hidden="true">
+        <rect x="0" y="0.5" width="22" height="11" rx="2" stroke="currentColor" stroke-width="1" fill="none"/>
+        <rect x="23" y="3.5" width="1.5" height="5" rx="0.5" fill="currentColor"/>
+        <rect x="2" y="2.5" width="18" height="7" rx="1" fill="currentColor"/>
+      </svg>
+    </div>
+  </div>
+  <div class="wld-titlebar">
+    <button class="wld-navbar-back" aria-hidden="true"></button>
+    <span class="wld-navbar-title">微粒贷</span>
+    <div class="wld-capsule" aria-hidden="true">
+      <div class="wld-capsule-dots">
+        <span class="wld-capsule-dot"></span>
+        <span class="wld-capsule-dot"></span>
+        <span class="wld-capsule-dot"></span>
+      </div>
+      <div class="wld-capsule-divider"></div>
+      <div class="wld-capsule-close">
+        <div class="wld-capsule-close-ring">
+          <div class="wld-capsule-close-dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <!-- ===== PAGE BODY ===== -->
+  <div class="wld-page-body" style="padding-bottom: 0;">
+
+    <div class="wld-welcome">
+
+      <!-- Hero block: title + 3-feature row -->
+      <div class="wld-welcome-hero">
+        <div class="wld-welcome-title">微信上可以借钱了</div>
+
+        <div class="wld-welcome-features">
+          <div class="wld-welcome-feature">
+            <span class="wld-welcome-feature-icon">
+              <!-- Lightning bolt -->
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <path d="M12.5 2L4 13h6l-1 7 8.5-11h-6l1-7z" fill="rgba(0,0,0,0.85)" stroke="rgba(0,0,0,0.85)" stroke-width="1" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="wld-welcome-feature-label">10 秒出额度</span>
+          </div>
+          <div class="wld-welcome-feature">
+            <span class="wld-welcome-feature-icon">
+              <!-- Clock / gauge -->
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <circle cx="11" cy="11" r="8" stroke="rgba(0,0,0,0.85)" stroke-width="1.5" fill="none"/>
+                <path d="M11 6v5l3.5 2" stroke="rgba(0,0,0,0.85)" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="wld-welcome-feature-label">1 分钟借钱</span>
+          </div>
+          <div class="wld-welcome-feature">
+            <span class="wld-welcome-feature-icon">
+              <!-- Yuan symbol -->
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <path d="M5 4l6 7 6-7M5 12h12M5 15h12M11 11v8" stroke="rgba(0,0,0,0.85)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="wld-welcome-feature-label">3 分钟到账</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer block: CTA + credit -->
+      <div class="wld-welcome-bottom">
+        <button class="wld-btn wld-btn-primary" style="width: 290px; height: 48px; font-size: 16px; line-height: 48px;">查看额度</button>
+        <div class="wld-welcome-credit">本服务由微众银行提供</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<style>
+  /* Welcome layout — vertical column filling the page body */
+  .wld-welcome {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 88px);
+  }
+
+  /* Hero — centered title + features, takes top portion */
+  .wld-welcome-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px 40px;
+    gap: 80px;
+  }
+  .wld-welcome-title {
+    font-size: var(--wld-text-display);
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-text-primary);
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  /* 3-feature row */
+  .wld-welcome-features {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 30px;
+  }
+  .wld-welcome-feature {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .wld-welcome-feature-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--wld-theme-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wld-welcome-feature-label {
+    font-size: var(--wld-text-body2);
+    color: var(--wld-text-secondary);
+    white-space: nowrap;
+  }
+
+  /* Footer — CTA above credit, pinned-feel near bottom */
+  .wld-welcome-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    padding: 0 20px 40px;
+  }
+  .wld-welcome-credit {
+    font-size: var(--wld-text-body2);
+    color: var(--wld-text-secondary);
+  }
+</style>
+
+</body>
+</html>

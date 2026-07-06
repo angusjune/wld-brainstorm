@@ -1,0 +1,6 @@
+{
+    "component": true,
+    "usingComponents": {
+        "caret": "/components/wld-caret/wld-caret"
+    }
+}

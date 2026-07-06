@@ -1,0 +1,11 @@
+{
+  "usingComponents": {
+    "wld-button": "/components/wld-button/wld-button",
+    "wld-cell": "/components/wld-cell/wld-cell",
+    "wld-chip-group": "/components/wld-chip-group/wld-chip-group",
+    "wld-drawer": "/components/wld-drawer/wld-drawer",
+    "wld-footer": "/components/wld-footer/wld-footer"
+  },
+  "navigationBarBackgroundColor": "#fff",
+  "backgroundColor": "#fff"
+}

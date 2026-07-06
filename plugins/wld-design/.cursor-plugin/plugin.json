@@ -1,0 +1,20 @@
+{
+  "name": "wld-design",
+  "displayName": "WLD Design",
+  "version": "1.1.1",
+  "description": "微粒贷设计工具箱",
+  "author": {
+    "name": "anguszhu"
+  },
+  "license": "MIT",
+  "keywords": [
+    "wld",
+    "webank",
+    "design",
+    "figma",
+    "wechat",
+    "miniprogram",
+    "product-knowledge"
+  ],
+  "logo": "assets/icons/logo-webank.svg"
+}

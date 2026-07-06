@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/assets/tokens.css">
+  <link rel="stylesheet" href="/assets/components.css">
+  <link rel="stylesheet" href="/assets/mockup-chrome.css">
+  <link rel="stylesheet" href="/assets/phone-mockup.css">
+</head>
+<body>
+  <div class="frame-header">
+    <h1>WLD Design</h1>
+    <div class="frame-status">Live</div>
+  </div>
+
+  <div class="frame-main">
+    <div id="frame-content">
+
+      <h2 class="frame-title">3 Design Solutions — 收银台</h2>
+      <p class="frame-subtitle">Pick one, or mix elements from multiple</p>
+
+      <div class="phone-gallery">
+
+        <!-- ============ 方案 A (UX): 对等方式卡 ============ -->
+        <div class="phone-slide">
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="wld-page">
+
+                <wld-wechat-chrome variant="inner" title=""></wld-wechat-chrome>
+
+                <div class="wld-page-body">
+
+                  <!-- Amount hero (white full-bleed, adapted from 本期应还 summary) -->
+                  <div class="wld-cashier-hero">
+                    <div class="wld-cashier-hero-label">还款金额</div>
+                    <div class="wld-cashier-hero-amount">&#165;10006.00</div>
+                  </div>
+
+                  <!-- Method card: bank card (selected) -->
+                  <div class="wld-cashier-card">
+                    <div class="wld-method-head">
+                      <span class="wld-method-title">银行卡还款</span>
+                      <div class="wld-checkbox is-checked">
+                        <svg viewBox="0 0 20 20" fill="none">
+                          <path d="M6 10.5l2.8 2.8L14.5 7.5" stroke="rgba(0,0,0,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="wld-method-divider"></div>
+                    <div class="wld-cashier-row">
+                      <!-- ICBC bank circular icon -->
+                      <span class="wld-bank-icon wld-bank-icon--icbc">
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                          <rect x="3" y="5" width="16" height="12" stroke="#C41230" stroke-width="1.4" fill="none"/>
+                          <path d="M3 9h16" stroke="#C41230" stroke-width="1.4"/>
+                          <text x="11" y="15" text-anchor="middle" font-size="8" font-weight="700" fill="#C41230" font-family="-apple-system, sans-serif">工</text>
+                        </svg>
+                      </span>
+                      <span class="wld-cashier-row-label">工商银行 (2004)</span>
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="margin-left:auto;">
+                        <path d="M7 4.5L11.5 9L7 13.5" stroke="rgba(0,0,0,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <!-- Method card: transfer (unselected) -->
+                  <div class="wld-cashier-card">
+                    <div class="wld-method-head">
+                      <div class="wld-cashier-row-stack">
+                        <span class="wld-method-title">转账还款</span>
+                        <span class="wld-cashier-row-sub">还款不限额，实时到账</span>
+                      </div>
+                      <div class="wld-checkbox"></div>
+                    </div>
+                  </div>
+
+                  <!-- Centered CTA directly below content -->
+                  <div class="wld-cashier-cta">
+                    <button class="wld-btn wld-btn-primary wld-btn-m">下一步</button>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            方案 A · UX: 对等方式卡
+            <span class="phone-caption-sub">Hypothesis: two peer method cards make compare-and-switch one glance, one tap · Tradeoff: taller stack; changing bank card sits one level deeper</span>
+          </div>
+        </div>
+
+        <!-- ============ 方案 B (UX): 单列表单选 ============ -->
+        <div class="phone-slide">
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="wld-page">
+
+                <wld-wechat-chrome variant="inner" title=""></wld-wechat-chrome>
+
+                <div class="wld-page-body">
+
+                  <div class="wld-cashier-hero">
+                    <div class="wld-cashier-hero-label">还款金额</div>
+                    <div class="wld-cashier-hero-amount">&#165;10006.00</div>
+                  </div>
+
+                  <!-- Single card, both methods as rows of one list -->
+                  <div class="wld-cashier-card">
+                    <div class="wld-cashier-row">
+                      <span class="wld-bank-icon wld-bank-icon--icbc">
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                          <rect x="3" y="5" width="16" height="12" stroke="#C41230" stroke-width="1.4" fill="none"/>
+                          <path d="M3 9h16" stroke="#C41230" stroke-width="1.4"/>
+                          <text x="11" y="15" text-anchor="middle" font-size="8" font-weight="700" fill="#C41230" font-family="-apple-system, sans-serif">工</text>
+                        </svg>
+                      </span>
+                      <div class="wld-cashier-row-stack">
+                        <span class="wld-cashier-row-label">银行卡还款</span>
+                        <span class="wld-cashier-row-sub">工商银行 (2004)</span>
+                      </div>
+                      <div class="wld-checkbox is-checked" style="margin-left:auto;">
+                        <svg viewBox="0 0 20 20" fill="none">
+                          <path d="M6 10.5l2.8 2.8L14.5 7.5" stroke="rgba(0,0,0,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <div class="wld-cashier-divider"></div>
+
+                    <div class="wld-cashier-row">
+                      <span class="wld-cashier-transfer-icon">
+                        <svg width="22" height="18" viewBox="0 0 22 18" fill="none">
+                          <path d="M3 5h14M14 2l3 3-3 3" stroke="rgba(0,0,0,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M19 13H5M8 16l-3-3 3-3" stroke="rgba(0,0,0,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </span>
+                      <div class="wld-cashier-row-stack">
+                        <span class="wld-cashier-row-label">转账还款</span>
+                        <span class="wld-cashier-row-sub">还款不限额，实时到账</span>
+                      </div>
+                      <div class="wld-checkbox" style="margin-left:auto;"></div>
+                    </div>
+                    <div class="wld-cashier-divider"></div>
+
+                    <div class="wld-cashier-row">
+                      <span class="wld-cashier-row-label" style="margin-left: 36px;">其他银行卡</span>
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="margin-left:auto;">
+                        <path d="M7 4.5L11.5 9L7 13.5" stroke="rgba(0,0,0,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div class="wld-cashier-cta">
+                    <button class="wld-btn wld-btn-primary wld-btn-m">下一步</button>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            方案 B · UX: 单列表单选
+            <span class="phone-caption-sub">Hypothesis: one list frames the method as a single decision — switching is one tap in place · Tradeoff: less room to explain each method</span>
+          </div>
+        </div>
+
+        <!-- ============ 方案 C (Visual): 金额优先留白 ============ -->
+        <div class="phone-slide">
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="wld-page">
+
+                <wld-wechat-chrome variant="inner" title=""></wld-wechat-chrome>
+
+                <div class="wld-page-body">
+
+                  <!-- What changes: amount summary becomes a white full-bleed hero -->
+                  <div class="wld-cashier-hero wld-cashier-hero--tall">
+                    <div class="wld-cashier-hero-label">还款金额</div>
+                    <div class="wld-cashier-hero-amount">&#165;10006.00</div>
+                  </div>
+
+                  <!-- Bank card method card — production structure, verbatim -->
+                  <div class="wld-cashier-card">
+                    <div class="wld-cashier-card-title">银行卡还款</div>
+
+                    <div class="wld-cashier-row">
+                      <span class="wld-bank-icon wld-bank-icon--icbc">
+                        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                          <rect x="3" y="5" width="16" height="12" stroke="#C41230" stroke-width="1.4" fill="none"/>
+                          <path d="M3 9h16" stroke="#C41230" stroke-width="1.4"/>
+                          <text x="11" y="15" text-anchor="middle" font-size="8" font-weight="700" fill="#C41230" font-family="-apple-system, sans-serif">工</text>
+                        </svg>
+                      </span>
+                      <span class="wld-cashier-row-label">工商银行 (2004)</span>
+                      <div class="wld-checkbox is-checked">
+                        <svg viewBox="0 0 20 20" fill="none">
+                          <path d="M6 10.5l2.8 2.8L14.5 7.5" stroke="rgba(0,0,0,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </div>
+                    </div>
+
+                    <div class="wld-cashier-divider"></div>
+
+                    <div class="wld-cashier-row">
+                      <span class="wld-cashier-row-label" style="margin-left: 36px;">其他银行卡</span>
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="margin-left:auto;">
+                        <path d="M7 4.5L11.5 9L7 13.5" stroke="rgba(0,0,0,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <!-- Transfer method card — production structure, verbatim -->
+                  <div class="wld-cashier-card">
+                    <div class="wld-cashier-row" style="padding-top: 14px; padding-bottom: 14px;">
+                      <span class="wld-cashier-transfer-icon">
+                        <svg width="22" height="18" viewBox="0 0 22 18" fill="none">
+                          <path d="M3 5h14M14 2l3 3-3 3" stroke="rgba(0,0,0,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M19 13H5M8 16l-3-3 3-3" stroke="rgba(0,0,0,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </span>
+                      <div class="wld-cashier-row-stack">
+                        <span class="wld-cashier-row-label">转账还款</span>
+                        <span class="wld-cashier-row-sub">还款不限额，实时到账</span>
+                      </div>
+                      <div class="wld-checkbox" style="margin-left:auto;"></div>
+                    </div>
+                  </div>
+
+                  <div class="wld-cashier-cta">
+                    <button class="wld-btn wld-btn-primary wld-btn-m">下一步</button>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            方案 C · Visual: 金额优先留白
+            <span class="phone-caption-sub">Visual hypothesis: a white full-bleed amount hero makes 还款金额 the sole focal point · What changes: amount section turns white with larger padding — cards, rows, copy and data stay as the production template</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="frame-indicator">
+    <span>Live preview — give feedback in terminal</span>
+  </div>
+
+  <style>
+    /* Amount hero — white full-bleed section (adapted from 本期应还
+       .wld-repay-summary), centered like the production 收银台 summary */
+    .wld-cashier-hero {
+      background: var(--wld-surface);
+      padding: 28px var(--wld-page-padding) 32px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .wld-cashier-hero--tall {
+      padding: 40px var(--wld-page-padding) 44px;
+    }
+    .wld-cashier-hero-label {
+      font-size: var(--wld-text-body2);
+      color: var(--wld-text-primary);
+      font-weight: var(--wld-font-weight-semibold);
+    }
+    .wld-cashier-hero-amount {
+      font-family: var(--wld-font-number);
+      font-size: var(--wld-text-numbers);
+      font-weight: 500;
+      color: var(--wld-text-primary);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    /* Method card container — from production 收银台 */
+    .wld-cashier-card {
+      background: var(--wld-surface);
+      border-radius: 12px;
+      margin: 0 var(--wld-page-padding) 12px;
+      overflow: hidden;
+    }
+    .wld-cashier-card-title {
+      padding: 14px 20px 6px;
+      font-size: var(--wld-text-caption);
+      color: var(--wld-text-secondary);
+    }
+
+    /* 方案 A: selectable method header row */
+    .wld-method-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 20px;
+      min-height: 56px;
+    }
+    .wld-method-title {
+      font-size: var(--wld-text-body1);
+      font-weight: var(--wld-font-weight-semibold);
+      color: var(--wld-text-primary);
+    }
+    .wld-method-head .wld-checkbox {
+      margin-left: auto;
+    }
+    .wld-method-divider {
+      height: 0.5px;
+      background: var(--wld-divider);
+      margin-left: 20px;
+    }
+
+    /* Row inside method card — from production 收银台 */
+    .wld-cashier-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      min-height: 52px;
+    }
+    .wld-cashier-row-label {
+      font-size: var(--wld-text-body1);
+      font-weight: var(--wld-font-weight-semibold);
+      color: var(--wld-text-primary);
+    }
+    .wld-cashier-row-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .wld-cashier-row-sub {
+      font-size: var(--wld-text-caption);
+      color: var(--wld-text-secondary);
+    }
+    .wld-cashier-divider {
+      height: 0.5px;
+      background: var(--wld-divider);
+      margin-left: 56px;
+    }
+
+    /* ICBC bank icon — red circle ring (from production 收银台) */
+    .wld-bank-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1.2px solid #C41230;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .wld-bank-icon svg { display: block; }
+
+    /* Transfer icon — light yellow rounded square (from production 收银台) */
+    .wld-cashier-transfer-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: var(--wld-theme-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Unchecked checkbox border tone — from production 收银台 */
+    .wld-cashier-row .wld-checkbox,
+    .wld-method-head .wld-checkbox {
+      border-color: rgba(0,0,0,0.25);
+    }
+    .wld-cashier-row .wld-checkbox.is-checked,
+    .wld-method-head .wld-checkbox.is-checked {
+      border-color: var(--wld-checkbox-checked-bg);
+    }
+
+    /* Centered CTA directly below content (SKILL.md Step 5 — 收银台 places
+       the centered button after the content, never pinned behind a void) */
+    .wld-cashier-cta {
+      padding: 28px 30px 40px;
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+</body>
+</html>

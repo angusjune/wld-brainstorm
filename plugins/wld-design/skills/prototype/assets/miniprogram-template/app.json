@@ -1,0 +1,20 @@
+{
+  "pages": [
+    "pages/prototype-home/prototype-home",
+    "pages/prototype-loan-input/prototype-loan-input"
+  ],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarBackgroundColor": "#f5f5f5",
+    "backgroundColor": "#f5f5f5",
+    "navigationBarTitleText": "微粒贷",
+    "navigationStyle": "custom"
+  },
+  "usingComponents": {
+    "wld-page": "/components/wld-page/wld-page"
+  },
+  "style": "v2",
+  "renderer": "webview",
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
+}

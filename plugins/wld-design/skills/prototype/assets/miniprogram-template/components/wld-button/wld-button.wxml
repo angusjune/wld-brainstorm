@@ -1,0 +1,17 @@
+<view
+    class="wld-button wld-button--{{type}} wld-button--{{size}} {{fullWidth ? 'wld-button--full-width': ''}} {{disabled ? 'wld-button--disabled' : ''}}"
+    hover-class="{{disabled ? '' : 'wld-button--hover'}}"
+    hover-stay-time="50"
+    role="button"
+    aria-disabled="{{disabled}}"
+    bindtap="onTap"
+>
+    <text class="wld-button__text"><slot /></text>
+    <view wx:if="{{showGlare}}" class="wld-button__glare-wrap">
+        <view class="wld-button__glare" style="left: 90rpx; top: -80rpx"></view>
+        <view
+            class="wld-button__glare"
+            style="left: -60rpx; top: 100rpx"
+        ></view>
+    </view>
+</view>

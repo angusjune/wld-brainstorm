@@ -1,0 +1,7 @@
+{
+  "screens": [
+    { "name": "欢迎页", "image": "./欢迎页.png" },
+    { "name": "输入金额", "image": "./输入金额.png" },
+    { "name": "个人中心", "image": "./个人中心.png" }
+  ]
+}

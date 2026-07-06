@@ -1,0 +1,40 @@
+<wld-page navBack="{{false}}" navTitle="微粒贷" background="#fff">
+  <view class="home">
+    <view class="hero">
+      <view class="hero__label">最高可借</view>
+      <view class="hero__amount wc-sans-ss">¥{{balance}}</view>
+      <view class="hero__meta">年利率(单利) {{rate}}% 起</view>
+      <wld-button type="circle" showGlare bindtap="goLoan">借钱</wld-button>
+    </view>
+
+    <view class="section">
+      <view class="section__title">推荐优惠</view>
+      <view class="offer-card">
+        <view class="offer-card__label">限 1 笔</view>
+        <view class="offer-card__title">前 30 天 0 利息</view>
+        <view class="offer-card__desc">借款成功后自动使用</view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section__title">借款设置示例</view>
+      <wld-chip-group items="{{terms}}" defaultSelectedIndex="{{1}}" bind:selectionchange="onTermChange" />
+      <view class="cell-card">
+        <wld-cell label="还款方式" value="等额本金" tappable="{{false}}" />
+        <wld-cell label="收款账号" value="{{bankCard.label}}" bindtap="openDrawer" />
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-bar">
+    <wld-button fullWidth size="large" showGlare bindtap="goLoan">立即借钱</wld-button>
+    <wld-footer>本 demo 使用本地 mock 数据</wld-footer>
+  </view>
+</wld-page>
+
+<wld-drawer show="{{showDrawer}}" title="收款账号" subtitle="示例抽屉，可替换为业务选项" bind:close="closeDrawer">
+  <view class="drawer-list">
+    <wld-cell label="工商银行 (2004)" value="已选" tappable="{{false}}" />
+    <wld-cell label="添加银行卡" value="示例入口" tappable="{{false}}" />
+  </view>
+</wld-drawer>

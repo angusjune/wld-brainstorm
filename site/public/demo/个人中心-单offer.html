@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>个人中心-单offer</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<link rel="stylesheet" href="assets/components.css">
+<link rel="stylesheet" href="assets/mockup-chrome.css">
+<style>body { margin: 0; background: #fff; }</style>
+</head>
+<body>
+<!--
+  WLD Screen: 个人中心-单offer (Personal Center / Single Offer)
+  Variant of 个人中心 with a promotional badge below the circle button.
+  Layout: Preview chrome (home) → interest rate bar → centered loan offer → promo badge → footer → tab bar
+  Background: White (home screen override)
+-->
+
+<div class="wld-page" style="background: var(--wld-surface);">
+
+  <!-- ===== WECHAT CHROME (Presentation-only) ===== -->
+  <nav class="wld-navbar wld-navbar--home">
+  <div class="wld-statusbar">
+    <span class="wld-statusbar-time">9:41</span>
+    <div class="wld-statusbar-icons">
+      <svg width="17" height="12" viewBox="0 0 17 12" aria-hidden="true">
+        <rect x="0" y="3" width="3" height="9" rx="0.5" fill="currentColor"/>
+        <rect x="4.5" y="2" width="3" height="10" rx="0.5" fill="currentColor"/>
+        <rect x="9" y="0.5" width="3" height="11.5" rx="0.5" fill="currentColor"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="currentColor"/>
+      </svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" aria-hidden="true">
+        <path d="M8 3.6C10.2 3.6 12.1 4.5 13.4 6L15 4.4C13.3 2.7 10.8 1.6 8 1.6S2.7 2.7 1 4.4L2.6 6C3.9 4.5 5.8 3.6 8 3.6Z" fill="currentColor"/>
+        <path d="M8 7.2C9.3 7.2 10.5 7.7 11.4 8.6L8 12L4.6 8.6C5.5 7.7 6.7 7.2 8 7.2Z" fill="currentColor"/>
+      </svg>
+      <svg width="25" height="12" viewBox="0 0 25 12" aria-hidden="true">
+        <rect x="0" y="0.5" width="22" height="11" rx="2" stroke="currentColor" stroke-width="1" fill="none"/>
+        <rect x="23" y="3.5" width="1.5" height="5" rx="0.5" fill="currentColor"/>
+        <rect x="2" y="2.5" width="18" height="7" rx="1" fill="currentColor"/>
+      </svg>
+    </div>
+  </div>
+  <div class="wld-titlebar">
+    <button class="wld-navbar-back" aria-hidden="true"></button>
+    <span class="wld-navbar-title">微粒贷</span>
+    <div class="wld-capsule" aria-hidden="true">
+      <div class="wld-capsule-dots">
+        <span class="wld-capsule-dot"></span>
+        <span class="wld-capsule-dot"></span>
+        <span class="wld-capsule-dot"></span>
+      </div>
+      <div class="wld-capsule-divider"></div>
+      <div class="wld-capsule-close">
+        <div class="wld-capsule-close-ring">
+          <div class="wld-capsule-close-dot"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+  <!-- ===== PAGE BODY ===== -->
+  <div class="wld-page-body" style="display: flex; flex-direction: column; padding-bottom: 0;">
+
+    <!-- Interest rate bar -->
+    <div class="wld-rate-bar">
+      年利率 (单利) 10.8%，1千元用1天只需0.3元
+    </div>
+
+    <!-- Centered loan offer content -->
+    <div class="wld-home-content">
+      <span class="wld-home-label">预估可借</span>
+      <span class="wld-home-amount">&#165;60000</span>
+      <button class="wld-btn-circle">借钱</button>
+
+      <!-- Promotional badge with upward-pointing triangle -->
+      <div style="position: relative; display: flex; flex-direction: column; align-items: center; margin-top: 4px;">
+        <!-- Upward-pointing triangle -->
+        <div style="width: 16px; height: 16px; background: #FFF4D9; transform: rotate(45deg); margin-bottom: -10px; z-index: 0;"></div>
+        <!-- Badge body -->
+        <div style="position: relative; z-index: 1; display: flex; align-items: center; gap: 6px; background: #FFF4D9; border-radius: 8px; padding: 6px 10px;">
+          <!-- Orange gradient tag -->
+          <span style="display: inline-block; background: linear-gradient(135deg, #FC8F3F, #F4761A); color: var(--wld-surface); font-size: 12px; font-weight: 600; line-height: 1; padding: 3px 6px; border-radius: 4px; white-space: nowrap;">限1笔</span>
+          <!-- Promo text -->
+          <span style="font-size: 14px; font-weight: 600; color: #A76F1C; white-space: nowrap;">前 30 天 0 利息</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="wld-footer">
+      <div class="wld-footer-links">
+        <a href="#">借钱须知</a>
+      </div>
+      <div class="wld-footer-disclaimer">实际可借以当次借款审批为准</div>
+    </div>
+
+  </div>
+
+  <!-- ===== TAB BAR ===== -->
+  <div class="wld-tabbar">
+    <!-- Active tab: 借钱 -->
+    <button class="wld-tabbar-item">
+      <div class="wld-tabbar-icon">
+        <img src="assets/icons/tab-icon-home-filled.svg" alt="借钱" width="22" height="22">
+      </div>
+      <span class="wld-tabbar-label">借钱</span>
+    </button>
+    <!-- Inactive tab: 我的 -->
+    <button class="wld-tabbar-item wld-tabbar-item--inactive">
+      <div class="wld-tabbar-icon">
+        <img src="assets/icons/tab-icon-me.svg" alt="我的" width="22" height="22">
+      </div>
+      <span class="wld-tabbar-label">我的</span>
+    </button>
+  </div>
+
+</div>
+
+<style>
+  /* Interest rate info bar */
+  .wld-rate-bar {
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--wld-text-secondary);
+    background: var(--wld-section);
+    flex-shrink: 0;
+  }
+
+  /* Centered loan offer area */
+  .wld-home-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    padding: 40px 0;
+  }
+  .wld-home-label {
+    font-size: 14px;
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-text-primary);
+  }
+  .wld-home-amount {
+    font-family: var(--wld-font-number);
+    font-size: var(--wld-text-numbers);
+    font-weight: 500;
+    color: var(--wld-text-primary);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+</style>
+
+</body>
+</html>

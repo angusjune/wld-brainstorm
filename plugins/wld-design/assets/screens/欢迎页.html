@@ -1,0 +1,132 @@
+<!--
+  WLD Screen: 欢迎页 (Welcome / Landing)
+  First-run entry into 微粒贷 — pitches the value prop with 3 feature icons + a primary CTA.
+  Layout: Preview chrome (centered 微粒贷, no back) → centered title + 3-feature row → primary CTA → footer credit
+  Background: #FFFFFF
+-->
+
+<div class="wld-page" style="background: var(--wld-surface);">
+
+  <!-- ===== WECHAT CHROME (Presentation-only) ===== -->
+  <wld-wechat-chrome variant="home" title="微粒贷"></wld-wechat-chrome>
+
+  <!-- ===== PAGE BODY ===== -->
+  <div class="wld-page-body" style="padding-bottom: 0;">
+
+    <div class="wld-welcome">
+
+      <!-- Hero block: title + 3-feature row -->
+      <div class="wld-welcome-hero">
+        <div class="wld-welcome-title">微信上可以借钱了</div>
+
+        <div class="wld-welcome-features">
+          <div class="wld-welcome-feature">
+            <span class="wld-welcome-feature-icon">
+              <!-- Lightning bolt -->
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <path d="M12.5 2L4 13h6l-1 7 8.5-11h-6l1-7z" fill="rgba(0,0,0,0.85)" stroke="rgba(0,0,0,0.85)" stroke-width="1" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="wld-welcome-feature-label">10 秒出额度</span>
+          </div>
+          <div class="wld-welcome-feature">
+            <span class="wld-welcome-feature-icon">
+              <!-- Clock / gauge -->
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <circle cx="11" cy="11" r="8" stroke="rgba(0,0,0,0.85)" stroke-width="1.5" fill="none"/>
+                <path d="M11 6v5l3.5 2" stroke="rgba(0,0,0,0.85)" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <span class="wld-welcome-feature-label">1 分钟借钱</span>
+          </div>
+          <div class="wld-welcome-feature">
+            <span class="wld-welcome-feature-icon">
+              <!-- Yuan symbol -->
+              <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                <path d="M5 4l6 7 6-7M5 12h12M5 15h12M11 11v8" stroke="rgba(0,0,0,0.85)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <span class="wld-welcome-feature-label">3 分钟到账</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer block: CTA + credit -->
+      <div class="wld-welcome-bottom">
+        <button class="wld-btn wld-btn-primary" style="width: 290px; height: 48px; font-size: 16px; line-height: 48px;">查看额度</button>
+        <div class="wld-welcome-credit">本服务由微众银行提供</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<style>
+  /* Welcome layout — vertical column filling the page body */
+  .wld-welcome {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - 88px);
+  }
+
+  /* Hero — centered title + features, takes top portion */
+  .wld-welcome-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px 40px;
+    gap: 80px;
+  }
+  .wld-welcome-title {
+    font-size: var(--wld-text-display);
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-text-primary);
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  /* 3-feature row */
+  .wld-welcome-features {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 30px;
+  }
+  .wld-welcome-feature {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .wld-welcome-feature-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: var(--wld-theme-500);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .wld-welcome-feature-label {
+    font-size: var(--wld-text-body2);
+    color: var(--wld-text-secondary);
+    white-space: nowrap;
+  }
+
+  /* Footer — CTA above credit, pinned-feel near bottom */
+  .wld-welcome-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    padding: 0 20px 40px;
+  }
+  .wld-welcome-credit {
+    font-size: var(--wld-text-body2);
+    color: var(--wld-text-secondary);
+  }
+</style>

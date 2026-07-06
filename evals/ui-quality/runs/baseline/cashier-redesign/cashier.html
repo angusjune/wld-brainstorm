@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/assets/tokens.css">
+  <link rel="stylesheet" href="/assets/components.css">
+  <link rel="stylesheet" href="/assets/mockup-chrome.css">
+  <link rel="stylesheet" href="/assets/phone-mockup.css">
+</head>
+<body>
+  <div class="frame-header">
+    <h1>WLD Design</h1>
+    <div class="frame-status">Live</div>
+  </div>
+
+  <div class="frame-main">
+    <div id="frame-content">
+      <h2 class="frame-title">收银台 — 方案 A 并列直选</h2>
+      <p class="frame-subtitle">Amount hero + two always-visible payment methods · bank card selected</p>
+
+      <div class="phone-gallery">
+        <div class="phone-slide">
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="wld-page">
+                <wld-wechat-chrome variant="inner" title="还款"></wld-wechat-chrome>
+                <div class="wld-page-body">
+
+                  <!-- Amount hero (adapted from 本期应还 summary) -->
+                  <div class="wld-cashier-summary">
+                    <div class="wld-cashier-summary-label">9月16日应还</div>
+                    <div class="wld-cashier-summary-amount">¥1001.00</div>
+                  </div>
+
+                  <!-- Payment method card (adapted from 提前还清 card + select/cell) -->
+                  <div class="wld-method-card">
+                    <div class="wld-method-card-title">还款方式</div>
+
+                    <!-- Bank card repayment — selected -->
+                    <div class="wld-method-row">
+                      <div class="wld-method-icon">
+                        <img src="/assets/icons/logo-icbc.svg" alt="工商银行">
+                      </div>
+                      <div class="wld-method-content">
+                        <span class="wld-method-label">银行卡还款</span>
+                        <span class="wld-method-desc">工商银行 储蓄卡 (2004)</span>
+                      </div>
+                      <div class="wld-radio is-checked"></div>
+                      <div class="wld-method-divider"></div>
+                    </div>
+
+                    <!-- Transfer repayment — unselected -->
+                    <div class="wld-method-row">
+                      <div class="wld-method-icon">
+                        <img src="/assets/icons/logo-webank.svg" alt="微众银行">
+                      </div>
+                      <div class="wld-method-content">
+                        <span class="wld-method-label">转账还款</span>
+                        <span class="wld-method-desc">转入专属还款账户，自动还款</span>
+                      </div>
+                      <div class="wld-radio"></div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Bottom action bar -->
+                <div class="wld-bottom-bar">
+                  <button class="wld-btn wld-btn-primary wld-btn-m" style="width: 100%;">确认还款</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            收银台（银行卡还款已选）
+            <span class="phone-caption-sub">Cashier — bank card selected · tapping 转账还款 switches method (shown as a separate state screen)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="frame-indicator">
+    <span>Live preview — give feedback in terminal</span>
+  </div>
+
+  <style>
+    /* ===== Amount hero (adapted from 本期应还 .wld-repay-summary) ===== */
+    .wld-cashier-summary {
+      background: var(--wld-surface);
+      padding: 35px var(--wld-page-padding);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .wld-cashier-summary-label {
+      font-size: var(--wld-text-body2);
+      font-weight: var(--wld-font-weight-semibold);
+      color: var(--wld-text-primary);
+      line-height: 1.5;
+    }
+    .wld-cashier-summary-amount {
+      font-family: var(--wld-font-number);
+      font-size: var(--wld-text-numbers);
+      font-weight: 500;
+      color: var(--wld-text-primary);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+      margin-top: 8px;
+    }
+
+    /* ===== Method card (adapted from 提前还清 .wld-repay-card + select/cell) ===== */
+    .wld-method-card {
+      background: var(--wld-surface);
+      border-radius: 12px;
+      margin: 15px var(--wld-page-padding);
+      padding-top: 20px;
+      overflow: hidden;
+    }
+    .wld-method-card-title {
+      font-size: 18px;
+      font-weight: var(--wld-font-weight-semibold);
+      color: var(--wld-text-primary);
+      padding: 0 20px 4px;
+    }
+    .wld-method-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 20px;
+      position: relative;
+    }
+    .wld-method-icon {
+      flex-shrink: 0;
+      width: 40px;
+      height: 40px;
+    }
+    .wld-method-icon img {
+      width: 40px;
+      height: 40px;
+      border-radius: 20px;
+      border: 0.5px solid var(--wld-divider);
+      object-fit: cover;
+    }
+    .wld-method-content {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .wld-method-label {
+      font-size: var(--wld-text-body1);
+      font-weight: var(--wld-font-weight-semibold);
+      color: var(--wld-text-primary);
+      line-height: 1.4;
+    }
+    .wld-method-desc {
+      font-size: var(--wld-text-caption);
+      color: var(--wld-text-secondary);
+      line-height: 1.4;
+    }
+    .wld-method-divider {
+      position: absolute;
+      bottom: 0;
+      left: 20px;
+      right: 0;
+      height: 0.5px;
+      background: var(--wld-divider);
+    }
+  </style>
+</body>
+</html>

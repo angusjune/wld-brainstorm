@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/assets/tokens.css">
+  <link rel="stylesheet" href="/assets/components.css">
+  <link rel="stylesheet" href="/assets/mockup-chrome.css">
+  <link rel="stylesheet" href="/assets/phone-mockup.css">
+</head>
+<body>
+  <div class="frame-header">
+    <h1>WLD Design</h1>
+    <div class="frame-status">Live</div>
+  </div>
+
+  <div class="frame-main">
+    <div id="frame-content">
+
+      <h2 class="frame-title">3 Design Solutions — 收银台</h2>
+      <p class="frame-subtitle">Pick one, or mix elements from multiple</p>
+
+      <div class="phone-gallery">
+
+        <!-- ============================================================
+             方案 A (UX) — 并列单选
+             Base: 收银台.html · bank chip from 更换还款卡.html
+             ============================================================ -->
+        <div class="phone-slide">
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="wld-page">
+
+                <wld-wechat-chrome variant="inner" title=""></wld-wechat-chrome>
+
+                <div class="wld-page-body">
+
+                  <!-- Amount summary (production 收银台, taller breathing room) -->
+                  <div class="wld-cashier-summary">
+                    <div class="wld-cashier-summary-label">还款金额</div>
+                    <div class="wld-cashier-summary-amount">&#165;10006.00</div>
+                  </div>
+
+                  <!-- One card, two peer method rows, single-choice radios -->
+                  <div class="wld-cashier-card">
+
+                    <div class="wld-cashier-row">
+                      <span class="wld-card-bank">
+                        <img src="/assets/icons/logo-icbc.svg" alt="工商银行" width="24" height="24">
+                      </span>
+                      <div class="wld-cashier-row-stack">
+                        <span class="wld-cashier-row-label">银行卡还款</span>
+                        <span class="wld-cashier-row-sub">工商银行 (2004)</span>
+                      </div>
+                      <div class="wld-radio is-checked" style="margin-left:auto;"></div>
+                    </div>
+
+                    <div class="wld-cashier-divider"></div>
+
+                    <div class="wld-cashier-row wld-cashier-row--secondary">
+                      <span class="wld-cashier-row-sub" style="margin-left:44px; font-size:var(--wld-text-body2);">其他银行卡</span>
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="margin-left:auto;">
+                        <path d="M7 4.5L11.5 9L7 13.5" stroke="rgba(0,0,0,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+
+                    <div class="wld-cashier-divider"></div>
+
+                    <div class="wld-cashier-row">
+                      <span class="wld-cashier-transfer-icon">
+                        <svg width="22" height="18" viewBox="0 0 22 18" fill="none">
+                          <path d="M3 5h14M14 2l3 3-3 3" stroke="rgba(0,0,0,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M19 13H5M8 16l-3-3 3-3" stroke="rgba(0,0,0,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </span>
+                      <div class="wld-cashier-row-stack">
+                        <span class="wld-cashier-row-label">转账还款</span>
+                        <span class="wld-cashier-row-sub">还款不限额，实时到账</span>
+                      </div>
+                      <div class="wld-radio" style="margin-left:auto;"></div>
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div class="wld-cashier-bottom">
+                  <button class="wld-btn wld-btn-primary wld-btn-m">下一步</button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            方案 A: 并列单选（UX）
+            <span class="phone-caption-sub">Hypothesis: 两种方式同卡并列，单选即切换，一眼可比 · Tradeoff: 更换银行卡需进一层</span>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             方案 B (UX) — 确认式收银台
+             Base: 收银台.html summary · options rows from 输入金额.html
+             ============================================================ -->
+        <div class="phone-slide">
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="wld-page">
+
+                <wld-wechat-chrome variant="inner" title=""></wld-wechat-chrome>
+
+                <div class="wld-page-body">
+
+                  <!-- Amount summary -->
+                  <div class="wld-cashier-summary">
+                    <div class="wld-cashier-summary-label">还款金额</div>
+                    <div class="wld-cashier-summary-amount">&#165;10006.00</div>
+                  </div>
+
+                  <!-- Settings-style rows: method + card are changeable settings -->
+                  <div class="wld-loan-options">
+
+                    <div class="wld-loan-options-row">
+                      <div style="display:flex; align-items:center; gap:30px; padding:5px 15px 5px 20px;">
+                        <span style="font-size:14px; font-weight:600; color:var(--wld-black-800); white-space:nowrap;">还款方式</span>
+                        <div style="flex:1; display:flex; justify-content:flex-end; align-items:center; gap:5px;">
+                          <span style="font-size:14px; color:var(--wld-black-800); text-align:right;">银行卡还款</span>
+                          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <path d="M7 4.5L11.5 9L7 13.5" stroke="rgba(0,0,0,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </div>
+                      </div>
+                      <div class="wld-loan-options-divider"></div>
+                    </div>
+
+                    <div class="wld-loan-options-row">
+                      <div style="display:flex; align-items:center; gap:30px; padding:5px 15px 5px 20px;">
+                        <span style="font-size:14px; font-weight:600; color:var(--wld-black-800); white-space:nowrap;">还款卡</span>
+                        <div style="flex:1; display:flex; justify-content:flex-end; align-items:center; gap:5px;">
+                          <img src="/assets/icons/logo-icbc.svg" alt="工商银行" width="20" height="20">
+                          <span style="font-size:14px; color:var(--wld-black-800); text-align:right;">工商银行 (2004)</span>
+                          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                            <path d="M7 4.5L11.5 9L7 13.5" stroke="rgba(0,0,0,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div class="wld-loan-bottom">
+                  <button class="wld-btn wld-btn-primary wld-btn-m" style="width: 100%;">还款</button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            方案 B: 确认式收银台（UX）
+            <span class="phone-caption-sub">Hypothesis: 默认方式直接确认，还款最快，方式是可改设置 · Tradeoff: 转账方式需打开选择器才可见</span>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             方案 C (Visual) — 金额优先
+             Base: 收银台.html structure kept · white hero band from 本期应还.html
+             ============================================================ -->
+        <div class="phone-slide">
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="wld-page">
+
+                <wld-wechat-chrome variant="inner" title=""></wld-wechat-chrome>
+
+                <div class="wld-page-body">
+
+                  <!-- Amount hero — white full-bleed band -->
+                  <div class="wld-cashier-summary wld-cashier-summary--hero">
+                    <div class="wld-cashier-summary-label">还款金额</div>
+                    <div class="wld-cashier-summary-amount">&#165;10006.00</div>
+                  </div>
+
+                  <!-- Bank card method card (production structure, matched row anatomy) -->
+                  <div class="wld-cashier-card">
+
+                    <div class="wld-cashier-row">
+                      <span class="wld-card-bank">
+                        <img src="/assets/icons/logo-icbc.svg" alt="工商银行" width="24" height="24">
+                      </span>
+                      <div class="wld-cashier-row-stack">
+                        <span class="wld-cashier-row-label">银行卡还款</span>
+                        <span class="wld-cashier-row-sub">工商银行 (2004)</span>
+                      </div>
+                      <div class="wld-checkbox is-checked" style="margin-left:auto;">
+                        <svg viewBox="0 0 20 20" fill="none">
+                          <path d="M6 10.5l2.8 2.8L14.5 7.5" stroke="rgba(0,0,0,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </div>
+                    </div>
+
+                    <div class="wld-cashier-divider"></div>
+
+                    <div class="wld-cashier-row wld-cashier-row--secondary">
+                      <span class="wld-cashier-row-sub" style="margin-left:44px; font-size:var(--wld-text-body2);">其他银行卡</span>
+                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="margin-left:auto;">
+                        <path d="M7 4.5L11.5 9L7 13.5" stroke="rgba(0,0,0,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+
+                  </div>
+
+                  <!-- Transfer method card (production, same row anatomy) -->
+                  <div class="wld-cashier-card">
+                    <div class="wld-cashier-row">
+                      <span class="wld-cashier-transfer-icon">
+                        <svg width="22" height="18" viewBox="0 0 22 18" fill="none">
+                          <path d="M3 5h14M14 2l3 3-3 3" stroke="rgba(0,0,0,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                          <path d="M19 13H5M8 16l-3-3 3-3" stroke="rgba(0,0,0,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </span>
+                      <div class="wld-cashier-row-stack">
+                        <span class="wld-cashier-row-label">转账还款</span>
+                        <span class="wld-cashier-row-sub">还款不限额，实时到账</span>
+                      </div>
+                      <div class="wld-checkbox" style="margin-left:auto;"></div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="wld-cashier-bottom">
+                  <button class="wld-btn wld-btn-primary wld-btn-m">下一步</button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            方案 C: 金额优先（Visual）
+            <span class="phone-caption-sub">Visual hypothesis: 白底金额区让金额成为唯一主角 · What changes: 金额区提亮加留白，两卡行结构对齐，流程不变</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="frame-indicator">
+    <span>Live preview — give feedback in terminal</span>
+  </div>
+
+  <style>
+    /* ==========================================================
+       Screen-local styles — adapted from production templates:
+       收银台.html (summary, card, rows, divider, transfer icon, bottom)
+       本期应还.html (white summary band → --hero variant)
+       更换还款卡.html (.wld-card-bank logo chip)
+       输入金额.html (.wld-loan-options rows, .wld-loan-bottom)
+       ========================================================== */
+
+    /* Amount summary — production 收银台, vertical padding increased */
+    .wld-cashier-summary {
+      padding: 24px var(--wld-page-padding) 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    .wld-cashier-summary-label {
+      font-size: var(--wld-text-body2);
+      color: var(--wld-text-primary);
+      font-weight: var(--wld-font-weight-semibold);
+    }
+    .wld-cashier-summary-amount {
+      font-family: var(--wld-font-number);
+      font-size: var(--wld-text-numbers);
+      font-weight: 500;
+      color: var(--wld-text-primary);
+      letter-spacing: -0.5px;
+      line-height: 1.2;
+    }
+
+    /* 方案 C hero variant — white full-bleed band (from 本期应还 summary) */
+    .wld-cashier-summary--hero {
+      background: var(--wld-surface);
+      padding: 34px var(--wld-page-padding) 38px;
+      margin-bottom: 12px;
+    }
+
+    /* Method card (production 收银台) */
+    .wld-cashier-card {
+      background: var(--wld-surface);
+      border-radius: 12px;
+      margin: 0 var(--wld-page-padding) 12px;
+      overflow: hidden;
+    }
+
+    /* Row inside method card (production 收银台, icon enlarged to 32px chip) */
+    .wld-cashier-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      min-height: 56px;
+    }
+    .wld-cashier-row--secondary {
+      min-height: 48px;
+    }
+    .wld-cashier-row-label {
+      font-size: var(--wld-text-body1);
+      font-weight: var(--wld-font-weight-semibold);
+      color: var(--wld-text-primary);
+    }
+    .wld-cashier-row-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .wld-cashier-row-sub {
+      font-size: var(--wld-text-caption);
+      color: var(--wld-text-secondary);
+    }
+    .wld-cashier-divider {
+      height: 0.5px;
+      background: var(--wld-divider);
+      margin-left: 64px;
+    }
+
+    /* Bank logo chip (from 更换还款卡) */
+    .wld-card-bank {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 0.5px solid var(--wld-divider);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      background: var(--wld-surface);
+      overflow: hidden;
+    }
+    .wld-card-bank img {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Transfer icon — light yellow rounded square (production 收银台, 32px to match chip) */
+    .wld-cashier-transfer-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: var(--wld-theme-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Checkbox border tone (production 收银台) */
+    .wld-cashier-row .wld-checkbox {
+      border-color: rgba(0,0,0,0.25);
+    }
+
+    /* Bottom action — small centered button (production 收银台) */
+    .wld-cashier-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: var(--wld-page-width);
+      padding: 16px 30px;
+      padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Options card (from 输入金额) */
+    .wld-loan-options {
+      background: var(--wld-surface);
+      border-radius: 12px;
+      margin: 0 var(--wld-page-padding);
+      overflow: hidden;
+    }
+    .wld-loan-options-row {
+      position: relative;
+      min-height: 44px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .wld-loan-options-divider {
+      height: 0.5px;
+      background: var(--wld-divider);
+      margin-left: 20px;
+    }
+
+    /* Bottom action — full-width CTA (from 输入金额, disclaimer omitted) */
+    .wld-loan-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: var(--wld-page-width);
+      padding: 16px 30px;
+      padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+      background: linear-gradient(to bottom, rgba(245,245,245,0), var(--wld-bg) 24px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  </style>
+</body>
+</html>

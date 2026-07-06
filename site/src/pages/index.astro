@@ -1,0 +1,218 @@
+---
+import Base from '../layouts/Base.astro'
+import ShaderHero from '../components/ShaderHero.tsx'
+import SkillCard from '../components/SkillCard.astro'
+import PhoneGallery from '../components/PhoneGallery.astro'
+import InstallTabs from '../components/InstallTabs.astro'
+import { getCollection } from 'astro:content'
+
+const skills = (await getCollection('skills')).sort((a, b) => a.data.order - b.data.order)
+---
+<Base>
+  <main>
+    <!-- 1. Hero -->
+    <section class="hero">
+      <ShaderHero client:only="react" />
+      <h1 class="visually-hidden">WLD Design 插件</h1>
+      <div class="hero-content">
+        <p>微粒贷设计师的 AI 插件</p>
+        <a class="hero-download" href="#install">查看安装方式</a>
+        <span class="scroll-hint" aria-hidden="true">↓</span>
+      </div>
+    </section>
+
+    <!-- 2. Skills 展示 -->
+    <section>
+      <div class="container">
+        <h2 class="section-title">7 个 Skill</h2>
+        <p class="section-sub">发散、交付、质检 — 各管一段，连起来是一条完整的设计工作流</p>
+        <div class="cards">
+          {skills.map((skill) => <SkillCard skill={skill} />)}
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. 痛点 -->
+    <section>
+      <div class="container">
+        <h2 class="section-title">哪里疼，治哪里</h2>
+        <p class="section-sub">每个 Skill 都对应一个真实发生过的瞬间</p>
+        <div class="cards">
+          <div class="card">
+            <h3>「看看有没有更多方案」</h3>
+            <p>一个想法，三个方向，浏览器里直接翻。</p>
+            <code>/brainstorm</code>
+          </div>
+          <div class="card">
+            <h3>「设计稿到原型要等排期」</h3>
+            <p>Figma 直接变成手机微信里能点的小程序 demo。</p>
+            <code>/prototype</code>
+          </div>
+          <div class="card">
+            <h3>「汇报前被抓到数字算错」</h3>
+            <p>利息、月供、总额，用真计算器复算一遍。</p>
+            <code>/fix-details</code>
+          </div>
+          <div class="card">
+            <h3>「评审前补全漏画状态」</h3>
+            <p>对照产品 Spec 的状态机，列出没画的空态、错误态、浮层。</p>
+            <code>/find-missing-states</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. 真机演示 -->
+    <section>
+      <div class="container">
+        <h2 class="section-title">真的能跑</h2>
+        <p class="section-sub">这些不是截图 — 是插件真实产出的 HTML，正在你的浏览器里渲染</p>
+        <PhoneGallery
+          screens={[
+            { screen: '欢迎页', caption: '欢迎页' },
+            { screen: '输入金额', caption: '输入金额' },
+            { screen: '个人中心', caption: '个人中心' },
+            { screen: '借款详情', caption: '借款详情' },
+            { screen: '提前还清', caption: '提前还清' },
+          ]}
+        />
+      </div>
+    </section>
+
+    <!-- 5. 它懂微粒贷 -->
+    <section>
+      <div class="container">
+        <h2 class="section-title">它懂微粒贷</h2>
+        <p class="section-sub">
+          插件带着内置产品知识快照跑：状态机、产品规律、历史易错点。
+          它知道空态下 CTA 必须禁用；知道首借和非首借的键盘不一样；利率按 360 天年化换算。
+        </p>
+        <div class="pit-quote">
+          <span class="badge">PIT-001 · 真实易错点</span>
+          <blockquote>
+            在未输入金额的空状态下，底部 CTA「下一步」按钮默认为禁用状态（浅黄色），
+            不能假设为可点击，也不应将空状态连接到 SUBMITTING 状态。
+          </blockquote>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. 30 秒安装 -->
+    <section id="install">
+      <div class="container">
+        <h2 class="section-title">30 秒安装</h2>
+        <p class="section-sub">支持 Claude、Codex、Cursor、opencode、Antigravity</p>
+        <InstallTabs />
+      </div>
+    </section>
+
+    <!-- 7. 彩蛋 — 爆旋陀螺 -->
+    <section class="beyblade">
+      <div class="container">
+        <h2 class="section-title">彩蛋：哪个方案更能打？</h2>
+        <p class="section-sub">让它们真打一场 — 界面变陀螺，刚体碎裂混战，最后还在转的方案赢</p>
+        <div class="arena-slot" id="arena-slot">
+          <button type="button" id="arena-start">▶ 开战</button>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const slot = document.getElementById('arena-slot')
+      const btn = document.getElementById('arena-start')
+      const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+      btn?.addEventListener('click', () => {
+        const iframe = document.createElement('iframe')
+        iframe.src = `${base}/demo/beyblade/arena.html`
+        iframe.title = '界面战斗陀螺'
+        slot?.replaceChildren(iframe)
+      })
+    </script>
+  </main>
+</Base>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    background: var(--bg); /* shader (or its poster fallback) paints on top */
+    padding: 0;
+    overflow: hidden;
+  }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 0 24px 56px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .hero p { font-size: 18px; color: rgba(245, 242, 232, 0.85); text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6); }
+  .hero-download {
+    display: inline-block;
+    background: var(--gold);
+    color: rgba(0, 0, 0, 0.9);
+    font-size: 15px;
+    font-weight: 600;
+    padding: 12px 28px;
+    border-radius: 999px;
+    text-decoration: none;
+  }
+  .hero-download:hover { background: var(--gold-deep); }
+  .scroll-hint {
+    font-size: 24px;
+    color: rgba(245, 242, 232, 0.6);
+    animation: bob 2s ease-in-out infinite;
+  }
+  @keyframes bob { 50% { transform: translateY(8px); } }
+  .card code {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--gold);
+    background: var(--gold-tint);
+    padding: 2px 10px;
+    border-radius: 999px;
+  }
+  .pit-quote {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-left: 4px solid var(--gold);
+    border-radius: 12px;
+    padding: 20px 24px;
+    max-width: 640px;
+  }
+  .pit-quote blockquote { margin-top: 12px; color: var(--text-2); font-size: 15px; }
+  .beyblade .arena-slot {
+    background: var(--navy);
+    border-radius: 16px;
+    min-height: 640px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .beyblade .arena-slot :global(iframe) { width: 100%; height: 720px; border: 0; border-radius: 16px; }
+  .beyblade #arena-start {
+    border: 1px solid var(--gold);
+    background: transparent;
+    color: var(--gold);
+    font-size: 18px;
+    padding: 14px 36px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+  .beyblade #arena-start:hover { background: rgba(255, 209, 67, 0.1); }
+</style>

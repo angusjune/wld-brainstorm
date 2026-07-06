@@ -1,0 +1,43 @@
+[
+  {
+    "prompt": "/simplify 这个借款确认页太乱了，帮我精简一下",
+    "expectedSkill": "simplify",
+    "expectedBehaviors": [
+      "Runs the product-correctness check before any visual stripping (e.g. CTA disabled in empty state)",
+      "Applies the 5-question evaluation framework to each element",
+      "Strips decorative elements and boilerplate copy while preserving compliance-critical content",
+      "Keeps a single primary CTA and one primary number"
+    ],
+    "mustNotTrigger": ["brainstorm", "find-missing-states"]
+  },
+  {
+    "prompt": "清理一下我刚生成的那个微粒贷首页，文案能短则短，去掉装饰",
+    "expectedSkill": "simplify",
+    "expectedBehaviors": [
+      "Shortens copy to <=15 characters where possible",
+      "Removes background dot patterns, triangle decorations, and emoji",
+      "Merges redundant elements (e.g. label + value into one line)"
+    ],
+    "mustNotTrigger": ["brainstorm"]
+  },
+  {
+    "prompt": "这个 Figma 链接 https://figma.com/design/xyz 的页面太花哨了，按 WLD 规范精简，元素太多了",
+    "expectedSkill": "simplify",
+    "expectedBehaviors": [
+      "Distills the existing Figma design down to essentials",
+      "Removes clutter and competing focal points",
+      "Preserves what the user truly needs to see and do"
+    ],
+    "mustNotTrigger": ["find-missing-states", "prototype"]
+  },
+  {
+    "prompt": "This WLD screen feels way too cluttered and busy — clean it up and distill it to the essentials",
+    "expectedSkill": "simplify",
+    "expectedBehaviors": [
+      "Identifies decorative vs functional elements and removes decoration",
+      "Reduces text and visual noise without losing required product content",
+      "Leaves a single clear primary action"
+    ],
+    "mustNotTrigger": ["brainstorm"]
+  }
+]

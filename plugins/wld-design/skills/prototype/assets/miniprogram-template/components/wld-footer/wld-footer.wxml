@@ -1,0 +1,6 @@
+<view class="wld-footer">
+    <view class="wld-footer__links">
+        <view wx:for="{{links}}" wx:key="unique" class="wld-footer__links-item"></view>
+    </view>
+    <view class="wld-footer__bottom"><slot /></view>
+</view>

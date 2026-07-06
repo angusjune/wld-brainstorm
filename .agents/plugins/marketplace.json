@@ -1,0 +1,20 @@
+{
+  "name": "wld-design",
+  "interface": {
+    "displayName": "WLD Design"
+  },
+  "plugins": [
+    {
+      "name": "wld-design",
+      "source": {
+        "source": "local",
+        "path": "./plugins/wld-design"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Design"
+    }
+  ]
+}

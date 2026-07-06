@@ -1,0 +1,8 @@
+[build]
+  base = "site"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  SITE_BASE = "/"
+  NODE_VERSION = "22"

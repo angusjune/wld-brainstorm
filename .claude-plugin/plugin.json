@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "wld-design",
+  "displayName": "WLD Design",
+  "version": "1.1.1",
+  "description": "微粒贷设计工具箱",
+  "author": {
+    "name": "anguszhu"
+  },
+  "homepage": "https://wld-design-plugin.netlify.app",
+  "repository": "local-bundle",
+  "license": "MIT",
+  "skills": [
+    "./plugins/wld-design/skills/brainstorm",
+    "./plugins/wld-design/skills/prototype",
+    "./plugins/wld-design/skills/push-to-figma",
+    "./plugins/wld-design/skills/simplify",
+    "./plugins/wld-design/skills/find-missing-states",
+    "./plugins/wld-design/skills/fix-details",
+    "./plugins/wld-design/skills/beyblade-battle"
+  ]
+}

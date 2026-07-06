@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/assets/tokens.css">
+  <link rel="stylesheet" href="/assets/components.css">
+  <link rel="stylesheet" href="/assets/mockup-chrome.css">
+  <link rel="stylesheet" href="/assets/phone-mockup.css">
+</head>
+<body>
+  <div class="frame-header">
+    <h1>WLD Design</h1>
+    <div class="frame-status">Live</div>
+  </div>
+
+  <div class="frame-main">
+    <div id="frame-content">
+
+      <h2 class="frame-title">逾期账单 — 方案 A 第 1 屏</h2>
+      <p class="frame-subtitle">Overdue bill — reminder and handling entry (screen 1 of 3)</p>
+
+      <div class="phone-gallery">
+        <div class="phone-slide">
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="wld-page">
+
+                <wld-wechat-chrome variant="inner" title="逾期还款"></wld-wechat-chrome>
+
+                <div class="wld-page-body">
+
+                  <!-- Overdue summary (white, full bleed — 本期应还 pattern) -->
+                  <div class="wld-odue-summary">
+                    <div class="wld-odue-summary-status">已逾期 3 天</div>
+                    <div class="wld-odue-summary-amount">&#165;1003.40</div>
+                    <div class="wld-odue-summary-sub">含本期应还 &#165;1001.00，罚息 &#165;2.40</div>
+                    <div class="wld-odue-summary-bank">
+                      <span>招商银行 (5397) 自动扣款未成功</span>
+                      <svg class="wld-odue-summary-info" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                        <circle cx="9" cy="9" r="8" stroke="rgba(0,0,0,0.5)" stroke-width="1"/>
+                        <text x="9" y="13" text-anchor="middle" font-size="11" font-weight="600" font-family="-apple-system, sans-serif" fill="rgba(0,0,0,0.5)">i</text>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <!-- Overdue receipt list card -->
+                  <div class="wld-odue-card">
+
+                    <div class="wld-odue-row">
+                      <div class="wld-odue-row-left">
+                        <span class="wld-odue-row-title">借款 &#165;500.00</span>
+                        <span class="wld-odue-row-date">2025/11/16</span>
+                      </div>
+                      <div class="wld-odue-row-right">
+                        <span class="wld-odue-row-due">逾期应还&#165;501.70</span>
+                        <svg class="wld-odue-row-arrow" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                          <path d="M7 4.5L11.5 9L7 13.5" stroke="rgba(0,0,0,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </div>
+                      <div class="wld-odue-row-divider"></div>
+                    </div>
+
+                    <div class="wld-odue-row">
+                      <div class="wld-odue-row-left">
+                        <span class="wld-odue-row-title">借款 &#165;500.00</span>
+                        <span class="wld-odue-row-date">2025/12/16</span>
+                      </div>
+                      <div class="wld-odue-row-right">
+                        <span class="wld-odue-row-due">逾期应还&#165;501.70</span>
+                        <svg class="wld-odue-row-arrow" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                          <path d="M7 4.5L11.5 9L7 13.5" stroke="rgba(0,0,0,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <!-- Risk disclosure (required — do not simplify away) -->
+                  <div class="wld-odue-note">罚息按日计收；逾期信息将按规定报送征信，还清后更新</div>
+
+                </div>
+
+                <!-- Centered bottom CTA (收银台 pattern) -->
+                <div class="wld-odue-bottom">
+                  <button class="wld-btn wld-btn-primary wld-btn-m">还款</button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            逾期账单
+            <span class="phone-caption-sub">Bill-first: status, total with penalty breakdown, per-loan list, single repay CTA</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="frame-indicator">
+    <span>Live preview — give feedback in terminal</span>
+  </div>
+
+<style>
+  /* ===== Overdue summary (adapted from 本期应还 .wld-repay-summary) ===== */
+  .wld-odue-summary {
+    background: var(--wld-surface);
+    padding: 35px var(--wld-page-padding);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .wld-odue-summary-status {
+    font-size: var(--wld-text-body2);
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-text-error);
+    line-height: 1.5;
+  }
+  .wld-odue-summary-amount {
+    font-family: var(--wld-font-number);
+    font-size: var(--wld-text-numbers);
+    font-weight: 500;
+    color: var(--wld-text-primary);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-top: 8px;
+  }
+  .wld-odue-summary-sub {
+    margin-top: 10px;
+    font-size: var(--wld-text-body2);
+    color: var(--wld-text-secondary);
+    line-height: 1.5;
+  }
+  .wld-odue-summary-bank {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    font-size: var(--wld-text-body2);
+    color: var(--wld-text-secondary);
+    line-height: 1.5;
+  }
+  .wld-odue-summary-info {
+    flex-shrink: 0;
+  }
+
+  /* ===== Receipt list card (adapted from 本期应还 .wld-repay-card) ===== */
+  .wld-odue-card {
+    background: var(--wld-surface);
+    border-radius: 12px;
+    margin: 15px var(--wld-page-padding);
+    overflow: hidden;
+  }
+  .wld-odue-row {
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 20px;
+    position: relative;
+  }
+  .wld-odue-row-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 0;
+    flex-shrink: 0;
+  }
+  .wld-odue-row-title {
+    font-size: var(--wld-text-body2);
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-text-primary);
+    line-height: 1.5;
+  }
+  .wld-odue-row-date {
+    font-size: var(--wld-text-caption);
+    color: var(--wld-text-secondary);
+    line-height: 1.5;
+  }
+  .wld-odue-row-right {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    gap: 4px;
+    padding-right: 15px;
+  }
+  .wld-odue-row-due {
+    font-size: var(--wld-text-body2);
+    color: var(--wld-text-primary);
+    line-height: 1.5;
+  }
+  .wld-odue-row-arrow {
+    flex-shrink: 0;
+  }
+  .wld-odue-row-divider {
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 0;
+    height: 0.5px;
+    background: var(--wld-divider);
+  }
+
+  /* ===== Risk disclosure note ===== */
+  .wld-odue-note {
+    margin: 0 var(--wld-page-padding);
+    font-size: var(--wld-text-caption);
+    color: var(--wld-text-tertiary);
+    line-height: 1.5;
+  }
+
+  /* ===== Centered bottom CTA (adapted from 收银台 .wld-cashier-bottom) ===== */
+  .wld-odue-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: var(--wld-page-width);
+    padding: 16px 30px;
+    padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    justify-content: center;
+  }
+</style>
+</body>
+</html>

@@ -1,0 +1,16 @@
+.caret {
+    width: 4rpx;
+    animation: blink 1.2s steps(1, end) infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+  40% {
+    opacity: 0;
+  }
+  80% {
+    opacity: 1;
+  }
+}

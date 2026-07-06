@@ -1,0 +1,13 @@
+<wld-mask show="{{show}}" tapToClose="{{true}}" bind:close="closeDrawer"></wld-mask>
+<view class="wld-drawer-wrap {{animationData}} {{fullWidth ? 'wld-drawer-wrap--full-width' : ''}}" wx:if="{{visible}}" bind:transitionend="onAnimationEnd">
+    <view class="wld-drawer">
+        <view class="wld-drawer__header {{title ? 'wld-drawer__header--has-title' : ''}}">
+            <text class="wld-drawer__title">{{title}}</text>
+            <view class="wld-drawer__close" hover-class="wld-drawer__close--hover" hover-stay-time="80" bindtap="closeDrawer" role="button"></view>
+        </view>
+        <view wx:if="{{subtitle}}" class="wld-drawer__subtitle">{{subtitle}}</view>
+        <view class="wld-drawer__content">
+            <slot />
+        </view>
+    </view>
+</view>

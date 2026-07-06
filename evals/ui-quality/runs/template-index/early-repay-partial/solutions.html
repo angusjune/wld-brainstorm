@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/assets/tokens.css">
+  <link rel="stylesheet" href="/assets/components.css">
+  <link rel="stylesheet" href="/assets/mockup-chrome.css">
+  <link rel="stylesheet" href="/assets/phone-mockup.css">
+</head>
+<body>
+  <div class="frame-header">
+    <h1>WLD Design</h1>
+    <div class="frame-status">Live</div>
+  </div>
+
+  <div class="frame-main">
+    <div id="frame-content">
+
+      <h2 class="frame-title">3 Design Solutions</h2>
+      <p class="frame-subtitle">提前还清页支持部分还款 — Pick one, or mix elements from multiple</p>
+
+      <div class="phone-gallery">
+
+        <!-- ============================================================
+             方案 A: 逐笔改金额 (Receipt-first, per-loan partial edit)
+             Base: assets/screens/提前还清.html
+             ============================================================ -->
+        <div class="phone-slide">
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="wld-page">
+
+                <wld-wechat-chrome variant="inner" title="提前还款"></wld-wechat-chrome>
+
+                <div class="wld-page-body">
+                  <div class="wld-repay-card">
+                    <div class="wld-repay-section-title">借款</div>
+
+                    <!-- Row 1: disabled (cannot repay yet) -->
+                    <div class="wld-repay-row is-disabled">
+                      <div class="wld-repay-row-left">
+                        <div class="wld-checkbox is-disabled"></div>
+                      </div>
+                      <div class="wld-repay-row-content">
+                        <div class="wld-repay-row-main">
+                          <div class="wld-repay-row-info">
+                            <span class="wld-repay-row-title">借款 ¥500</span>
+                            <span class="wld-repay-row-date">2020/05/21</span>
+                          </div>
+                          <div class="wld-repay-row-right">
+                            <span class="wld-repay-row-amount">明日起可还</span>
+                            <svg class="wld-repay-info-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                              <circle cx="9" cy="9" r="8" stroke="rgba(0,0,0,0.35)" stroke-width="1"/>
+                              <text x="9" y="13" text-anchor="middle" font-size="11" font-weight="600" fill="rgba(0,0,0,0.35)" font-family="-apple-system, sans-serif">i</text>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Row 2: enabled, unchecked -->
+                    <div class="wld-repay-row">
+                      <div class="wld-repay-row-left">
+                        <div class="wld-checkbox"></div>
+                      </div>
+                      <div class="wld-repay-row-content">
+                        <div class="wld-repay-row-main">
+                          <div class="wld-repay-row-info">
+                            <span class="wld-repay-row-title">借款 ¥500.00</span>
+                            <span class="wld-repay-row-date">2020/05/20</span>
+                          </div>
+                          <div class="wld-repay-row-right">
+                            <span class="wld-repay-row-amount">应还¥500.50</span>
+                            <svg class="wld-repay-info-icon" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                              <circle cx="9" cy="9" r="8" stroke="rgba(0,0,0,0.35)" stroke-width="1"/>
+                              <text x="9" y="13" text-anchor="middle" font-size="11" font-weight="600" fill="rgba(0,0,0,0.35)" font-family="-apple-system, sans-serif">i</text>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Row 3: checked, partial amount edited -->
+                    <div class="wld-repay-row">
+                      <div class="wld-repay-row-left">
+                        <div class="wld-checkbox is-checked">
+                          <svg viewBox="0 0 16 16" fill="none">
+                            <path d="M4 8.5l2.5 2.5L12 5" stroke="rgba(0,0,0,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                        </div>
+                      </div>
+                      <div class="wld-repay-row-content wld-repay-row-content--last">
+                        <div class="wld-repay-row-main">
+                          <div class="wld-repay-row-info">
+                            <span class="wld-repay-row-title">借款 ¥500.00</span>
+                            <span class="wld-repay-row-date">2020/05/01</span>
+                          </div>
+                          <div class="wld-repay-row-right">
+                            <div class="wld-repay-row-amount-group">
+                              <span class="wld-repay-partial-line">
+                                <span class="wld-repay-row-amount">本次还 ¥300.00</span>
+                                <span class="wld-link wld-repay-edit">修改</span>
+                              </span>
+                              <span class="wld-repay-row-discount">剩余应还 ¥204.00</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Action bar -->
+                    <div class="wld-repay-action-bar">
+                      <div class="wld-repay-action-left">
+                        <div class="wld-checkbox"></div>
+                        <span class="wld-repay-action-label">全选</span>
+                      </div>
+                      <div class="wld-repay-action-right">
+                        <div class="wld-repay-action-total">
+                          <span class="wld-repay-total-label">总计</span>
+                          <span class="wld-repay-total-amount">¥300.00</span>
+                        </div>
+                        <button class="wld-btn wld-btn-primary wld-btn-s">还款</button>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            方案 A: 逐笔改金额
+            <span class="phone-caption-sub">Hypothesis: keep the familiar select-to-repay list, edit each loan's amount inline · Tradeoff: per-loan editing gets heavy when many loans are selected</span>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             方案 B: 金额优先 (Amount-first, auto-allocation)
+             Base: assets/screens/输入金额.html + 提前还清.html rows
+             ============================================================ -->
+        <div class="phone-slide">
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="wld-page">
+
+                <wld-wechat-chrome variant="inner" title="提前还款"></wld-wechat-chrome>
+
+                <div class="wld-page-body">
+
+                  <!-- Amount input (white, full bleed) -->
+                  <div class="wld-loan-amount">
+                    <div class="wld-loan-amount-row">
+                      <div class="wld-loan-amount-value">
+                        <span class="wld-loan-amount-prefix">&#165;</span>
+                        <span class="wld-loan-amount-number">800</span>
+                      </div>
+                      <button class="wld-loan-amount-clear">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                          <circle cx="12" cy="12" r="11" fill="rgba(0,0,0,0.1)"/>
+                          <path d="M8.5 8.5L15.5 15.5M15.5 8.5L8.5 15.5" stroke="rgba(0,0,0,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                      </button>
+                    </div>
+                    <div class="wld-loan-amount-underline"></div>
+                    <div class="wld-loan-amount-hint">最多可还 ¥1004.50</div>
+                    <div class="wld-loan-amount-pills">
+                      <span class="wld-loan-amount-pill">还 ¥500</span>
+                      <span class="wld-loan-amount-pill">还 ¥1000</span>
+                      <span class="wld-loan-amount-pill">全部还清</span>
+                    </div>
+                  </div>
+
+                  <!-- Allocation detail card -->
+                  <div class="wld-repay-card">
+                    <div class="wld-repay-section-title">还款明细</div>
+
+                    <div class="wld-repay-row">
+                      <div class="wld-repay-row-content">
+                        <div class="wld-repay-row-main">
+                          <div class="wld-repay-row-info">
+                            <span class="wld-repay-row-title">借款 ¥500.00</span>
+                            <span class="wld-repay-row-date">2020/05/01</span>
+                          </div>
+                          <div class="wld-repay-row-amount-group">
+                            <span class="wld-repay-row-amount">本次还 ¥504.00</span>
+                            <span class="wld-repay-row-discount">还清</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="wld-repay-row">
+                      <div class="wld-repay-row-content wld-repay-row-content--last">
+                        <div class="wld-repay-row-main">
+                          <div class="wld-repay-row-info">
+                            <span class="wld-repay-row-title">借款 ¥500.00</span>
+                            <span class="wld-repay-row-date">2020/05/20</span>
+                          </div>
+                          <div class="wld-repay-row-amount-group">
+                            <span class="wld-repay-row-amount">本次还 ¥296.00</span>
+                            <span class="wld-repay-row-discount">剩余应还 ¥204.50</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="wld-alloc-note">优先还清较早的借款</div>
+                  </div>
+
+                </div>
+
+                <!-- Bottom action -->
+                <div class="wld-loan-bottom">
+                  <button class="wld-btn wld-btn-primary wld-btn-m" style="width: 100%;">还款 ¥800.00</button>
+                  <div class="wld-loan-bottom-disclaimer">提前还款免违约金</div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            方案 B: 金额优先
+            <span class="phone-caption-sub">Hypothesis: user thinks "还 ¥X" — enter one amount, system allocates across loans · Tradeoff: less per-loan control, allocation rule must stay visible</span>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             方案 C: 先选方式 (Mode choice + consequence preview)
+             Base: assets/screens/提前还清.html + 输入金额.html amount block
+             ============================================================ -->
+        <div class="phone-slide">
+          <div class="phone-mockup">
+            <div class="phone-screen">
+              <div class="wld-page">
+
+                <wld-wechat-chrome variant="inner" title="提前还款"></wld-wechat-chrome>
+
+                <div class="wld-page-body">
+
+                  <!-- Mode selection card -->
+                  <div class="wld-mode-card">
+                    <div class="wld-mode-row">
+                      <div class="wld-radio"></div>
+                      <span class="wld-mode-label">全部还清</span>
+                      <span class="wld-mode-value">应还 ¥1004.50</span>
+                    </div>
+                    <div class="wld-mode-divider"></div>
+                    <div class="wld-mode-row">
+                      <div class="wld-radio is-checked"></div>
+                      <span class="wld-mode-label">部分还款</span>
+                      <span class="wld-mode-value">自定金额</span>
+                    </div>
+                  </div>
+
+                  <!-- Partial amount card with consequence preview -->
+                  <div class="wld-partial-card">
+                    <div class="wld-loan-amount-row">
+                      <div class="wld-loan-amount-value">
+                        <span class="wld-loan-amount-prefix">&#165;</span>
+                        <span class="wld-loan-amount-number">800</span>
+                      </div>
+                      <button class="wld-loan-amount-clear">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                          <circle cx="12" cy="12" r="11" fill="rgba(0,0,0,0.1)"/>
+                          <path d="M8.5 8.5L15.5 15.5M15.5 8.5L8.5 15.5" stroke="rgba(0,0,0,0.4)" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                      </button>
+                    </div>
+                    <div class="wld-loan-amount-underline"></div>
+                    <div class="wld-loan-amount-hint">最多可还 ¥1004.50</div>
+                    <div class="wld-partial-preview">
+                      <span class="wld-partial-preview-label">还款后剩余应还</span>
+                      <span class="wld-partial-preview-value">¥204.50</span>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Bottom action -->
+                <div class="wld-loan-bottom">
+                  <button class="wld-btn wld-btn-primary wld-btn-m" style="width: 100%;">还款 ¥800.00</button>
+                  <div class="wld-loan-bottom-disclaimer">提前还款免违约金</div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="phone-caption">
+            方案 C: 先选方式
+            <span class="phone-caption-sub">Hypothesis: an explicit 还清/部分 choice prevents mistakes and previews the balance after repaying · Tradeoff: one extra decision step</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="frame-indicator">
+    <span>Live preview — give feedback in terminal</span>
+  </div>
+
+<style>
+  /* ===== Repayment Card (from assets/screens/提前还清.html) ===== */
+  .wld-repay-card {
+    background: var(--wld-surface);
+    border-radius: 12px;
+    margin: 15px;
+    padding-top: 20px;
+    overflow: hidden;
+  }
+
+  .wld-repay-section-title {
+    font-size: 18px;
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-text-primary);
+    padding: 0 20px 4px;
+  }
+
+  .wld-repay-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-left: 20px;
+  }
+
+  .wld-repay-row-left {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .wld-repay-row-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 12px 0;
+    border-bottom: 0.5px solid var(--wld-divider);
+  }
+  .wld-repay-row-content--last {
+    border-bottom: none;
+  }
+
+  .wld-repay-row-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 20px;
+  }
+
+  .wld-repay-row-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .wld-repay-row-title {
+    font-size: 14px;
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-text-primary);
+    line-height: 1.4;
+  }
+
+  .wld-repay-row-date {
+    font-size: 12px;
+    color: var(--wld-text-secondary);
+    line-height: 1.4;
+  }
+
+  .wld-repay-row-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .wld-repay-row-amount-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+  }
+
+  .wld-repay-row-amount {
+    font-size: 14px;
+    color: var(--wld-text-primary);
+    line-height: 1.4;
+  }
+
+  .wld-repay-row-discount {
+    font-size: 12px;
+    color: var(--wld-text-secondary);
+    line-height: 1.4;
+  }
+
+  .wld-repay-info-icon {
+    flex-shrink: 0;
+  }
+
+  .wld-repay-row.is-disabled .wld-repay-row-title,
+  .wld-repay-row.is-disabled .wld-repay-row-date,
+  .wld-repay-row.is-disabled .wld-repay-row-amount {
+    color: var(--wld-text-tertiary);
+  }
+
+  .wld-repay-row.is-disabled .wld-checkbox {
+    border-color: var(--wld-black-300);
+  }
+
+  .wld-repay-action-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 20px;
+    border-top: 0.5px solid var(--wld-divider);
+  }
+
+  .wld-repay-action-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wld-repay-action-label {
+    font-size: 14px;
+    color: var(--wld-text-primary);
+  }
+
+  .wld-repay-action-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .wld-repay-action-total {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+
+  .wld-repay-total-label {
+    font-size: 14px;
+    color: var(--wld-text-secondary);
+  }
+
+  .wld-repay-total-amount {
+    font-family: var(--wld-font-number);
+    font-size: 18px;
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-text-primary);
+  }
+
+  /* ===== Partial edit line (方案 A) ===== */
+  .wld-repay-partial-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .wld-repay-edit {
+    font-size: 12px;
+  }
+
+  /* ===== Amount input (from assets/screens/输入金额.html) ===== */
+  .wld-loan-amount {
+    background: var(--wld-surface);
+    padding: 35px var(--wld-page-padding);
+  }
+  .wld-loan-amount-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .wld-loan-amount-value {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+  }
+  .wld-loan-amount-prefix {
+    font-family: var(--wld-font-number);
+    font-size: var(--wld-text-numbers);
+    font-weight: 500;
+    color: var(--wld-text-primary);
+    line-height: 1.2;
+  }
+  .wld-loan-amount-number {
+    font-family: var(--wld-font-number);
+    font-size: var(--wld-text-numbers);
+    font-weight: 500;
+    color: var(--wld-text-primary);
+    line-height: 1.2;
+  }
+  .wld-loan-amount-clear {
+    width: 24px;
+    height: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+  }
+  .wld-loan-amount-clear svg {
+    display: block;
+  }
+  .wld-loan-amount-underline {
+    height: 1px;
+    background: var(--wld-theme-500);
+    margin-top: 8px;
+  }
+  .wld-loan-amount-hint {
+    font-size: var(--wld-text-caption);
+    color: var(--wld-text-secondary);
+    margin-top: 10px;
+  }
+  .wld-loan-amount-pills {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .wld-loan-amount-pill {
+    background: var(--wld-black-200);
+    border-radius: 4px;
+    padding: 5px 10px;
+    font-size: var(--wld-text-body2);
+    color: var(--wld-text-primary);
+    cursor: pointer;
+  }
+
+  /* ===== Allocation note (方案 B) ===== */
+  .wld-alloc-note {
+    font-size: 12px;
+    color: var(--wld-text-tertiary);
+    padding: 10px 20px 16px;
+  }
+
+  /* ===== Mode selection card (方案 C) ===== */
+  .wld-mode-card {
+    background: var(--wld-surface);
+    border-radius: 12px;
+    margin: 15px;
+    overflow: hidden;
+  }
+  .wld-mode-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 8px 20px;
+  }
+  .wld-mode-label {
+    font-size: 14px;
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-text-primary);
+  }
+  .wld-mode-value {
+    flex: 1;
+    text-align: right;
+    font-size: 14px;
+    color: var(--wld-text-secondary);
+  }
+  .wld-mode-divider {
+    height: 0.5px;
+    background: var(--wld-divider);
+    margin-left: 20px;
+  }
+
+  /* ===== Partial amount card (方案 C) ===== */
+  .wld-partial-card {
+    background: var(--wld-surface);
+    border-radius: 12px;
+    margin: 0 15px;
+    padding: 20px;
+  }
+  .wld-partial-preview {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-top: 0.5px solid var(--wld-divider);
+    margin-top: 16px;
+    padding-top: 12px;
+  }
+  .wld-partial-preview-label {
+    font-size: 14px;
+    color: var(--wld-text-secondary);
+  }
+  .wld-partial-preview-value {
+    font-family: var(--wld-font-number);
+    font-size: 16px;
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-text-primary);
+  }
+
+  /* ===== Bottom action area (from assets/screens/输入金额.html) ===== */
+  .wld-loan-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: var(--wld-page-width);
+    padding: 16px 30px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    background: linear-gradient(to bottom, rgba(245,245,245,0), var(--wld-bg) 24px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .wld-loan-bottom-disclaimer {
+    font-size: var(--wld-text-caption);
+    color: var(--wld-text-secondary);
+    text-align: center;
+    padding-bottom: 20px;
+  }
+</style>
+</body>
+</html>

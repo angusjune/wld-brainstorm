@@ -1,0 +1,22 @@
+# Bundled product knowledge snapshot @ 2026-05-07
+
+components:
+- component_id: COMP_WLD_WELCOME
+  component_name: 欢迎页规格文档
+  product: WLD
+  scene_ids:
+  - SCENE_WLD_ONBOARDING
+  lifecycle_status: draft
+  version: 0.2.0
+  spec_path: knowledge-base-spec/components/COMP_WLD_WELCOME.yaml
+  updated_at: '2026-04-29'
+- component_id: COMP_WLD_LOAN_AMOUNT
+  component_name: 输入金额页规格文档
+  product: WLD
+  scene_ids:
+  - SCENE_WLD_BORROW
+  lifecycle_status: draft
+  version: 2.3.0
+  spec_path: knowledge-base-spec/components/COMP_WLD_LOAN_AMOUNT.yaml
+  updated_at: '2026-04-29'
+scenes: []
