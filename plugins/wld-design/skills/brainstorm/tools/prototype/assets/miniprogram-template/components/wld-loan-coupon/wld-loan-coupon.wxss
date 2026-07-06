@@ -1,0 +1,124 @@
+.wld-loan-coupon {
+    --cell-font-size: 28rpx;
+    --cell-font-line-height: 39rpx;
+    --cell-padding-vertical: 26rpx;
+    --cell-padding-horizontal: 30rpx;
+    font-size: var(--cell-font-size);
+    line-height: var(--cell-font-line-height);
+}
+
+.wld-loan-coupon__main {
+    padding: var(--cell-padding-vertical) var(--cell-padding-horizontal);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+.wld-loan-coupon__main__left {
+    display: flex;
+    gap: 10rpx;
+}
+
+.wld-loan-coupon__main__right {
+    display: flex;
+    gap: 10rpx;
+    align-items: center;
+}
+
+.coupon-icon {
+    position: relative;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0ibm9uZSI+PHBhdGggZmlsbD0idXJsKCNhKSIgZD0iTTE2LjM4IDNBMi42MyAyLjYzIDAgMCAxIDE5IDUuNjN2Mi42NGEyIDIgMCAwIDAgMCAzLjQ2djIuNjRBMi42MyAyLjYzIDAgMCAxIDE2LjM4IDE3SDMuNjNBMi42MyAyLjYzIDAgMCAxIDEgMTQuMzh2LTIuNjVhMiAyIDAgMCAwIDAtMy40NlY1LjYzQTIuNiAyLjYgMCAwIDEgMy42MyAzeiIvPjxwYXRoIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIuOTMiIGQ9Ik02Ljg5IDkuMTRoMi4zM20zLjkgMGgtMi4zNG0tMy45IDIuMzNoNi4yM00xMCA5LjE0VjE0bTAtNC44NmgtLjc4bS43OCAwaC43OG0tMS41NiAwTDguMDYgN20yLjcyIDIuMTRMMTEuOTQgNyIgc3R5bGU9InN0cm9rZTojZmZmO3N0cm9rZS1vcGFjaXR5OjEiLz48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImEiIHgxPSI4LjI1IiB4Mj0iOC4yNSIgeTE9IjIuNSIgeTI9IjE3LjUiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj48c3RvcCBzdG9wLWNvbG9yPSIjRkM4RjNGIiBzdHlsZT0ic3RvcC1jb2xvcjojZmM4ZjNmO3N0b3AtY29sb3I6Y29sb3IoZGlzcGxheS1wMyAuOTg4NyAuNTU5OCAuMjQ2Nyk7c3RvcC1vcGFjaXR5OjEiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNGNDc2MUEiIHN0eWxlPSJzdG9wLWNvbG9yOiNmNDc2MWE7c3RvcC1jb2xvcjpjb2xvcihkaXNwbGF5LXAzIC45NTY5IC40NjI3IC4xMDIpO3N0b3Atb3BhY2l0eToxIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PC9zdmc+");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 40rpx;
+    aspect-ratio: 1;
+}
+
+.coupon-label.coupon-label--disabled {
+    color: var(--text-secondary);
+    font-weight: normal;
+}
+
+.coupon-value {
+    color: #ee8a27;
+}
+
+.coupon-value.coupon-value--disabled {
+    color: var(--text-secondary);
+    font-weight: normal;
+}
+
+.cell-chevron {
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMCIgaGVpZ2h0PSIxOCIgZmlsbD0ibm9uZSI+PHBhdGggc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIHN0cm9rZS1vcGFjaXR5PSIuMTYiIHN0cm9rZS13aWR0aD0iMS41IiBkPSJtNSA1IDQgNC00IDQiIHN0eWxlPSJzdHJva2U6IzAwMDtzdHJva2Utb3BhY2l0eTouMTYiLz48L3N2Zz4=");
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 20rpx;
+    height: 36rpx;
+}
+
+.wld-loan-coupon__tip-wrap {
+    position: relative;
+    max-height: 130rpx;
+    overflow: hidden;
+    opacity: 1;
+    transition:
+        max-height 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.2s ease-out;
+}
+
+.wld-loan-coupon__tip-wrap--hidden {
+    max-height: 0;
+    opacity: 0;
+    transition:
+        max-height 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.1s ease-in;
+}
+
+.wld-loan-coupon__tip {
+    position: relative;
+    margin: 0 10rpx;
+    display: flex;
+    align-items: center;
+    gap: 10rpx;
+    font-size: 28rpx;
+    border-radius: 22rpx;
+    background: #fff6ee;
+    padding: 20rpx;
+}
+
+.wld-loan-coupon__tip-arrow {
+    content: "";
+    position: absolute;
+    bottom: -40rpx;
+    left: 8rpx;
+    border-radius: 4rpx;
+    background: #fff6ee;
+    width: 24rpx;
+    height: 24rpx;
+    transform: rotate(45deg);
+    transition: opacity 0.15s ease-out;
+}
+
+.wld-loan-coupon__tip-arrow--hidden {
+    opacity: 0;
+}
+
+.wld-loan-coupon__tip__button {
+    color: #ee8a27;
+    font-weight: bold;
+    padding: 4rpx 16rpx;
+    border-radius: 999px;
+    border: 1px solid #ee8a27;
+}
+
+.wld-loan-coupon__tip__button--hover {
+    background: #ee8a27;
+    color: #fff;
+}
+
+.wld-loan-coupon__tip__text {
+    flex: 1;
+}

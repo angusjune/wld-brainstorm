@@ -3,10 +3,10 @@
     "prompt": "/brainstorm 帮我设计一个微粒贷的新用户引导页，首次打开时推荐借款额度，先给我三个方案",
     "expectedSkill": "brainstorm",
     "expectedBehaviors": [
-      "Asks one clarifying question at a time about intent (core action, number of screens, which data to show)",
+      "Asks all needed clarifying questions in one message, with defaults",
       "Reads the closest production template from assets/screens/ as a base",
       "Generates three distinct HTML option directions",
-      "Auto-invokes simplify to clean up the generated screens",
+      "Runs the embedded Simplify Pass and Fix Details Pass before user review",
       "Starts a local hot-reload server and tells the PM the browser URL to preview"
     ],
     "mustNotTrigger": ["prototype", "find-missing-states"]
@@ -17,6 +17,7 @@
     "expectedBehaviors": [
       "Clarifies the core action and which screens are involved before generating",
       "Produces multiple option directions rather than a single fixed design",
+      "Runs Simplify and Fix Details on generated screens",
       "Sets up live browser preview with hot reload so the PM can iterate"
     ],
     "mustNotTrigger": ["simplify", "prototype"]
@@ -27,7 +28,8 @@
     "expectedBehaviors": [
       "Recognizes there is no existing design and starts from a product template",
       "Generates HTML screens shown in a live local server with hot reload",
-      "Emphasizes the requested data (amount, interest rate) in the layout"
+      "Emphasizes the requested data (amount, interest rate) in the layout",
+      "Uses only local brainstorm assets/tools rather than sibling skill directories"
     ],
     "mustNotTrigger": ["find-missing-states"]
   },
@@ -36,6 +38,7 @@
     "expectedSkill": "brainstorm",
     "expectedBehaviors": [
       "Treats the request as exploratory ideation, generating three browser-previewable HTML options",
+      "Runs Simplify and Fix Details before asking the user to compare",
       "Runs a hot-reload dev server and reports the preview URL",
       "Iterates on edits with instant browser feedback"
     ],
@@ -47,7 +50,8 @@
     "expectedBehaviors": [
       "Infers Visual Exploration mode because the flow is fixed and the PM asks for visual directions",
       "Keeps the same core structure while varying visual treatment, density, hierarchy, and emphasis",
-      "Labels each option with a visual hypothesis rather than forcing three different UX flows"
+      "Labels each option with a visual hypothesis rather than forcing three different UX flows",
+      "Preserves product values and uses Fix Details to catch value/copy contradictions"
     ],
     "mustNotTrigger": ["prototype", "find-missing-states"]
   },
@@ -57,6 +61,7 @@
     "expectedBehaviors": [
       "Uses Visual Exploration mode because the user explicitly asks to keep the path unchanged",
       "Generates three visual variants that stay within WLD tokens and production template structure",
+      "Runs embedded Simplify and Fix Details passes from brainstorm/references/merged-workflows.md",
       "Avoids treating the request as a missing-states or Mini Program implementation task"
     ],
     "mustNotTrigger": ["prototype", "find-missing-states"]

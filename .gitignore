@@ -3,3 +3,6 @@ node_modules
 dist
 .netlify
 docs
+!docs/
+!docs/adr/
+!docs/adr/*.md

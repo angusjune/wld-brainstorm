@@ -22,7 +22,7 @@ const META = {
 const SKILLS = [
   {
     name: 'brainstorm',
-    summary: 'Clarify a WLD UI idea, generate three options, then iterate on screens with hot reload.',
+    summary: 'Clarify a WLD UI idea, generate three options, run simplify/detail checks, then continue with feedback, Figma, Mini Program, or battle branches.',
   },
   {
     name: 'prototype',

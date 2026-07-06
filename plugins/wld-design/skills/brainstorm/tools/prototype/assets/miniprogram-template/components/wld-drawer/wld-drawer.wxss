@@ -1,0 +1,94 @@
+.wld-drawer-wrap {
+    box-sizing: border-box;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16rpx 16rpx env(safe-area-inset-bottom, 16rpx);
+    z-index: 99999;
+    transform: translateY(100%);
+    transition:  0.25s ease-in;
+    transition-property: opacity, transform;
+}
+
+.wld-drawer-wrap--full-width {
+  padding: 0;
+}
+
+.wld-drawer-wrap--full-width .wld-drawer {
+  background: #fff;
+  border-radius: 64rpx 64rpx 0 0;
+}
+
+.slideInUp {
+    transform: translateY(0);
+    transition-timing-function: cubic-bezier(0.34, 1.25, 0.64, 1);
+  }
+  
+  
+  .slideOutDown {
+    transform: translateY(100%);
+    transition-timing-function: cubic-bezier(0.36, 0, 0.66, -0.3);
+  }
+
+.wld-drawer {
+    display: flex;
+    flex-direction: column;
+    border-radius: 64rpx;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0px 0px 2rpx 2rpx rgba(255, 255, 255, 0.90) inset, 0px 0px 60rpx 0px rgba(0, 0, 0, 0.30);
+    backdrop-filter: blur(10rpx);
+}
+
+.wld-drawer__header {
+    display: flex;
+    gap: 40rpx;
+    padding: 40rpx 40rpx 20rpx;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.wld-drawer__title {
+    font-size: 44rpx;
+    line-height: 68rpx;
+    font-weight: bold;
+    flex: 1;
+}
+
+.wld-drawer__close {
+    position: relative;
+    top: -10rpx;
+    right: -10rpx;
+    width: 68rpx;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.06);
+    transition: 0.1s ease-out;
+    transition-property: background, transform;
+}
+
+.wld-drawer__close::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 36rpx;
+    height: 36rpx;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMiIgaGVpZ2h0PSIxMiIgZmlsbD0ibm9uZSI+PHBhdGggc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS13aWR0aD0iMS41IiBkPSJtMSAxIDEwIDEwbTAtMTBMMSAxMSIgc3R5bGU9InN0cm9rZTojMDAwO3N0cm9rZS1vcGFjaXR5OjEiLz48L3N2Zz4=");
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.wld-drawer__close--hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.2);
+}
+
+.wld-drawer__subtitle {
+    font-size: 28rpx;
+    padding: 0 40rpx 40rpx;
+}
+
+.wld-drawer__content {
+    padding: 20rpx 0;
+}

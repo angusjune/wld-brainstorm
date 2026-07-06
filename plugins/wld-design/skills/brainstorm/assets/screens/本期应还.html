@@ -1,0 +1,184 @@
+<!--
+  WLD Screen: 本期应还 (Current Period Repayment)
+  Info screen showing the upcoming repayment amount and breakdown by loan.
+  Layout: Preview chrome (back) → repayment summary (white) → receipt list card → no bottom bar
+  Background: #F5F5F5
+-->
+
+<div class="wld-page">
+
+  <!-- ===== WECHAT CHROME (Presentation-only) ===== -->
+  <wld-wechat-chrome variant="inner" title="本期应还"></wld-wechat-chrome>
+
+  <!-- ===== PAGE BODY ===== -->
+  <div class="wld-page-body">
+
+    <!-- Repayment summary section (white bg, full bleed) -->
+    <div class="wld-repay-summary">
+      <div class="wld-repay-summary-date">9月16日应还</div>
+      <div class="wld-repay-summary-amount">&#165;1001.00</div>
+      <div class="wld-repay-summary-bank">
+        <span>优先从招商银行 (5397) 自动还款</span>
+        <!-- Info icon (circle with i) -->
+        <svg class="wld-repay-summary-info" width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <circle cx="9" cy="9" r="8" stroke="rgba(0,0,0,0.5)" stroke-width="1"/>
+          <text x="9" y="13" text-anchor="middle" font-size="11" font-weight="600" font-family="-apple-system, sans-serif" fill="rgba(0,0,0,0.5)">i</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Receipt list card -->
+    <div class="wld-repay-card">
+
+      <!-- Row 1 -->
+      <div class="wld-repay-row">
+        <div class="wld-repay-row-left">
+          <span class="wld-repay-row-title">借款 &#165;500</span>
+          <span class="wld-repay-row-date">2020/05/20</span>
+        </div>
+        <div class="wld-repay-row-right">
+          <div class="wld-repay-row-values">
+            <span class="wld-repay-row-due">本期应还&#165;500.50</span>
+            <span class="wld-repay-row-deducted">已抵扣&#165;50</span>
+          </div>
+          <!-- Chevron arrow -->
+          <svg class="wld-repay-row-arrow" width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M7 4.5L11.5 9L7 13.5" stroke="rgba(0,0,0,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="wld-repay-row-divider"></div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="wld-repay-row">
+        <div class="wld-repay-row-left">
+          <span class="wld-repay-row-title">借款 &#165;500</span>
+          <span class="wld-repay-row-date">2020/05/20</span>
+        </div>
+        <div class="wld-repay-row-right">
+          <div class="wld-repay-row-values">
+            <span class="wld-repay-row-due">本期应还&#165;500.50</span>
+            <span class="wld-repay-row-deducted">已抵扣&#165;50</span>
+          </div>
+          <!-- Chevron arrow -->
+          <svg class="wld-repay-row-arrow" width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M7 4.5L11.5 9L7 13.5" stroke="rgba(0,0,0,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<style>
+  /* Repayment summary — white section at top */
+  .wld-repay-summary {
+    background: var(--wld-surface);
+    padding: 35px var(--wld-page-padding);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .wld-repay-summary-date {
+    font-size: var(--wld-text-body2);
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-text-primary);
+    line-height: 1.5;
+  }
+  .wld-repay-summary-amount {
+    font-family: var(--wld-font-number);
+    font-size: var(--wld-text-numbers);
+    font-weight: 500;
+    color: var(--wld-text-primary);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-top: 8px;
+  }
+  .wld-repay-summary-bank {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 10px;
+    font-size: var(--wld-text-body2);
+    color: var(--wld-text-secondary);
+    line-height: 1.5;
+  }
+  .wld-repay-summary-info {
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  /* Receipt list card */
+  .wld-repay-card {
+    background: var(--wld-surface);
+    border-radius: 12px;
+    margin: 15px var(--wld-page-padding);
+    overflow: hidden;
+  }
+
+  /* Receipt row */
+  .wld-repay-row {
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 20px;
+    position: relative;
+  }
+  .wld-repay-row-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 12px 0;
+    flex-shrink: 0;
+  }
+  .wld-repay-row-title {
+    font-size: var(--wld-text-body2);
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-text-primary);
+    line-height: 1.5;
+  }
+  .wld-repay-row-date {
+    font-size: var(--wld-text-caption);
+    color: var(--wld-text-secondary);
+    line-height: 1.5;
+  }
+
+  .wld-repay-row-right {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    gap: 4px;
+    padding-right: 15px;
+  }
+  .wld-repay-row-values {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+  }
+  .wld-repay-row-due {
+    font-size: var(--wld-text-body2);
+    color: var(--wld-text-primary);
+    line-height: 1.5;
+  }
+  .wld-repay-row-deducted {
+    font-size: var(--wld-text-caption);
+    color: var(--wld-text-secondary);
+    line-height: 1.5;
+  }
+  .wld-repay-row-arrow {
+    flex-shrink: 0;
+  }
+
+  /* Divider between rows (0.5px, indented from left padding) */
+  .wld-repay-row-divider {
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    right: 0;
+    height: 0.5px;
+    background: var(--wld-divider);
+  }
+</style>

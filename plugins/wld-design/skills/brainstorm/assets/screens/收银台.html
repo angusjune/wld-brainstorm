@@ -1,0 +1,187 @@
+<!--
+  WLD Screen: 收银台 (Cashier / Repayment Method Selection)
+  User picks a repayment method (bank card or transfer) for an outstanding amount.
+  Layout: Preview chrome (back, no title) → amount summary → method cards (bank / transfer) → centered CTA
+  Background: #F5F5F5
+-->
+
+<div class="wld-page">
+
+  <!-- ===== WECHAT CHROME (Presentation-only) ===== -->
+  <wld-wechat-chrome variant="inner" title=""></wld-wechat-chrome>
+
+  <!-- ===== PAGE BODY ===== -->
+  <div class="wld-page-body">
+
+    <!-- Amount summary -->
+    <div class="wld-cashier-summary">
+      <div class="wld-cashier-summary-label">还款金额</div>
+      <div class="wld-cashier-summary-amount">&#165;10006.00</div>
+    </div>
+
+    <!-- Bank card method card -->
+    <div class="wld-cashier-card">
+      <div class="wld-cashier-card-title">银行卡还款</div>
+
+      <div class="wld-cashier-row">
+        <!-- ICBC bank circular icon -->
+        <span class="wld-bank-icon wld-bank-icon--icbc">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <rect x="3" y="5" width="16" height="12" stroke="#C41230" stroke-width="1.4" fill="none"/>
+            <path d="M3 9h16" stroke="#C41230" stroke-width="1.4"/>
+            <text x="11" y="15" text-anchor="middle" font-size="8" font-weight="700" fill="#C41230" font-family="-apple-system, sans-serif">工</text>
+          </svg>
+        </span>
+        <span class="wld-cashier-row-label">工商银行 (2004)</span>
+        <!-- Checked round checkbox -->
+        <div class="wld-checkbox is-checked">
+          <svg viewBox="0 0 20 20" fill="none">
+            <path d="M6 10.5l2.8 2.8L14.5 7.5" stroke="rgba(0,0,0,0.85)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="wld-cashier-divider"></div>
+
+      <div class="wld-cashier-row">
+        <span class="wld-cashier-row-label" style="margin-left: 36px;">其他银行卡</span>
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="margin-left:auto;">
+          <path d="M7 4.5L11.5 9L7 13.5" stroke="rgba(0,0,0,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Transfer method card -->
+    <div class="wld-cashier-card">
+      <div class="wld-cashier-row" style="padding-top: 14px; padding-bottom: 14px;">
+        <!-- Transfer icon (light yellow square) -->
+        <span class="wld-cashier-transfer-icon">
+          <svg width="22" height="18" viewBox="0 0 22 18" fill="none">
+            <path d="M3 5h14M14 2l3 3-3 3" stroke="rgba(0,0,0,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M19 13H5M8 16l-3-3 3-3" stroke="rgba(0,0,0,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <div class="wld-cashier-row-stack">
+          <span class="wld-cashier-row-label">转账还款</span>
+          <span class="wld-cashier-row-sub">还款不限额，实时到账</span>
+        </div>
+        <!-- Unchecked round checkbox -->
+        <div class="wld-checkbox" style="margin-left:auto;"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== BOTTOM ACTION ===== -->
+  <div class="wld-cashier-bottom">
+    <button class="wld-btn wld-btn-primary wld-btn-m">下一步</button>
+  </div>
+
+</div>
+
+<style>
+  /* Amount summary — full bleed, transparent over page bg */
+  .wld-cashier-summary {
+    padding: 15px var(--wld-page-padding) 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  .wld-cashier-summary-label {
+    font-size: var(--wld-text-body2);
+    color: var(--wld-text-primary);
+    font-weight: var(--wld-font-weight-semibold);
+  }
+  .wld-cashier-summary-amount {
+    font-family: var(--wld-font-number);
+    font-size: var(--wld-text-numbers);
+    font-weight: 500;
+    color: var(--wld-text-primary);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+
+  /* Method card */
+  .wld-cashier-card {
+    background: var(--wld-surface);
+    border-radius: 12px;
+    margin: 0 var(--wld-page-padding) 12px;
+    overflow: hidden;
+  }
+  .wld-cashier-card-title {
+    padding: 14px 20px 6px;
+    font-size: var(--wld-text-caption);
+    color: var(--wld-text-secondary);
+  }
+
+  /* Row inside method card */
+  .wld-cashier-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    min-height: 52px;
+  }
+  .wld-cashier-row-label {
+    font-size: var(--wld-text-body1);
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-text-primary);
+  }
+  .wld-cashier-row-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .wld-cashier-row-sub {
+    font-size: var(--wld-text-caption);
+    color: var(--wld-text-secondary);
+  }
+  .wld-cashier-divider {
+    height: 0.5px;
+    background: var(--wld-divider);
+    margin-left: 56px;
+  }
+
+  /* ICBC bank icon — red circle ring */
+  .wld-bank-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1.2px solid #C41230;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .wld-bank-icon svg { display: block; }
+
+  /* Transfer icon — light yellow rounded square */
+  .wld-cashier-transfer-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    background: var(--wld-theme-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* Override .wld-checkbox sizing in this screen for the gold ✓ background */
+  .wld-cashier-row .wld-checkbox {
+    border-color: rgba(0,0,0,0.25);
+  }
+
+  /* Bottom action area — small centered button, no full-bleed bar */
+  .wld-cashier-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: var(--wld-page-width);
+    padding: 16px 30px;
+    padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    justify-content: center;
+  }
+</style>

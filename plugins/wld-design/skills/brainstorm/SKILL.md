@@ -1,13 +1,15 @@
 ---
 name: brainstorm
-description: 用于头脑风暴微粒贷UI界面，可基于现有设计或纯文字描述生成更多方案。Brainstorms WLD (微粒贷) mobile UI screens and flows, generating three UX or visual solution options from a concept or existing design, then iterating with a live hot-reload phone preview. Use when the user asks to ideate, redesign, compare directions, or explore WLD screen options.
+description: 用于微粒贷 UI 头脑风暴：生成3个方案、迭代完整流程，并在定稿后继续精简、校验细节、推送 Figma、小程序 Demo 或界面陀螺 battle。Use when exploring or finishing WLD mobile screens.
 ---
 
 # WLD Design Brainstorm
 
-Design system and interactive prototyping for WLD (微粒贷) mobile screens. users describe ideas, compare 3 solution options in phone mockups, pick a direction, and iterate via terminal feedback with live hot-reload preview.
+Design system and interactive finishing workflow for WLD (微粒贷) mobile screens. Users describe ideas, compare 3 solution options in phone mockups, pick a direction, iterate via terminal feedback with live hot-reload preview, then choose whether to keep editing, push to Figma, build a Mini Program prototype, or run a beyblade battle.
 
-**Shared files** (in `../../assets/`):
+Resolve this skill directory as `skillDir`. Every path below is relative to `skillDir`; this directory is self-contained for upload.
+
+**Shared files** (in `assets/`):
 - `tokens.css` — All CSS custom properties
 - `components.css` — Full CSS for every component
 - `mockup-chrome.css` — Presentation-only WeChat status/navbar/capsule chrome
@@ -16,7 +18,7 @@ Design system and interactive prototyping for WLD (微粒贷) mobile screens. us
 - `product-memory.md` — Bridge to bundled product knowledge (screen ↔ COMP_ID mapping, filter rules, injection format)
 - `snippets/wechat-chrome-home.html`, `snippets/wechat-chrome-inner.html` — Server-expanded preview chrome snippets
 
-**Screen templates** (in `../../assets/screens/`) — production-accurate HTML from Figma:
+**Screen templates** (in `assets/screens/`) — production-accurate HTML from Figma:
 
 | Screen name | File | Description |
 |-------------|------|-------------|
@@ -37,13 +39,14 @@ This table is checked against `assets/screens/` by `npm run validate` — if a t
 
 **When the user mentions a screen by Chinese name** (e.g., "优化个人中心样式"), read the matching file from `assets/screens/` and use it as the base template.
 
-**Figma MCP reference:** when this skill tells you to use Figma MCP tools directly, first read `<plugin-root>/plugins/wld-design/assets/figma-mcp.md`.
+**Figma MCP reference:** when this skill tells you to use Figma MCP tools directly, first read `references/figma-mcp.md`.
 
 **Brainstorm-specific files** (in this directory):
 - `server.cjs` — Local Node.js server with SSE hot-reload
 - `helper.js` — Browser-side SSE live reload client
 - `references/solution-archetypes.md` — UX and visual exploration archetypes for diversifying 3-solution sets
-- `<plugin-root>/plugins/wld-design/assets/DESIGN.md` — Colors, typography, buttons, components, layout rules
+- `references/merged-workflows.md` — Embedded Simplify, Fix Details, Push to Figma, Prototype, and Beyblade Battle branches
+- `assets/DESIGN.md` — Colors, typography, buttons, components, layout rules
 - `production-reference.md` — Current app screens, structure, and terminology
 - **Playwright MCP / Chrome dev tool MCP / browser tool** — Used for screenshot verification when available. If no browser automation tool is available in the current provider, skip verification for that session and tell the user.
 
@@ -52,15 +55,18 @@ This table is checked against `assets/screens/` by `npm run validate` — if a t
 ## Workflow
 
 1. User describes idea
-2. **Step 1:** Ask clarifying questions (one at a time)
+2. **Step 1:** Ask clarifying questions in one message
 3. **Step 2:** Start brainstorm server (`node server.cjs`)
 4. **Step 3:** Read production templates from `screens/`
-5. **Step 4:** Generate 3 solutions (phone-gallery page)
+5. **Step 4:** Generate 3 solutions, then run Simplify and Fix Details before showing them
 6. User picks a direction (or request new options)
-7. **Step 5:** Build full flow screens
-8. User views in browser, gives feedback in terminal
-9. Agent edits HTML, browser hot-reloads (loop Steps 5-6)
-10. User approves → finish, or continue to the next screen and repeat Steps 5-6
+7. **Step 5:** Build full flow screens, then run Simplify and Fix Details before showing them
+8. **Step 6:** User chooses the next branch:
+   - **A. Give feedback** — edit the same HTML file and hot-reload
+   - **B. Push to Figma** — draw editable frames in the user's Figma page
+   - **C. Prototype** — build a WeChat Mini Program demo from the approved screens
+   - **D. Beyblade battle** — turn selected screens into a local battle arena
+9. Continue the chosen branch until its completion criterion is met.
 
 ---
 
@@ -128,7 +134,7 @@ Skip any question the request already answers; tell the user they can reply "def
 ### Step 2: Start the Brainstorm Server
 
 ```bash
-node "<plugin-root>/plugins/wld-design/skills/brainstorm/server.cjs" \
+node "<skill-dir>/server.cjs" \
   --project-dir /path/to/project \
   --port 3210
 ```
@@ -141,7 +147,7 @@ Save `screenDir` and `url` from the JSON response. You will write all screen HTM
 
 **CRITICAL — Do this before writing ANY screen HTML (including solutions).**
 
-Read the closest matching file from `<plugin-root>/plugins/wld-design/assets/screens/`. Also read `<plugin-root>/plugins/wld-design/assets/DESIGN.md` for color/typography/component rules.
+Read the closest matching file from `assets/screens/`. Also read `assets/DESIGN.md` for color/typography/component rules.
 
 | Screen type | Read this file |
 |-------------|---------------|
@@ -154,9 +160,9 @@ Read the closest matching file from `<plugin-root>/plugins/wld-design/assets/scr
 | Onboarding / welcome | `欢迎页.html` |
 | Bank card management | `更换还款卡.html` |
 | Account / profile (我的) tab | `我的Tab.html` |
-| Any card/cell layout | Also read `<plugin-root>/plugins/wld-design/assets/components.css` |
+| Any card/cell layout | Also read `assets/components.css` |
 
-**If no row matches:** list `<plugin-root>/plugins/wld-design/assets/screens/` and read each file's header comment — every template self-describes its purpose, layout, and background. Only combine sections from multiple templates after confirming no single template covers the screen.
+**If no row matches:** list `assets/screens/` and read each file's header comment — every template self-describes its purpose, layout, and background. Only combine sections from multiple templates after confirming no single template covers the screen.
 
 **The rule:** Every screen must be traceable to a production template. Copy and adapt — never invent from scratch. If no single template matches, combine sections from multiple templates.
 
@@ -168,7 +174,7 @@ Read the closest matching file from `<plugin-root>/plugins/wld-design/assets/scr
 
 **Canonical reference:** When production templates use inconsistent patterns (e.g., inline styles vs. classes), prefer the pattern used by the majority. The `个人中心.html` template is the canonical home screen reference.
 
-**Product rules and pitfalls:** After reading the template, read `<plugin-root>/plugins/wld-design/assets/product-memory.md` to find the screen's COMP_ID. If one exists, load matching entries from `<plugin-root>/plugins/wld-design/assets/pm-memory-cache/product-patterns.yaml` and `<plugin-root>/plugins/wld-design/assets/pm-memory-cache/common-pitfalls.yaml` per the bridge file's filter rule, and inject them under the bridge's labelled headers before generating solutions. Patterns describe state splits, hidden product variants, and default-selection rules that the visual template alone does not capture (e.g., 首借/非首借 keyboard CTA differs, 期数 sheet has two independent variants). Pitfalls are must-avoid constraints, not cleanup suggestions. If a rule conflicts with the template, the rule wins — flag the conflict to the user. If no COMP_ID is mapped or the cache file is missing, skip silently. **Do not edit `pm-memory-cache/` during normal use**; it is a bundled product knowledge snapshot.
+**Product rules and pitfalls:** After reading the template, read `assets/product-memory.md` to find the screen's COMP_ID. If one exists, load matching entries from `assets/pm-memory-cache/product-patterns.yaml` and `assets/pm-memory-cache/common-pitfalls.yaml` per the bridge file's filter rule, and inject them under the bridge's labelled headers before generating solutions. Patterns describe state splits, hidden product variants, and default-selection rules that the visual template alone does not capture (e.g., 首借/非首借 keyboard CTA differs, 期数 sheet has two independent variants). Pitfalls are must-avoid constraints, not cleanup suggestions. If a rule conflicts with the template, the rule wins — flag the conflict to the user. If no COMP_ID is mapped or the cache file is missing, skip silently. **Do not edit `pm-memory-cache/` during normal use**; it is a bundled product knowledge snapshot.
 
 ### Step 4: Generate 3 Design Solutions
 
@@ -211,7 +217,7 @@ Caption each solution with its intent:
 - Visual mode: `Visual hypothesis` + `What changes`
 - Mixed mode: label which options are UX variants and which one is visual
 
-**REQUIRED SUB-SKILL:** Invoke `wld-design:simplify` on the generated file before proceeding.
+**Required embedded passes:** Read only the Simplify Pass and Fix Details Pass sections from `references/merged-workflows.md`, run Simplify on `solutions.html`, then invoke Fix Details on the simplified file before proceeding. Fix every clear issue in the HTML before user review; if a calculation needs missing loan parameters, leave the value unchanged and note the exact input needed.
 
 Check if the server (the `url` saved from Step 2 — the port may differ from 3210 if it was busy) is still running. If not, start it again.
 
@@ -225,7 +231,7 @@ Check if the server (the `url` saved from Step 2 — the port may differ from 32
 - Required financial/legal text remains if the template has it
 - No custom JavaScript unless user explicitly requested interactivity
 
-**Verify screenshot:** Navigate to `http://localhost:3210` with Playwright MCP (`mcp__playwright__browser_navigate` + `mcp__playwright__browser_take_screenshot` with `fullPage: true`). Check for:
+**Verify screenshot:** Navigate to the saved `url` from Step 2 with Playwright MCP (`mcp__playwright__browser_navigate` + `mcp__playwright__browser_take_screenshot` with `fullPage: true`). Check for:
 - Preview chrome renders correctly (88px, capsule button visible)
 - All 3 phones visible and properly spaced
 - Text readable, no overflow or clipping
@@ -233,7 +239,7 @@ Check if the server (the `url` saved from Step 2 — the port may differ from 32
 
 If issues found, fix the HTML, re-screenshot until clean. Tell user what you fixed before asking them to open.
 
-Tell user to open `http://localhost:3210` to compare. Ask which they prefer. Only proceed after user chooses.
+Tell user to open the saved `url` to compare. Ask which they prefer. Only proceed after user chooses.
 
 ### Step 5: Build Flow Screens
 
@@ -252,10 +258,11 @@ For the chosen direction, build each screen as a separate HTML file in `screenDi
 **For each screen:**
 1. Copy closest matching production template and adapt
 2. Write to `screenDir` (e.g., `home.html`, `loan-input.html`)
-3. **REQUIRED SUB-SKILL:** Invoke `wld-design:simplify` on the file
-4. Run the Pre-user QA gate and copy quality pass
-5. **Verify screenshot:** Same as Step 4 — navigate, screenshot, check navbar/layout/text/colors. Fix and inform user of any corrections.
-6. Enter the feedback loop (Step 6)
+3. Run the embedded Simplify Pass from `references/merged-workflows.md`
+4. Invoke the embedded Fix Details Pass from `references/merged-workflows.md`
+5. Run the Pre-user QA gate and copy quality pass
+6. **Verify screenshot:** Same as Step 4 — navigate, screenshot, check navbar/layout/text/colors. Fix and inform user of any corrections.
+7. Enter the branch loop (Step 6)
 
 **Rules:** Always use phone frame · Chinese caption + English subtitle · Flow arrows between journey screens · Max 3-4 phones per row.
 
@@ -263,14 +270,20 @@ For the chosen direction, build each screen as a separate HTML file in `screenDi
 
 **Copy quality pass:** Use concise Chinese, production terminology from templates, and task-specific CTA labels. Preserve required rate, agreement, repayment, or risk text. Remove fake urgency and generic helper copy like "点击下方按钮".
 
-### Step 6: The Feedback Loop
+### Step 6: Choose the Next Branch
 
-1. **User gives feedback in terminal** — describes what to change
-2. **Agent edits the HTML file** in `screenDir`
-3. **Browser auto-reloads** via SSE — User sees change instantly
-4. **Repeat** until user is satisfied
+Ask the user to choose one of these paths after they have seen the approved screen or flow:
 
-**Critical:** Always edit the SAME file for iterative changes. Only create new files for new screens.
+| Choice | Branch | What to do |
+|--------|--------|------------|
+| A | Feedback | Edit the current HTML in `screenDir`; the browser hot-reloads through SSE. Repeat until the user is satisfied. |
+| B | Push to Figma | Use the Push to Figma branch in `references/merged-workflows.md`. Requires the approved brainstorm source and a target Figma page link. |
+| C | Prototype | Use the Prototype branch in `references/merged-workflows.md`. Builds a WeChat Mini Program demo from the approved brainstorm output. |
+| D | Beyblade battle | Use the Beyblade Battle branch in `references/merged-workflows.md`. Uses 2-7 approved screens or Figma frames as battle entrants. |
+
+**Critical for A:** Always edit the SAME file for iterative changes. Only create new files for new screens.
+
+**Critical for B/C/D:** Load only the selected branch from `references/merged-workflows.md`; do not carry unrelated branch instructions into context. If the required input for that branch is missing, ask for it in one short message and do not substitute a screenshot-only or text-only deliverable unless that branch explicitly allows it.
 
 ---
 
@@ -296,13 +309,14 @@ For the chosen direction, build each screen as a separate HTML file in `screenDi
 | Mistake | Fix |
 |---------|-----|
 | Inventing layouts from scratch | Always copy from `assets/screens/` templates |
-| Using system `simplify` skill | Use `wld-design:simplify` (fully qualified) |
+| Calling a generic simplify routine | Use the embedded Simplify Pass in `references/merged-workflows.md` |
 | White text on gold buttons | Always `rgba(0,0,0,0.9)` on gold |
 | Square buttons | Always pill-shaped (`border-radius: 999px`) |
 | Custom/generic navbar | Use the `<wld-wechat-chrome>` placeholder from a production template |
 | Writing navbar SVGs from scratch | Never hand-write chrome; the server expands `assets/snippets/` |
 | Adding JS interactivity | Screens are static — show states as separate screens |
 | Showing bare HTML pages | Always wrap in `.phone-mockup` |
+| Calling old standalone WLD skills from Step 4/5 | Use the embedded passes in `references/merged-workflows.md` from this `brainstorm` skill |
 | Using `#F5F5F5` on home screens | Home screens use `#FFFFFF` background; only inner pages use `#F5F5F5` |
 | Using `font-family: sans-serif` | Use `var(--wld-font-family)` from tokens.css |
 | Making quick-amount chips pill-shaped | Quick amount chips use `border-radius: 4px`, NOT `999px` |

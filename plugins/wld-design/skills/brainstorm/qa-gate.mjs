@@ -349,7 +349,7 @@ function main() {
   const argv = process.argv.slice(2);
   const targets = [];
   let json = false;
-  let assetsDir = path.resolve(__dirname, '../../assets');
+  let assetsDir = path.resolve(__dirname, 'assets');
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--json') json = true;
     else if (argv[i] === '--assets') assetsDir = path.resolve(argv[++i]);

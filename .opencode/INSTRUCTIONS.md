@@ -6,7 +6,7 @@ This generated package adapts the canonical WLD Design skills for opencode. The 
 
 When the user asks for WLD mobile UI work, match the request to one of these workflows and read that skill file before acting:
 
-- `wld-design:brainstorm` - Clarify a WLD UI idea, generate three options, then iterate on screens with hot reload.
+- `wld-design:brainstorm` - Clarify a WLD UI idea, generate three options, run simplify/detail checks, then continue with feedback, Figma, Mini Program, or battle branches.
 - `wld-design:prototype` - Build high-fidelity WLD WeChat Mini Program demos from approved Figma or brainstorm designs.
 - `wld-design:push-to-figma` - Push approved WLD brainstorm designs into editable Figma frames with local MCP and WLD components.
 - `wld-design:simplify` - Strip clutter while preserving WLD product correctness and compliance-critical content.

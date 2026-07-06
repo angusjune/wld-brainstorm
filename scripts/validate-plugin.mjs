@@ -185,7 +185,10 @@ function validateSkills() {
     assert(!content.includes('CLAUDE.md'), `${file} must not reference provider-specific CLAUDE.md`);
     assert(!content.includes('mcp__claude_ai_Figma'), `${file} must not hard-code provider-specific Figma MCP tool names`);
     if (content.includes('Figma MCP')) {
-      assert(content.includes('<plugin-root>/plugins/wld-design/assets/figma-mcp.md'), `${file} mentions Figma MCP and must reference <plugin-root>/plugins/wld-design/assets/figma-mcp.md`);
+      const expectedFigmaRef = skill === 'brainstorm'
+        ? 'references/figma-mcp.md'
+        : '<plugin-root>/plugins/wld-design/assets/figma-mcp.md';
+      assert(content.includes(expectedFigmaRef), `${file} mentions Figma MCP and must reference ${expectedFigmaRef}`);
     }
   }
 }
@@ -297,6 +300,102 @@ function validateSharedDocs() {
   assert(figmaMcp.includes('## Setup'), 'plugins/wld-design/assets/figma-mcp.md must include setup instructions');
   assert(figmaMcp.includes('https://mcp.figma.com/mcp'), 'plugins/wld-design/assets/figma-mcp.md must document the remote Figma MCP endpoint');
   assert(figmaMcp.includes('http://127.0.0.1:3845/mcp'), 'plugins/wld-design/assets/figma-mcp.md must document the desktop Figma MCP endpoint');
+}
+
+function directorySizeBytes(relativeRoot) {
+  const root = abs(relativeRoot);
+  let total = 0;
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else total += fs.statSync(full).size;
+    }
+  };
+  walk(root);
+  return total;
+}
+
+function validatePublishableBrainstorm() {
+  const root = 'plugins/wld-design/skills/brainstorm';
+  assert(exists(root, 'SKILL.md'), `${root} must include root SKILL.md`);
+
+  const required = [
+    'assets/DESIGN.md',
+    'assets/tokens.css',
+    'assets/components.css',
+    'assets/mockup-chrome.css',
+    'assets/phone-mockup.css',
+    'assets/frame-template.html',
+    'assets/product-memory.md',
+    'assets/snippets/wechat-chrome-home.html',
+    'assets/snippets/wechat-chrome-inner.html',
+    'assets/pm-memory-cache/product-patterns.yaml',
+    'assets/pm-memory-cache/common-pitfalls.yaml',
+    'assets/pm-spec-cache/index.yaml',
+    'assets/screens/个人中心.html',
+    'references/figma-mcp.md',
+    'references/merged-workflows.md',
+    'references/solution-archetypes.md',
+    'tools/fix-details/big.mjs',
+    'tools/fix-details/calc.mjs',
+    'tools/fix-details/report-template.html',
+    'tools/prototype/assets/miniprogram-template/app.json',
+    'tools/prototype/assets/miniprogram-template/app.wxss',
+    'tools/prototype/verify-miniprogram.mjs',
+    'tools/prototype/capture-miniprogram.mjs',
+    'tools/prototype/render-html-reference.mjs',
+    'tools/prototype/conform-to-design.mjs',
+    'tools/prototype/conform-design.md',
+    'tools/beyblade/server.cjs',
+    'tools/beyblade/assets/arena.html',
+    'tools/beyblade/assets/arena.css',
+    'tools/beyblade/assets/engine.js',
+  ];
+  for (const file of required) {
+    assert(exists(root, file), `${root} publishable package is missing ${file}`);
+  }
+
+  const forbidden = [];
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(abs(dir), { withFileTypes: true })) {
+      const relative = path.join(dir, entry.name);
+      if (['.git', 'node_modules', '__pycache__'].includes(entry.name) || entry.name === '.env') {
+        forbidden.push(relative);
+      }
+      if (entry.name === '.DS_Store' || entry.name.startsWith('._')) {
+        forbidden.push(relative);
+      }
+      if (entry.isDirectory()) walk(relative);
+    }
+  };
+  walk(root);
+  assert(forbidden.length === 0, `${root} must not contain upload-forbidden files: ${forbidden.join(', ')}`);
+
+  const forbiddenRefs = [
+    '<plugin-root>',
+    'plugins/wld-design',
+    '../../assets',
+    '../prototype',
+    '../fix-details',
+    '../beyblade-battle',
+    '../simplify',
+    '../push-to-figma',
+    'wld-design:prototype',
+    'wld-design:fix-details',
+    'wld-design:beyblade-battle',
+    'wld-design:simplify',
+    'wld-design:push-to-figma',
+  ];
+  for (const file of collectFiles(root, '.md')) {
+    const content = read(file);
+    for (const ref of forbiddenRefs) {
+      assert(!content.includes(ref), `${file} must be self-contained and not reference ${ref}`);
+    }
+  }
+
+  const size = directorySizeBytes(root);
+  assert(size < 100 * 1024 * 1024, `${root} must be under 100MB for upload (got ${Math.round(size / 1024 / 1024)}MB)`);
 }
 
 // ---- Skill reference integrity (progressive disclosure: refs one level deep) ----
@@ -531,6 +630,7 @@ validateMarketplace();
 validateClaudeManifest('.claude-plugin/plugin.json');
 validateSkills();
 validateSkillReferences();
+validatePublishableBrainstorm();
 validateTemplateIndex();
 validateTokenCompliance();
 validateDesignDoc();

@@ -15,3 +15,7 @@ _Avoid_: Submodule, upstream PM repository, external knowledge base
 **Provider Package**:
 A generated adapter directory for a supported agent runtime, such as Claude, Codex, Cursor, or opencode. It points back to the canonical skills and assets in this bundle.
 _Avoid_: Distribution repo, marketplace source
+
+**Publishable Skill Directory**:
+A single self-contained skill directory with a root `SKILL.md` and every runtime file it references, suitable to upload on its own. For this bundle, `plugins/wld-design/skills/brainstorm/` is the publishable skill directory.
+_Avoid_: Wrapper skill, plugin package, provider package

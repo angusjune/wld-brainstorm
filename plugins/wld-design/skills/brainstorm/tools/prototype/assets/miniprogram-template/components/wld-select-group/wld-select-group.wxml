@@ -1,0 +1,14 @@
+<view class="wld-select-group">
+    <view wx:for="{{items}}" wx:key="unique" class="wld-select {{selectedIndex === index ? 'wld-select--active' : ''}}" bindtap="onSelect" data-index="{{index}}" hover-class="wld-select--hover" hover-start-time="200" hover-stay-time="200">
+        <view class="wld-select__icon" wx:if="{{item.icon}}">
+            <image src="{{item.icon}}" mode="aspectFit" style="width: 80rpx;height: 80rpx;"></image>
+        </view>
+        <view class="wld-select__text">
+            <text class="wld-select__text-title">{{item.label}}</text>
+            <text class="wld-select__text-desc" wx:if="{{item.desc}}">{{item.desc}}</text>
+        </view>
+    </view>
+    <view class="wld-select-group__active-indicator" style="--current-index: {{selectedIndex}}; --index-difference: {{indexDifference}};">
+        <view class="check"></view>
+    </view>
+</view>

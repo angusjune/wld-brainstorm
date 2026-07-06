@@ -39,8 +39,9 @@ One **fresh agent per case** (no shared context between cases). Each agent gets:
 > - Do NOT ask clarifying questions. Choose sensible defaults for anything
 >   Step 1 would have asked, and record every default in `NOTES.md`.
 > - Skip Step 2 (server start) and all browser screenshot verification.
-> - Where the skill invokes `wld-design:simplify`, read
->   `plugins/wld-design/skills/simplify/SKILL.md` and apply it yourself.
+> - Where the skill runs embedded passes, read
+>   `plugins/wld-design/skills/brainstorm/references/merged-workflows.md` and
+>   apply the Simplify Pass and Fix Details Pass yourself.
 > - Write all output HTML files to `evals/ui-quality/runs/<version>/<case-id>/`
 >   instead of `screenDir`. Follow the skill's Page Template and file naming.
 > - Stop after Step 5 for the first screen of the chosen direction (produce

@@ -1,0 +1,43 @@
+<view class="loan-options">
+    <view
+        wx:for="{{cellProps}}"
+        wx:key="unique"
+        class="cell-wrap {{show ? '' : 'hidden'}}"
+        style="transition-delay: {{reverse ? index * 0.03 : (cellProps.length - index) * 0.03}}s;"
+    >
+        <wld-cell
+            label="{{item.label}}"
+            value="{{item.value}}"
+            chevronRotate="{{index === cellProps.length - 1 && isAgreementExpanded}}"
+            bind:tap="onTapCell"
+            data-index="{{index}}"
+        >
+        </wld-cell>
+        <block wx:if="{{index === cellProps.length - 1}}">
+            <view
+                class="agreement-details {{isAgreementExpanded ? 'agreement-details--expanded' : ''}}"
+            >
+                <wld-cell
+                    type="info"
+                    tappable="{{false}}"
+                    label="贷款提供方"
+                    value="微众银行"
+                ></wld-cell>
+                <wld-cell
+                    type="info"
+                    tappable="{{true}}"
+                    label="借款用途"
+                    value="{{usage.label}}"
+                    bind:tap="onTapCell"
+                    data-cell-type="usage"
+                ></wld-cell>
+                <wld-cell
+                    type="info"
+                    tappable="{{false}}"
+                    label="合同协议"
+                    value="查看"
+                ></wld-cell>
+            </view>
+        </block>
+    </view>
+</view>

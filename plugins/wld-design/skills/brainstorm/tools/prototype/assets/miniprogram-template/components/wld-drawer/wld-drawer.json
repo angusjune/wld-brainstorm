@@ -1,0 +1,6 @@
+{
+    "component": true,
+    "usingComponents": {
+        "wld-mask": "/components/wld-mask/wld-mask"
+    }
+}

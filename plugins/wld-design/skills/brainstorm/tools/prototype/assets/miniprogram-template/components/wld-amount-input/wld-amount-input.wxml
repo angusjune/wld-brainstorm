@@ -1,0 +1,39 @@
+<view
+    class="header__input {{focus ? 'header__input--focus' : ''}} {{animating ? 'animating' : ''}} header__input--style-{{inputStyle}}"
+    catchtap="onTap"
+    role="input"
+    aria-labelledby="inputlabel"
+>
+    <view
+        wx:for="{{'¥' + value}}"
+        wx:key="unique"
+        class="numchar"
+        catchtap="onTapChar"
+        data-index="{{index}}"
+        style="transform:translateX(-{{index * 18}}rpx); z-index:{{value.length - index}}; --char-animation-delay:{{initDelay + index * delayBetweenChars}}s;"
+    >
+        <text>{{item}}</text>
+        <caret
+            color="{{error ? '#ff5a4f' : '#ffd143'}}"
+            wx:if="{{index == cursor}}"
+        />
+        <view
+            wx:if="{{!focus && (inputStyle === 1 || inputStyle === 3) && index == value.length}}"
+            class="icon-pen"
+            style="position: absolute; bottom: 10rpx; right: -36rpx"
+        ></view>
+    </view>
+    <view
+        wx:if="{{placeholder !== ''}}"
+        class="header__input__placeholder {{value === '' ? '' : 'hidden'}}"
+        >{{placeholder}}</view
+    >
+    <view
+        wx:if="{{inputStyle === 0}}"
+        class="input-line {{focus ? 'input-line--focus' : ''}} {{error ? 'input-line--error' : ''}}"
+    ></view>
+</view>
+<view
+    class="header__helper-text {{showErrorText ? 'header__helper-text--error' : 'header__helper-text--default'}} {{inputStyle === 3 ? 'header__helper-text--center' : ''}}"
+    >{{showErrorText ? errorText : helperText}}</view
+>

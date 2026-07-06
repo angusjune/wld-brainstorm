@@ -32,7 +32,7 @@ const SESSION_ID = `${process.pid}-${Date.now()}`;
 const SESSION_DIR = path.join(PROJECT_DIR, '.wld-brainstorm', SESSION_ID);
 const SCREEN_DIR = path.join(SESSION_DIR, 'screens');
 const STATE_DIR = path.join(SESSION_DIR, 'state');
-const ASSETS_DIR = path.resolve(__dirname, '../../assets');
+const ASSETS_DIR = path.resolve(__dirname, 'assets');
 const SNIPPETS_DIR = path.join(ASSETS_DIR, 'snippets');
 const HELPER_PATH = path.join(__dirname, 'helper.js');
 
