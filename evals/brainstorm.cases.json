@@ -61,7 +61,7 @@
     "expectedBehaviors": [
       "Uses Visual Exploration mode because the user explicitly asks to keep the path unchanged",
       "Generates three visual variants that stay within WLD tokens and production template structure",
-      "Runs embedded Simplify and Fix Details passes from brainstorm/references/merged-workflows.md",
+      "Runs embedded Simplify and Fix Details passes from brainstorm/references/embedded-workflows.md",
       "Avoids treating the request as a missing-states or Mini Program implementation task"
     ],
     "mustNotTrigger": ["prototype", "find-missing-states"]

@@ -1,4 +1,4 @@
-# Merged Brainstorm Workflows
+# Embedded Brainstorm Workflows
 
 These workflows are embedded branches of `brainstorm`. Load only the pass or branch named by the active step.
 
@@ -66,7 +66,7 @@ Workflow:
 
 Use when Step 6 choice is **C**.
 
-Required input: an approved brainstorm screen/flow or a Figma source. If the user only has a text idea, return to Step 1 and generate/approve a brainstorm design first.
+Required input: an approved brainstorm screen/flow. If the user only has a text idea or external design source, return to Step 1 and generate/approve a brainstorm design first.
 
 Workflow:
 
@@ -84,11 +84,11 @@ Workflow:
 
 Use when Step 6 choice is **D**.
 
-Required input: 2-7 screens. Accept approved brainstorm screens, a Figma selection, frame links, or user-attached screenshots. If there are more than 7, ask the user to pick 7.
+Required input: 2-3 approved brainstorm screens.
 
 Workflow:
 
-1. For Figma frames, read `references/figma-mcp.md`, then capture each frame's screenshot and structural features: descendant node count, text node count, max nesting depth, and distinct fill count. If Figma MCP is unavailable, use attached images and omit structure.
+1. Use the approved brainstorm screens as battle entrants. Derive screenshots and visual features from those local brainstorm HTML files.
 2. Start the arena:
 
    ```bash

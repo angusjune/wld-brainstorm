@@ -19,3 +19,7 @@ _Avoid_: Distribution repo, marketplace source
 **Publishable Skill Directory**:
 A single self-contained skill directory with a root `SKILL.md` and every runtime file it references, suitable to upload on its own. For this bundle, `plugins/wld-design/skills/brainstorm/` is the publishable skill directory.
 _Avoid_: Wrapper skill, plugin package, provider package
+
+**Embedded Workflow**:
+A sub-workflow packaged inside the publishable skill directory so the skill can run follow-up passes and branches without depending on sibling skills.
+_Avoid_: Merged workflow, external workflow

@@ -45,7 +45,7 @@ This table is checked against `assets/screens/` by `npm run validate` — if a t
 - `server.cjs` — Local Node.js server with SSE hot-reload
 - `helper.js` — Browser-side SSE live reload client
 - `references/solution-archetypes.md` — UX and visual exploration archetypes for diversifying 3-solution sets
-- `references/merged-workflows.md` — Embedded Simplify, Fix Details, Push to Figma, Prototype, and Beyblade Battle branches
+- `references/embedded-workflows.md` — Embedded Simplify, Fix Details, Push to Figma, Prototype, and Beyblade Battle branches
 - `assets/DESIGN.md` — Colors, typography, buttons, components, layout rules
 - `production-reference.md` — Current app screens, structure, and terminology
 - **Playwright MCP / Chrome dev tool MCP / browser tool** — Used for screenshot verification when available. If no browser automation tool is available in the current provider, skip verification for that session and tell the user.
@@ -217,7 +217,7 @@ Caption each solution with its intent:
 - Visual mode: `Visual hypothesis` + `What changes`
 - Mixed mode: label which options are UX variants and which one is visual
 
-**Required embedded passes:** Read only the Simplify Pass and Fix Details Pass sections from `references/merged-workflows.md`, run Simplify on `solutions.html`, then invoke Fix Details on the simplified file before proceeding. Fix every clear issue in the HTML before user review; if a calculation needs missing loan parameters, leave the value unchanged and note the exact input needed.
+**Required embedded passes:** Read only the Simplify Pass and Fix Details Pass sections from `references/embedded-workflows.md`, run Simplify on `solutions.html`, then invoke Fix Details on the simplified file before proceeding. Fix every clear issue in the HTML before user review; if a calculation needs missing loan parameters, leave the value unchanged and note the exact input needed.
 
 Check if the server (the `url` saved from Step 2 — the port may differ from 3210 if it was busy) is still running. If not, start it again.
 
@@ -258,8 +258,8 @@ For the chosen direction, build each screen as a separate HTML file in `screenDi
 **For each screen:**
 1. Copy closest matching production template and adapt
 2. Write to `screenDir` (e.g., `home.html`, `loan-input.html`)
-3. Run the embedded Simplify Pass from `references/merged-workflows.md`
-4. Invoke the embedded Fix Details Pass from `references/merged-workflows.md`
+3. Run the embedded Simplify Pass from `references/embedded-workflows.md`
+4. Invoke the embedded Fix Details Pass from `references/embedded-workflows.md`
 5. Run the Pre-user QA gate and copy quality pass
 6. **Verify screenshot:** Same as Step 4 — navigate, screenshot, check navbar/layout/text/colors. Fix and inform user of any corrections.
 7. Enter the branch loop (Step 6)
@@ -277,13 +277,13 @@ Ask the user to choose one of these paths after they have seen the approved scre
 | Choice | Branch | What to do |
 |--------|--------|------------|
 | A | Feedback | Edit the current HTML in `screenDir`; the browser hot-reloads through SSE. Repeat until the user is satisfied. |
-| B | Push to Figma | Use the Push to Figma branch in `references/merged-workflows.md`. Requires the approved brainstorm source and a target Figma page link. |
-| C | Prototype | Use the Prototype branch in `references/merged-workflows.md`. Builds a WeChat Mini Program demo from the approved brainstorm output. |
-| D | Beyblade battle | Use the Beyblade Battle branch in `references/merged-workflows.md`. Uses 2-7 approved screens or Figma frames as battle entrants. |
+| B | Push to Figma | Use the Push to Figma branch in `references/embedded-workflows.md`. Requires the approved brainstorm source and a target Figma page link. |
+| C | Prototype | Use the Prototype branch in `references/embedded-workflows.md`. Builds a WeChat Mini Program demo from the approved brainstorm output. |
+| D | Beyblade battle | Use the Beyblade Battle branch in `references/embedded-workflows.md`. Uses 2-7 approved brainstorm screens as battle entrants. |
 
 **Critical for A:** Always edit the SAME file for iterative changes. Only create new files for new screens.
 
-**Critical for B/C/D:** Load only the selected branch from `references/merged-workflows.md`; do not carry unrelated branch instructions into context. If the required input for that branch is missing, ask for it in one short message and do not substitute a screenshot-only or text-only deliverable unless that branch explicitly allows it.
+**Critical for B/C/D:** Load only the selected branch from `references/embedded-workflows.md`; do not carry unrelated branch instructions into context. If the required input for that branch is missing, ask for it in one short message and do not substitute a screenshot-only or text-only deliverable unless that branch explicitly allows it.
 
 ---
 
@@ -309,14 +309,14 @@ Ask the user to choose one of these paths after they have seen the approved scre
 | Mistake | Fix |
 |---------|-----|
 | Inventing layouts from scratch | Always copy from `assets/screens/` templates |
-| Calling a generic simplify routine | Use the embedded Simplify Pass in `references/merged-workflows.md` |
+| Calling a generic simplify routine | Use the embedded Simplify Pass in `references/embedded-workflows.md` |
 | White text on gold buttons | Always `rgba(0,0,0,0.9)` on gold |
 | Square buttons | Always pill-shaped (`border-radius: 999px`) |
 | Custom/generic navbar | Use the `<wld-wechat-chrome>` placeholder from a production template |
 | Writing navbar SVGs from scratch | Never hand-write chrome; the server expands `assets/snippets/` |
 | Adding JS interactivity | Screens are static — show states as separate screens |
 | Showing bare HTML pages | Always wrap in `.phone-mockup` |
-| Calling old standalone WLD skills from Step 4/5 | Use the embedded passes in `references/merged-workflows.md` from this `brainstorm` skill |
+| Calling old standalone WLD skills from Step 4/5 | Use the embedded passes in `references/embedded-workflows.md` from this `brainstorm` skill |
 | Using `#F5F5F5` on home screens | Home screens use `#FFFFFF` background; only inner pages use `#F5F5F5` |
 | Using `font-family: sans-serif` | Use `var(--wld-font-family)` from tokens.css |
 | Making quick-amount chips pill-shaped | Quick amount chips use `border-radius: 4px`, NOT `999px` |

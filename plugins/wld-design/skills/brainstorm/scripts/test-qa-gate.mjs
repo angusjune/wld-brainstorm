@@ -1,20 +1,12 @@
 #!/usr/bin/env node
 
 /**
- * Self-test for the brainstorm QA gate (plugins/wld-design/skills/brainstorm/qa-gate.mjs).
+ * Self-test for the local brainstorm QA gate.
  *
- * Two guarantees:
- *  1. Fixture contract — every fixture in
- *     plugins/wld-design/skills/brainstorm/quality-benchmark/fixtures/
- *     produces
- *     exactly the finding codes listed in expected.json (no more, no less),
- *     and the exit code matches (1 iff any error-severity finding).
- *  2. Production calibration — every template in
- *     plugins/wld-design/skills/brainstorm/assets/screens/
- *     passes with 0 error-severity findings (warnings allowed). Production is
- *     the quality bar; if the gate flags production as broken, the gate is wrong.
- *
- * Run: npm run test:qa-gate
+ * Guarantees:
+ * 1. Every fixture in quality-benchmark/fixtures/ produces exactly the finding
+ *    codes listed in expected.json.
+ * 2. Every bundled production template in assets/screens/ has 0 errors.
  */
 
 import fs from 'node:fs';
@@ -22,20 +14,20 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const GATE = path.join(ROOT, 'plugins/wld-design/skills/brainstorm/qa-gate.mjs');
-const FIXTURES_DIR = path.join(ROOT, 'plugins/wld-design/skills/brainstorm/quality-benchmark/fixtures');
-const SCREENS_DIR = path.join(ROOT, 'plugins/wld-design/skills/brainstorm/assets/screens');
+const BRAINSTORM_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const GATE = path.join(BRAINSTORM_DIR, 'qa-gate.mjs');
+const FIXTURES_DIR = path.join(BRAINSTORM_DIR, 'quality-benchmark/fixtures');
+const SCREENS_DIR = path.join(BRAINSTORM_DIR, 'assets/screens');
 
 let failures = 0;
 
 function fail(message) {
   failures += 1;
-  console.log(`  ✗ ${message}`);
+  console.log(`  FAIL ${message}`);
 }
 
 function pass(message) {
-  console.log(`  ✓ ${message}`);
+  console.log(`  PASS ${message}`);
 }
 
 function runGate(file) {
@@ -53,7 +45,7 @@ function runGate(file) {
 }
 
 function codesOf(report) {
-  const all = report.files.flatMap((f) => f.findings.map((finding) => finding.code));
+  const all = report.files.flatMap((file) => file.findings.map((finding) => finding.code));
   return [...new Set(all)].sort();
 }
 
@@ -76,32 +68,32 @@ for (const [fixture, expectedCodes] of Object.entries(expected)) {
     fail(`${fixture}: codes [${actual.join(', ')}] != expected [${want.join(', ')}]`);
     continue;
   }
-  const errorCount = report.files.reduce((n, f) => n + f.findings.filter((x) => x.severity === 'error').length, 0);
+  const errorCount = report.files.reduce((n, fileReport) => n + fileReport.findings.filter((finding) => finding.severity === 'error').length, 0);
   const expectedExit = errorCount > 0 ? 1 : 0;
   if (status !== expectedExit) {
     fail(`${fixture}: exit code ${status} != ${expectedExit} (errors reported: ${errorCount})`);
     continue;
   }
-  if (want.length === 0 && report.files.some((f) => f.findings.length > 0)) {
+  if (want.length === 0 && report.files.some((fileReport) => fileReport.findings.length > 0)) {
     fail(`${fixture}: clean fixture has findings`);
     continue;
   }
-  pass(`${fixture} → [${actual.join(', ') || 'clean'}]`);
+  pass(`${fixture} -> [${actual.join(', ') || 'clean'}]`);
 }
 
 console.log('Production calibration (0 errors required, warnings allowed):');
-const templates = fs.readdirSync(SCREENS_DIR).filter((f) => f.endsWith('.html')).sort();
+const templates = fs.readdirSync(SCREENS_DIR).filter((file) => file.endsWith('.html')).sort();
 for (const template of templates) {
   const { fatal, report } = runGate(path.join(SCREENS_DIR, template));
   if (fatal) {
     fail(`${template}: ${fatal}`);
     continue;
   }
-  const errors = report.files.flatMap((f) => f.findings.filter((x) => x.severity === 'error'));
+  const errors = report.files.flatMap((fileReport) => fileReport.findings.filter((finding) => finding.severity === 'error'));
   if (errors.length > 0) {
-    fail(`${template}: ${errors.length} error(s): ${errors.map((e) => `${e.code}@${e.line}`).join(', ')}`);
+    fail(`${template}: ${errors.length} error(s): ${errors.map((error) => `${error.code}@${error.line}`).join(', ')}`);
   } else {
-    const warnings = report.files.reduce((n, f) => n + f.findings.filter((x) => x.severity === 'warning').length, 0);
+    const warnings = report.files.reduce((n, fileReport) => n + fileReport.findings.filter((finding) => finding.severity === 'warning').length, 0);
     pass(`${template} (0 errors, ${warnings} warning${warnings === 1 ? '' : 's'})`);
   }
 }

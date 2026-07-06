@@ -141,6 +141,22 @@ Agent 会读取屏幕上的金额、利率、期数和文案，使用内置 `cal
 
 快照随本地包一起分发。普通使用者无需维护这些文件；维护者也应把它们视为只读，除非正在准备新的本地包。
 
+## 质量基准
+
+`brainstorm` 的产出质量基准随 Skill 一起放在 `plugins/wld-design/skills/brainstorm/quality-benchmark/`。维护者在修改 `brainstorm` 流程说明、生产模板、设计资产、嵌入分支或 `qa-gate.mjs` 后使用它；只改安装说明或普通文档时通常不需要。
+
+运行报告示例：
+
+```bash
+npm --prefix plugins/wld-design/skills/brainstorm run benchmark:report -- quality-benchmark/runs/<version>
+```
+
+与 baseline 对比：
+
+```bash
+npm --prefix plugins/wld-design/skills/brainstorm run benchmark:report -- quality-benchmark/runs/<new> --compare quality-benchmark/runs/baseline
+```
+
 ## 该插件不适用的场景
 
 - 非微粒贷业务界面：颜色、组件、模板都是 WLD 专属

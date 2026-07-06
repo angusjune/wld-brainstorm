@@ -1,16 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * Smoke test for scripts/ui-quality-report.mjs.
+ * Smoke test for quality-benchmark/report.mjs.
  *
- * Builds a fake benchmark run from the qa-gate fixtures, runs the report
- * script against it, and asserts:
- *  - report.json / report.md are produced with per-case gate numbers
- *  - a clean case reports 0 errors, a dirty case reports > 0
- *  - when Chrome is available, every screen HTML gets a rendered PNG,
- *    and --compare produces side-by-side composites
- *
- * Run: node scripts/test-ui-quality-report.mjs
+ * Builds two temporary benchmark runs from qa-gate fixtures, runs the report
+ * script with --compare, then checks reports and optional Chrome renders.
  */
 
 import fs from 'node:fs';
@@ -19,20 +13,20 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const REPORT = path.join(ROOT, 'scripts/ui-quality-report.mjs');
-const FIXTURES = path.join(ROOT, 'plugins/wld-design/skills/brainstorm/quality-benchmark/fixtures');
+const BRAINSTORM_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const REPORT = path.join(BRAINSTORM_DIR, 'quality-benchmark/report.mjs');
+const FIXTURES = path.join(BRAINSTORM_DIR, 'quality-benchmark/fixtures');
 
 const chromeAvailable = [
   process.env.CHROME_PATH,
   '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
   '/usr/bin/google-chrome',
   '/usr/bin/chromium',
-].filter(Boolean).some((p) => fs.existsSync(p));
+].filter(Boolean).some((candidate) => fs.existsSync(candidate));
 
 let failures = 0;
-const fail = (msg) => { failures += 1; console.log(`  ✗ ${msg}`); };
-const pass = (msg) => console.log(`  ✓ ${msg}`);
+const fail = (message) => { failures += 1; console.log(`  FAIL ${message}`); };
+const pass = (message) => console.log(`  PASS ${message}`);
 
 function makeRun(base, name) {
   const run = path.join(base, name);
@@ -60,8 +54,8 @@ try {
     fail('report.json missing');
   } else {
     const report = JSON.parse(fs.readFileSync(reportPath, 'utf8'));
-    const clean = report.cases.find((c) => c.id === 'clean-case');
-    const dirty = report.cases.find((c) => c.id === 'dirty-case');
+    const clean = report.cases.find((testCase) => testCase.id === 'clean-case');
+    const dirty = report.cases.find((testCase) => testCase.id === 'dirty-case');
     if (!clean || !dirty) fail('report.json missing cases');
     else if (clean.errors !== 0) fail(`clean-case errors ${clean.errors} != 0`);
     else if (dirty.errors === 0) fail('dirty-case reported 0 errors');
@@ -78,7 +72,7 @@ try {
       else pass(`render present: ${caseId}/screen.html.png`);
     }
     const compareDir = path.join(runA, 'compare-runB');
-    const composites = fs.existsSync(compareDir) ? fs.readdirSync(compareDir).filter((f) => f.endsWith('.png')) : [];
+    const composites = fs.existsSync(compareDir) ? fs.readdirSync(compareDir).filter((file) => file.endsWith('.png')) : [];
     if (composites.length === 0) fail('no side-by-side composites produced');
     else pass(`${composites.length} composite(s) produced`);
   } else {
@@ -89,8 +83,8 @@ try {
 }
 
 if (failures > 0) {
-  console.log(`\ntest-ui-quality-report: ${failures} failure(s)`);
+  console.log(`\ntest-quality-benchmark: ${failures} failure(s)`);
   process.exitCode = 1;
 } else {
-  console.log('\ntest-ui-quality-report: all checks passed');
+  console.log('\ntest-quality-benchmark: all checks passed');
 }

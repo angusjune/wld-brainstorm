@@ -321,6 +321,7 @@ function validatePublishableBrainstorm() {
   assert(exists(root, 'SKILL.md'), `${root} must include root SKILL.md`);
 
   const required = [
+    'package.json',
     'assets/DESIGN.md',
     'assets/tokens.css',
     'assets/components.css',
@@ -335,8 +336,20 @@ function validatePublishableBrainstorm() {
     'assets/pm-spec-cache/index.yaml',
     'assets/screens/个人中心.html',
     'references/figma-mcp.md',
-    'references/merged-workflows.md',
+    'references/embedded-workflows.md',
     'references/solution-archetypes.md',
+    'quality-benchmark/README.md',
+    'quality-benchmark/prompts.json',
+    'quality-benchmark/report.mjs',
+    'quality-benchmark/fixtures/expected.json',
+    'quality-benchmark/fixtures/clean-home.html',
+    'quality-benchmark/fixtures/clean-inner.html',
+    'quality-benchmark/fixtures/bad-shell.html',
+    'quality-benchmark/fixtures/bad-bg.html',
+    'quality-benchmark/fixtures/bad-screen.html',
+    'quality-benchmark/fixtures/off-system.html',
+    'scripts/test-qa-gate.mjs',
+    'scripts/test-quality-benchmark.mjs',
     'tools/fix-details/big.mjs',
     'tools/fix-details/calc.mjs',
     'tools/fix-details/report-template.html',
@@ -355,6 +368,12 @@ function validatePublishableBrainstorm() {
   for (const file of required) {
     assert(exists(root, file), `${root} publishable package is missing ${file}`);
   }
+
+  const pkg = readJson(`${root}/package.json`);
+  assert(pkg.scripts?.['qa-gate'] === 'node qa-gate.mjs', `${root}/package.json must expose npm run qa-gate`);
+  assert(pkg.scripts?.['benchmark:report'] === 'node quality-benchmark/report.mjs', `${root}/package.json must expose npm run benchmark:report`);
+  assert(pkg.scripts?.['test:qa-gate'] === 'node scripts/test-qa-gate.mjs', `${root}/package.json must expose npm run test:qa-gate`);
+  assert(pkg.scripts?.['test:quality-benchmark'] === 'node scripts/test-quality-benchmark.mjs', `${root}/package.json must expose npm run test:quality-benchmark`);
 
   const forbidden = [];
   const walk = (dir) => {

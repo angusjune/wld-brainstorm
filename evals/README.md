@@ -6,7 +6,8 @@ English, drawn from the README usage examples and variations of them).
 
 These cases grade **routing** (which skill wins for a prompt). The *output
 quality* of brainstorm-generated screens is measured separately by the
-UI-quality benchmark in `ui-quality/` — see `ui-quality/README.md`.
+quality benchmark shipped inside the publishable brainstorm skill directory:
+`plugins/wld-design/skills/brainstorm/quality-benchmark/`.
 
 Run it:
 

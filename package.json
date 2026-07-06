@@ -7,8 +7,8 @@
     "build": "node scripts/build-plugin.mjs",
     "validate": "node scripts/validate-plugin.mjs",
     "eval": "node scripts/run-evals.mjs",
-    "test:qa-gate": "node scripts/test-qa-gate.mjs",
-    "test:ui-report": "node scripts/test-ui-quality-report.mjs",
+    "test:qa-gate": "npm --prefix plugins/wld-design/skills/brainstorm run test:qa-gate",
+    "test:ui-report": "npm --prefix plugins/wld-design/skills/brainstorm run test:quality-benchmark",
     "test": "npm run build && npm run validate && npm run test:qa-gate",
     "site:dev": "npm --prefix site run dev",
     "site:build": "npm --prefix site run build"
