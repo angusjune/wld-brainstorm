@@ -1,9 +1,0 @@
-<view class="wld-page {{fixed && !bare ? 'wld-page--fixed' : '' }} {{bare ? 'wld-page--bare' : ''}}">
-  <block wx:if="{{!bare}}">
-    <view class="wld-page__bg" style="--background: {{background}}"></view>
-    <navigation-bar class="wld-page__navbar" back="{{navBack}}" title="{{navTitle}}" subtitle="{{navSubtitle}}"></navigation-bar>
-  </block>
-  <view class="wld-page__content" style="{{bare ? '' : safeAreaTop}}">
-    <slot />
-  </view>
-</view>
