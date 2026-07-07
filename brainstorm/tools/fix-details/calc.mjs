@@ -511,11 +511,32 @@ function readStdin() {
   });
 }
 
+const USAGE = `用法: node calc.mjs '<params-json>'   (也可通过 stdin 传入: echo '{...}' | node calc.mjs)
+
+参数字段 (params-json):
+  annualRate      年化利率, 小数 (0.144 = 14.4%)。内部按 360 天折算日利率
+  principal       借款本金 (元)
+  term            期数 (月)
+  loanDate        放款日 "YYYY-MM-DD"
+  firstBillingDate  可选, 首个账单日 "YYYY-MM-DD"
+  repaymentType   可选, EQUAL_INSTALLMENT (等额本息, 默认) | EQUAL_PRINCIPAL (等额本金)
+  coupons         可选, 优惠券数组, 如 [{"type":"INTEREST_REDUCTION","days":30}]
+  interestFirstTerms 可选, 先息后本的先息期数
+  stagedRate/stagedTerms 可选, 分段利率及其适用期数
+  earlyRepaymentDate 可选, 提前还款日 "YYYY-MM-DD"
+
+示例:
+  node calc.mjs '{"annualRate":0.144,"principal":60000,"term":12,"loanDate":"2026-06-08","coupons":[{"type":"INTEREST_REDUCTION","days":30}]}'`;
+
 async function main() {
   let raw = process.argv[2];
+  if (raw === '--help' || raw === '-h') {
+    console.log(USAGE);
+    process.exit(0);
+  }
   if (!raw) raw = (await readStdin()).trim();
   if (!raw) {
-    console.error('用法: node calc.mjs \'{"annualRate":0.144,"principal":60000,"term":12,"loanDate":"2026-06-08","coupons":[{"type":"INTEREST_REDUCTION","days":30}]}\'');
+    console.error(USAGE);
     process.exit(2);
   }
 

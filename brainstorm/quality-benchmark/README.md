@@ -71,18 +71,13 @@ npm run benchmark:report -- quality-benchmark/runs/<new> --compare quality-bench
 
 ## 自测
 
-在完整仓库根目录运行：
-
-```bash
-npm run test:qa-gate
-npm run test:ui-report
-```
-
-在 `brainstorm` 目录内也可以直接运行：
+在 `brainstorm` 目录内运行（这些脚本定义在 `brainstorm/package.json`）：
 
 ```bash
 npm run test:qa-gate
 npm run test:quality-benchmark
 ```
+
+或用 `npm test` 一次跑完两个。
 
 校准规则：生产模板必须是 0 个 error。若 gate 报生产模板错误，优先修 gate；只有确认模板本身有问题时才改模板。

@@ -6,6 +6,7 @@
   "description": "Self-contained WLD brainstorm skill package with QA gate and quality benchmark scripts.",
   "scripts": {
     "qa-gate": "node qa-gate.mjs",
+    "validate": "node scripts/validate-plugin.mjs",
     "benchmark:report": "node quality-benchmark/report.mjs",
     "test:qa-gate": "node scripts/test-qa-gate.mjs",
     "test:quality-benchmark": "node scripts/test-quality-benchmark.mjs",

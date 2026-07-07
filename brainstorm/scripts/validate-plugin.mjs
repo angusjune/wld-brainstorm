@@ -1,0 +1,155 @@
+#!/usr/bin/env node
+
+/**
+ * WLD Brainstorm — Publish Validator
+ *
+ * Pre-upload sanity checks for the self-contained skill directory. Codifies
+ * the "发布前" checklist in README.md and the SKILL.md screen-table claim so
+ * they are enforced instead of asserted. Exit code 1 on any error.
+ *
+ * Checks:
+ *   1. SKILL.md exists at the package root.
+ *   2. No forbidden entries (.git/, node_modules/, .env, __pycache__/, .DS_Store).
+ *   3. SKILL.md and references/*.md reference only in-package files.
+ *   4. Package size < 100 MB.
+ *   5. SKILL.md screen table matches assets/screens/ on disk (both directions).
+ *
+ * Usage: node scripts/validate-plugin.mjs [--json]
+ */
+
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, '..');
+
+const FORBIDDEN = ['.git', 'node_modules', '.env', '__pycache__', '.DS_Store'];
+const SIZE_LIMIT_BYTES = 100 * 1024 * 1024;
+
+const errors = [];
+const notes = [];
+
+function walk(dir, onEntry) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const abs = path.join(dir, entry.name);
+    onEntry(entry, abs);
+    if (entry.isDirectory() && !FORBIDDEN.includes(entry.name)) walk(abs, onEntry);
+  }
+}
+
+// Check 1: SKILL.md exists at root
+if (!fs.existsSync(path.join(ROOT, 'SKILL.md'))) {
+  errors.push('缺少根目录 SKILL.md');
+}
+
+// Check 2: no forbidden entries + Check 4: size
+let totalBytes = 0;
+walk(ROOT, (entry, abs) => {
+  if (FORBIDDEN.includes(entry.name)) {
+    errors.push(`存在禁止项: ${path.relative(ROOT, abs)}`);
+  }
+  if (entry.isFile()) {
+    try {
+      totalBytes += fs.statSync(abs).size;
+    } catch {
+      /* ignore unreadable */
+    }
+  }
+});
+if (totalBytes >= SIZE_LIMIT_BYTES) {
+  errors.push(`目录体积 ${(totalBytes / 1024 / 1024).toFixed(1)}MB 超过 100MB 上限`);
+}
+
+// Check 3: SKILL.md + references/*.md reference only in-package files.
+// Inspect backtick code spans that look like concrete in-package file paths.
+const docsToScan = [path.join(ROOT, 'SKILL.md')];
+const refsDir = path.join(ROOT, 'references');
+if (fs.existsSync(refsDir)) {
+  for (const f of fs.readdirSync(refsDir)) {
+    if (f.endsWith('.md')) docsToScan.push(path.join(refsDir, f));
+  }
+}
+
+// A token is a "concrete in-package path" when it starts with a known top-level
+// segment or is a known root file, and carries a file extension (so we skip
+// prose, dirs-as-concepts, and generated-output examples like `home.html`).
+const IN_PKG_PREFIXES = ['assets/', 'references/', 'tools/', 'scripts/', 'quality-benchmark/'];
+const ROOT_FILES = new Set(['server.cjs', 'helper.js', 'qa-gate.mjs', 'package.json', 'production-reference.md']);
+
+function looksLikeInPackagePath(tok) {
+  if (/^https?:\/\//.test(tok)) return false;
+  if (tok.includes('<') || tok.includes('>')) return false; // placeholders
+  if (IN_PKG_PREFIXES.some((p) => tok.startsWith(p))) return true;
+  if (ROOT_FILES.has(tok)) return true;
+  return false;
+}
+
+for (const docPath of docsToScan) {
+  const text = fs.readFileSync(docPath, 'utf8');
+  const spans = text.match(/`([^`]+)`/g) || [];
+  for (const span of spans) {
+    const tok = span.slice(1, -1).trim().replace(/^\.\//, '');
+    if (path.isAbsolute(tok) || tok.startsWith('..')) {
+      // absolute or escaping paths are not self-contained
+      if (looksLikeInPackagePath(tok) || tok.startsWith('..')) {
+        errors.push(`${path.relative(ROOT, docPath)} 引用了非包内路径: ${tok}`);
+      }
+      continue;
+    }
+    if (!looksLikeInPackagePath(tok)) continue;
+    const target = path.join(ROOT, tok.replace(/\/$/, ''));
+    if (!fs.existsSync(target)) {
+      errors.push(`${path.relative(ROOT, docPath)} 引用了不存在的包内文件: ${tok}`);
+    }
+  }
+}
+
+// Check 5: SKILL.md screen table <-> assets/screens/ (both directions)
+const screensDir = path.join(ROOT, 'assets', 'screens');
+if (!fs.existsSync(screensDir)) {
+  errors.push('缺少 assets/screens/ 目录');
+} else {
+  const skill = fs.readFileSync(path.join(ROOT, 'SKILL.md'), 'utf8');
+  const mentioned = new Set(
+    (skill.match(/`([^`]+\.html)`/g) || []).map((s) => s.slice(1, -1).trim()),
+  );
+  const onDisk = fs
+    .readdirSync(screensDir)
+    .filter((f) => f.endsWith('.html'))
+    .sort();
+
+  // Forward: every template on disk must be documented in SKILL.md.
+  for (const f of onDisk) {
+    if (!mentioned.has(f)) {
+      errors.push(`模板存在但未在 SKILL.md 列出: assets/screens/${f}`);
+    }
+  }
+  // Reverse: every screen file named in SKILL.md must exist on disk.
+  const diskSet = new Set(onDisk);
+  for (const f of mentioned) {
+    // Only Chinese-named template files live in screens/; skip generated-output
+    // examples (home.html, solutions.html, loan-input.html, *-v2.html …).
+    const isTemplateName = /[一-鿿]/.test(f);
+    if (isTemplateName && !diskSet.has(f)) {
+      errors.push(`SKILL.md 列出的模板在磁盘上不存在: assets/screens/${f}`);
+    }
+  }
+  notes.push(`screens: ${onDisk.length} 个模板, ${onDisk.length - errors.filter((e) => e.includes('未在 SKILL.md')).length} 个已文档化`);
+}
+
+const json = process.argv.includes('--json');
+if (json) {
+  console.log(JSON.stringify({ ok: errors.length === 0, errors, notes, sizeMB: +(totalBytes / 1024 / 1024).toFixed(2) }, null, 2));
+} else {
+  console.log(`包大小: ${(totalBytes / 1024 / 1024).toFixed(2)} MB`);
+  for (const n of notes) console.log(`  · ${n}`);
+  if (errors.length === 0) {
+    console.log('validate: 所有检查通过 ✓');
+  } else {
+    console.log(`validate: ${errors.length} 个问题`);
+    for (const e of errors) console.log(`  ✗ ${e}`);
+  }
+}
+
+process.exit(errors.length === 0 ? 0 : 1);

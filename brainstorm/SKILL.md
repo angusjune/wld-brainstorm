@@ -221,7 +221,13 @@ Caption each solution with its intent:
 
 Check if the server (the `url` saved from Step 2 — the port may differ from 3210 if it was busy) is still running. If not, start it again.
 
-**Pre-user QA gate:** Before asking the user to open the browser, verify:
+**Pre-user QA gate:** Before asking the user to open the browser, first run the automated gate on the generated file(s) and fix every reported error:
+
+```bash
+node "<skill-dir>/qa-gate.mjs" "<screenDir>/solutions.html"
+```
+
+The gate is deterministic and catches the mechanical mistakes from the Common Mistakes table (non-token colors, square buttons, white-on-gold, thousands separators, missing chrome, background mismatch, custom JS, etc.). Exit code 1 means at least one error — fix the HTML and re-run until it exits 0. Warnings are advisory. Then eyeball the checks the gate cannot automate:
 - WLD preview chrome uses `<wld-wechat-chrome>`, not hand-built navbar markup
 - `mockup-chrome.css` is linked when using `<wld-wechat-chrome>`
 - One primary gold CTA per screen
@@ -254,6 +260,8 @@ For the chosen direction, build each screen as a separate HTML file in `screenDi
 | Flow (journey) | `<div class="phone-gallery phone-gallery--flow">` | `<div class="phone-flow-arrow">→</div>` between slides |
 
 **Presentation modifiers:** `presentation--single` (centers one phone), `presentation--dark` (dark bg for screenshots).
+
+**File granularity (per-screen vs. flow):** Each screen is its own file (`loan-input.html`, `confirm.html`) — this is what the user iterates on in the Feedback branch, so one screen per file is the rule. The Flow (journey) variant is **not** a replacement for those files: build one additional presentation page (e.g. `flow.html`) that embeds each screen's `phone-slide` side by side with `phone-flow-arrow` between them, purely to show the journey. So a 2-step flow produces three files: two editable per-screen files plus one flow overview. Do not put flow arrows inside the individual per-screen files.
 
 **For each screen:**
 1. Copy closest matching production template and adapt

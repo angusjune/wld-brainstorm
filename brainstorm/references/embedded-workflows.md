@@ -34,7 +34,7 @@ Completion criterion: every visible amount, rate, term, selection state, CTA lab
    - Copy: CTA labels, coupon chips, headings, dialog buttons, agreement and footnote text.
    - Selection state: selected coupon, selected term, selected card, selected repayment method.
 2. Run four checks:
-   - **Calculation correctness:** use `node tools/fix-details/calc.mjs '<params-json>'` for loan math. Never hand-compute interest or repayment amounts. Treat differences over ¥1 as real mismatches.
+   - **Calculation correctness:** use `node tools/fix-details/calc.mjs '<params-json>'` for loan math (run `node tools/fix-details/calc.mjs --help` for the full field list). Minimum params: `{"annualRate":0.144,"principal":60000,"term":12,"loanDate":"2026-06-08"}` — `annualRate` is a decimal (0.144 = 14.4%), `principal` in 元, `term` in months, `loanDate` as `YYYY-MM-DD`; optional `coupons`, `repaymentType`, `earlyRepaymentDate`. Never hand-compute interest or repayment amounts. Treat differences over ¥1 as real mismatches. If the screen has no loan numbers to check (e.g. a pure restyle), skip this check.
    - **Intra-screen consistency:** values on the same screen must agree, such as amount not exceeding quota and selected coupon matching the shown rate path.
    - **Inter-screen consistency:** shared values across the flow, dialogs, sheets, and backdrops must stay equal.
    - **UX copy:** units, decimal places, rate口径, terminology, CTA action, and regulated language must be consistent with production templates.
