@@ -1,7 +1,7 @@
 /*
- * Composes the plugin's canonical demo assets into site/public/demo/.
- * READ-ONLY toward plugins/wld-design — mirrors what the brainstorm
- * server (skills/brainstorm/server.cjs) does at request time.
+ * Composes the brainstorm skill's canonical demo assets into site/public/demo/.
+ * READ-ONLY toward brainstorm/ — mirrors what the brainstorm
+ * server (brainstorm/server.cjs) does at request time.
  * public/demo is gitignored; this runs as predev/prebuild.
  */
 import fs from 'node:fs'
@@ -10,8 +10,8 @@ import { fileURLToPath } from 'node:url'
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const REPO = path.resolve(HERE, '../..')
-const ASSETS = path.join(REPO, 'plugins/wld-design/assets')
-const BEYBLADE_SRC = path.join(REPO, 'plugins/wld-design/skills/beyblade-battle/assets')
+const ASSETS = path.join(REPO, 'brainstorm/assets')
+const BEYBLADE_SRC = path.join(REPO, 'brainstorm/tools/beyblade/assets')
 const CANNED = path.join(HERE, '../src/beyblade-demo')
 const OUT = path.join(HERE, '../public/demo')
 

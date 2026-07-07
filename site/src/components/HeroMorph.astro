@@ -1,0 +1,75 @@
+---
+// Voxel letter grid that morphs through B-R-A-I-N-S-T-O-R-M.
+// The SVG is rendered once at build time (all cells present, non-first-letter
+// cells at opacity 0); the inline script below only toggles per-cell opacity,
+// so the morph costs no client-side rendering. Honors prefers-reduced-motion
+// by staying on the static "B".
+import { heroMorphScene, HERO_LETTER_CELLS, HERO_SEQUENCE } from '../lib/voxel.js'
+
+const svg = heroMorphScene()
+---
+<div
+  id="hero-morph"
+  class="hero-morph"
+  role="img"
+  aria-label="体素字母轮播：BRAINSTORM"
+  set:html={svg}
+/>
+
+<script define:vars={{ sequence: HERO_SEQUENCE, letterCells: HERO_LETTER_CELLS }}>
+  const host = document.getElementById('hero-morph')
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)')
+  if (host && !reduced.matches) {
+    // Group the SVG polygons by voxel cell and stagger their transitions
+    // along the grid diagonal for a wave-like morph.
+    const cells = new Map()
+    for (const poly of host.querySelectorAll('[data-cell]')) {
+      const key = poly.dataset.cell
+      if (!cells.has(key)) cells.set(key, [])
+      cells.get(key).push(poly)
+      const [x, y] = key.split('-').map(Number)
+      poly.style.transitionDelay = `${(x + y) * 40}ms`
+    }
+
+    let index = 0
+    const tick = () => {
+      if (document.hidden) return
+      index = (index + 1) % sequence.length
+      const letter = sequence[index]
+      const on = new Set(letterCells[letter])
+      // One gold cell per letter — the accent wanders through the word.
+      const goldKey = letterCells[letter][(index * 7) % letterCells[letter].length]
+      for (const [key, polys] of cells) {
+        const visible = on.has(key)
+        const gold = visible && key === goldKey
+        for (const poly of polys) {
+          poly.style.opacity = visible ? '1' : '0'
+          poly.classList.toggle('gold', gold)
+        }
+      }
+    }
+    setInterval(tick, 1600)
+  }
+</script>
+
+<style>
+  .hero-morph {
+    display: block;
+    line-height: 0;
+  }
+  .hero-morph :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .hero-morph :global(polygon) {
+    /* Keep strokes at a true 1px regardless of how far the small viewBox is
+       scaled up to fill the hero column. */
+    vector-effect: non-scaling-stroke;
+    transition: opacity 0.5s ease;
+  }
+  .hero-morph :global(polygon.gold) {
+    stroke: #ffd143;
+  }
+</style>

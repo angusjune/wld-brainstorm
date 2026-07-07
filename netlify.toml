@@ -5,4 +5,4 @@
 
 [build.environment]
   SITE_BASE = "/"
-  NODE_VERSION = "22"
+  NODE_VERSION = "24"

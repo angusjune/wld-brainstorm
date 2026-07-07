@@ -1,7 +1,9 @@
 ---
 import '../styles/site.css'
 interface Props { title?: string }
-const { title = 'WLD Design 插件' } = Astro.props
+const {
+  title = '微粒贷设计 Brainstorm — 一个 Skill，从想法到真实产出',
+} = Astro.props
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 ---
 <!DOCTYPE html>
@@ -10,15 +12,13 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '')
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
-    <meta name="description" content="面向微粒贷设计师和产品经理的 AI 技能包 — 从想法到小程序 demo" />
+    <meta
+      name="description"
+      content="微粒贷设计 Brainstorm 是一个自包含的设计 Skill：澄清需求、对齐生产模板、生成 3 个方案，并可继续精简、校验、推送 Figma、生成小程序 Demo。"
+    />
     <link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
   </head>
   <body>
     <slot />
-    <footer class="site-footer">
-      <div class="container">
-        <span>WLD Design 插件 · alpha</span>
-      </div>
-    </footer>
   </body>
 </html>
