@@ -1,24 +1,22 @@
 # Repo guide
 
-This repo is for readying @brainstorm to participate in WeBank（微众银行) agent skill contest.
+This repo is for developing `brainstorm` skill.
 
 ## Project structure
 
 - `./brainstorm`: the publishable skill directory
+  - `profile/`: the product profile — the only directory a forking team rewrites
+  - `platforms/`: platform packs (`wechat`, `ios`)
+  - everything else: shared machinery, which never names a product or platform
 - `./site`: an Astro 7 site introducing `brainstorm` skill
 
 ## Iron laws
 
-- **Contest guide skill is ref ONLY**: use the contest guide skill (@ref-only-webank-Skill-Contest-guide) for understanding the rules of the contest, don't use any skills inside to guide you writing the participant skill `brainstorm`
 - **External git is forbidden**: don't use external git (git submodule, published on GitHub, etc.)
-- **Use Chinese on user-facing copy**: use Chinese in @site, @README.md, etc.
+- **Use Chinese on user-facing copy**: use Chinese in @site, `brainstorm/README.md`, `brainstorm/profile/README.md`, etc.
+- **Shared machinery is product-neutral**: nothing outside `profile/` may name a product; nothing outside `profile/` and `platforms/` may assume a platform
 
-## Contest guides and rules
+## ADRs and glossary
 
-@ref-only-webank-Skill-Contest-guide
-
-We will only upload `./brainstorm/` to the contest.
-
-## ADRs
-
+@CONTEXT.md
 @docs/adr/

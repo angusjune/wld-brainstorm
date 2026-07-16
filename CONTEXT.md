@@ -1,17 +1,49 @@
-# WLD Design Local Bundle
+# Brainstorm Skill
 
-This context describes the self-contained local distribution of the WLD Design plugin and the words maintainers should use when documenting it.
+This context describes the `brainstorm` skill: a self-contained design brainstorm workflow that ships with one product's design system in it, and is adopted by other teams by copying and editing.
 
 ## Language
 
-**Bundled Product Knowledge Snapshot**:
-The product rules and structured specs packaged under `brainstorm/assets/pm-*-cache/`. It is treated as a read-only local artifact unless a maintainer intentionally prepares a refreshed bundle.
-_Avoid_: Submodule, upstream PM repository, external knowledge base
+### Distribution
+
+**Fork**:
+The way another team adopts this skill — copying the publishable skill directory once and editing it into their own, with no upstream, shared repository, or configuration between the two copies.
+_Avoid_: Install, onboard, configure, tenant, instance
 
 **Publishable Skill Directory**:
 A single self-contained skill directory with a root `SKILL.md` and every runtime file it references, suitable to upload on its own. For this bundle, `brainstorm/` is the publishable skill directory.
 _Avoid_: Wrapper skill, plugin package, provider package
 
-**Embedded Workflow**:
-A sub-workflow packaged inside the publishable skill directory so the skill can run follow-up passes and branches without depending on sibling skills.
-_Avoid_: Merged workflow, external workflow
+### Layers
+
+**Product Profile**:
+The single directory holding everything specific to one product — its tokens, component styles, screen corpus, product rules, and bundled knowledge. It is the only thing a forking team rewrites, and there is exactly one per copy of the skill.
+_Avoid_: Theme, tenant, config, plugin, preset, brand pack
+
+**Platform Pack**:
+The furniture belonging to a surface rather than a product — its preview chrome, that chrome's variant vocabulary, and any branch that only exists there. Reusable across every product on that surface.
+_Avoid_: Adapter, driver, target, renderer
+
+**Shared Machinery**:
+The parts that vary by nothing: the method in `SKILL.md`, the preview server, the QA engine, and the presentation frame. It never names a product or a platform.
+_Avoid_: Core, framework, engine, runtime
+
+### Workflow extension
+
+**Pass**:
+A step run inline during solution and flow generation, before anything is shown to the user. Simplify is the one shared pass; a product profile may contribute its own.
+_Avoid_: Embedded workflow, filter, post-process, hook
+
+**Branch**:
+A path the user may choose after approving a screen or flow. Contributed by shared machinery or by a platform pack.
+_Avoid_: Embedded workflow, mode, plugin, exporter
+
+### Product knowledge
+
+**Screen Corpus**:
+The production screen templates a profile ships. It is the ground truth the model copies from rather than inventing against, and it is what most determines output quality.
+_Avoid_: Examples, samples, fixtures, mockups
+
+**Bundled Product Knowledge Snapshot**:
+The product rules and structured specs packaged under the product profile. It is treated as a read-only local artifact unless a maintainer intentionally prepares a refreshed bundle.
+_Avoid_: Submodule, upstream PM repository, external knowledge base
