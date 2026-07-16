@@ -1,15 +1,17 @@
 {
-  "name": "wld-brainstorm-skill",
+  "name": "brainstorm-skill",
   "version": "1.1.1",
   "private": true,
   "type": "module",
-  "description": "Self-contained WLD brainstorm skill package with QA gate and quality benchmark scripts.",
+  "description": "Self-contained design brainstorm skill: shared method, platform packs, and one swappable product profile.",
   "scripts": {
     "qa-gate": "node qa-gate.mjs",
     "validate": "node scripts/validate-plugin.mjs",
+    "gen:wxss-tokens": "node platforms/wechat/prototype/generate-wxss-tokens.mjs",
     "benchmark:report": "node quality-benchmark/report.mjs",
     "test:qa-gate": "node scripts/test-qa-gate.mjs",
+    "test:wxss-tokens": "node platforms/wechat/prototype/generate-wxss-tokens.mjs --check",
     "test:quality-benchmark": "node scripts/test-quality-benchmark.mjs",
-    "test": "npm run test:qa-gate && npm run test:quality-benchmark"
+    "test": "npm run test:qa-gate && npm run test:wxss-tokens && npm run test:quality-benchmark"
   }
 }

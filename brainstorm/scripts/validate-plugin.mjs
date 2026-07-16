@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * WLD Brainstorm — Publish Validator
+ * Brainstorm — Publish Validator
  *
  * Pre-upload sanity checks for the self-contained skill directory. Codifies
  * the "发布前" checklist in README.md and the SKILL.md screen-table claim so

@@ -4,39 +4,31 @@ Use this reference before generating the three-option `solutions.html` page. The
 
 ## UX Strategy Archetypes
 
-Use when the PM is still exploring what the screen or flow should do.
+Use when the user is still exploring what the screen or flow should do.
 
-### Loan Amount / Borrowing Entry
+UX directions depend on what the product actually does, so they live in the profile: **read the Solution archetypes section of `profile/PROFILE.md`** for the ones that fit this product's screens.
 
-- Amount-first: fastest path to entering amount and submitting
-- Repayment-confidence: foregrounds monthly repayment, term, and repayment schedule before CTA
-- Offer-comparison: helps compare term, rate, and discount tradeoffs
-- Guardrail-first: makes eligibility, limits, disabled states, or risk explanations clear before action
+When the profile lists none for the screen at hand, these generic lenses still apply — each makes a different thing the dominant object:
 
-### Home / Personal Center
-
-- Credit-first: makes available credit the dominant object
-- Task-first: makes the next likely action obvious based on user state
-- Repayment-aware: balances borrowing entry with due amount and repayment status
-- Offer-aware: lets promotion or preferential rate explain why the user should continue, without pressure
-
-### Repayment / Due Amount
-
-- Receipt-first: makes selected loans, totals, and due items easy to verify
-- Risk-reduction: emphasizes what changes after repayment and whether any fee/risk remains
-- Batch-action: optimizes selecting or clearing multiple loans quickly
-- Status-first: prioritizes paid, overdue, processing, or failed repayment status
+- **Task-first:** the next likely action is obvious from the user's state
+- **Object-first:** the thing the user came for (the amount, the item, the status) dominates
+- **Confidence-first:** foregrounds what the user needs to trust before acting — consequences, totals, what happens next
+- **Guardrail-first:** eligibility, limits, disabled states, and risk are clear before action
+- **Comparison-first:** helps weigh options against each other rather than picking blind
+- **Verification-first:** makes it easy to check that the selection and totals are right
 
 ## Visual Exploration Archetypes
 
-Use when the PM asks for visual possibilities, style direction, or the flow is already fixed. These may share the same user journey.
+Use when the user asks for visual possibilities, style direction, or the flow is already fixed. These may share the same user journey.
 
-- Calmer / native: closest to WeChat defaults, light separators, quiet hierarchy
-- Premium / spacious: more whitespace, stronger amount treatment, fewer competing modules
+- Calmer / native: closest to the platform's defaults, light separators, quiet hierarchy
+- Premium / spacious: more whitespace, stronger focal treatment, fewer competing modules
 - Compact / task-focused: denser rows, faster scanning, bottom CTA dominant
 - Data-forward: key numbers, dates, and terms become the main visual rhythm
-- Softer / warmer: gentle surfaces and warmer secondary emphasis while staying inside WLD palette
-- Promotional but restrained: offer or discount is visible without urgency language, countdowns, or pressure
+- Softer / warmer: gentle surfaces and warmer secondary emphasis, staying inside the profile's palette
+- Promotional but restrained: an offer is visible without urgency language, countdowns, or pressure
+
+Every option must stay inside the profile's product laws, whichever archetype it follows.
 
 ## Caption Format
 

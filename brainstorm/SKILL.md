@@ -57,7 +57,7 @@ The profile's screen table lists every production template on disk, and `npm run
 8. **Step 6:** User chooses the next branch:
    - **A. Give feedback** — edit the same HTML file and hot-reload
    - **B. Push to Figma** — draw editable frames in the user's Figma page
-   - **C. Prototype** — build a WeChat Mini Program demo from the approved screens
+   - **C. Prototype** — a branch the platform pack contributes, if it has one
    - **D. Beyblade battle** — turn selected screens into a local battle arena
 9. Continue the chosen branch until its completion criterion is met.
 
@@ -260,7 +260,7 @@ Ask the user to choose one of these paths after they have seen the approved scre
 |--------|--------|------------|
 | A | Feedback | Edit the current HTML in `screenDir`; the browser hot-reloads through SSE. Repeat until the user is satisfied. |
 | B | Push to Figma | Use the Push to Figma branch in `references/embedded-workflows.md`. Requires the approved brainstorm source and a target Figma page link. |
-| C | Prototype | Use the Prototype branch in `references/embedded-workflows.md`. Builds a WeChat Mini Program demo from the approved brainstorm output. |
+| C | Prototype | Only offered when the active platform pack contributes it (`platform.json` → `branches`). Follow the branch doc the pack names — on `wechat` that is `platforms/wechat/branches/prototype.md`, which builds a Mini Program demo. Do not offer this choice when the pack contributes no branches. |
 | D | Beyblade battle | Use the Beyblade Battle branch in `references/embedded-workflows.md`. Uses 2-7 approved brainstorm screens as battle entrants. |
 
 **Critical for A:** Always edit the SAME file for iterative changes. Only create new files for new screens.

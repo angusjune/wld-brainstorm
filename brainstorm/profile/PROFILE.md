@@ -118,13 +118,38 @@ Run these in Steps 4 and 5, after the shared Simplify pass, before showing anyth
 
 ## Solution archetypes
 
-Beyond the generic archetypes in `references/solution-archetypes.md`, these UX directions are specific to this product:
+The UX Strategy directions for this product's screens. `references/solution-archetypes.md` holds the method (UX vs Visual modes, caption format) and the visual archetypes; these are the product-specific ones it points here for.
 
-- **Loan amount / borrowing entry** — Amount-first, Repayment-confidence, Offer-comparison, Guardrail-first
-- **Home / personal center** — Status-first, Card-continuation, Amount-focused
-- **Repayment / due amount** — Task-verification, Flow-continuation, Light-prompt
+### Loan amount / borrowing entry
 
-Visual variants may use warmer secondary emphasis while staying inside the WLD palette, and may show an offer or discount — but without urgency language, countdowns, or pressure.
+- **Amount-first:** fastest path to entering amount and submitting
+- **Repayment-confidence:** foregrounds monthly repayment, term, and repayment schedule before CTA
+- **Offer-comparison:** helps compare term, rate, and discount tradeoffs
+- **Guardrail-first:** makes eligibility, limits, disabled states, or risk explanations clear before action
+
+### Home / personal center
+
+- **Credit-first:** makes available credit the dominant object
+- **Task-first:** makes the next likely action obvious based on user state
+- **Repayment-aware:** balances borrowing entry with due amount and repayment status
+- **Offer-aware:** lets promotion or preferential rate explain why the user should continue, without pressure
+
+### Repayment / due amount
+
+- **Receipt-first:** makes selected loans, totals, and due items easy to verify
+- **Risk-reduction:** emphasizes what changes after repayment and whether any fee/risk remains
+- **Batch-action:** optimizes selecting or clearing multiple loans quickly
+- **Status-first:** prioritizes paid, overdue, processing, or failed repayment status
+
+---
+
+## Figma component library
+
+When running the Push to Figma branch, prioritize these existing components before drawing primitives:
+
+`Button 按钮`, `Actions 操作区`, `借钱按钮`, `Input 输入框`, `借款金额输入`, `借款选项`, `Keyboard 键盘`, `Cell 列表项`, `Receipt 借据`, `优惠券`, `Dialog 弹框`, `Drawer 抽屉`, `Header 标题`, `Tabs`, `Tab Bar - 首页 Tab`, `首页主内容`, `首页详情`, `利率条`.
+
+Frames are 375 x 812. Preserve Chinese copy, amounts, rates and agreement text exactly.
 
 ---
 

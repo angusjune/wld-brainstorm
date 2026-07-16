@@ -4,7 +4,7 @@ Use this reference whenever a skill says "Figma MCP". Different agents expose Fi
 
 ## Setup
 
-If Figma tools are not available in the current agent, set up a Figma MCP server before running any Figma-dependent WLD skill. Figma currently offers two server options:
+If Figma tools are not available in the current agent, set up a Figma MCP server before running any Figma-dependent step. Figma currently offers two server options:
 
 - **Remote Figma MCP server (default preferred):** hosted by Figma at `https://mcp.figma.com/mcp`. Use this when the MCP client supports remote HTTP servers and OAuth-style sign-in. It has the broadest feature set, including write-to-canvas features.
 - **Desktop Figma MCP server:** runs locally through the Figma desktop app, usually at `http://127.0.0.1:3845/mcp`. Use this when remote MCP is unavailable and only reading is required (desktop Figma MCP has no write tools).

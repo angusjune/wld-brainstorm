@@ -8,7 +8,7 @@
 - `assets/`：WLD 设计规范、CSS tokens、组件样式、微信预览 chrome、生产页面模板和产品知识快照。
 - `references/`：方案发散方法、嵌入分支流程、Figma MCP 使用说明。
 - `profile/tools/`：微粒贷借款金额、利息、还款额等细节校验工具（属于产品档案）。
-- `tools/prototype/`：微信小程序 Demo 模板、校验脚本、视觉对齐工具，以及可选的微信开发者工具驱动技能包（`references/miniprogram-dev-skill/`，安装 `wechatide` CLI 后可直接打开项目、编译、截图并推送真机预览）。
+- `platforms/wechat/prototype/`：微信小程序 Demo 模板、校验脚本、视觉对齐工具，以及可选的微信开发者工具驱动技能包（`references/miniprogram-dev-skill/`，安装 `wechatide` CLI 后可直接打开项目、编译、截图并推送真机预览）。
 - `tools/beyblade/`：爆旋陀螺战斗所需的前端资源。
 - `server.cjs`、`helper.js`：本地热更新预览服务。
 - `qa-gate.mjs`：生成页面的质量检查。

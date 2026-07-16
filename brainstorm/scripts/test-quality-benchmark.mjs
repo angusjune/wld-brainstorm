@@ -37,7 +37,7 @@ function makeRun(base, name) {
   return run;
 }
 
-const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'wld-uiq-test-'));
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'brainstorm-uiq-test-'));
 try {
   const runA = makeRun(tmp, 'runA');
   const runB = makeRun(tmp, 'runB');

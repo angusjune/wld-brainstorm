@@ -25,13 +25,13 @@ reported as `ref-missing` / `impl-missing`.
 
 ## 3. The three tools
 
-All live in `tools/prototype/`, are ESM `.mjs`, and are dependency-free
+All live in `platforms/wechat/prototype/`, are ESM `.mjs`, and are dependency-free
 (except a lazy, optional `miniprogram-automator` used only for live capture).
 
 **Capture the running screens** — `impl/*.png` via DevTools + `miniprogram-automator`:
 
 ```bash
-node "tools/prototype/capture-miniprogram.mjs" <projectDir> \
+node "platforms/wechat/prototype/capture-miniprogram.mjs" <projectDir> \
   [--out <dir, default <project>/.conform/impl>] \
   [--pages all|p1,p2,...] \
   [--cli <devtoolsCliPath>]
@@ -43,7 +43,7 @@ by `-` (e.g. `pages/home/index` → `pages-home-index.png`).
 **Compare ref vs impl** — writes `out/*.composite.png` + `out/manifest.json`:
 
 ```bash
-node "tools/prototype/conform-to-design.mjs" <projectDir> \
+node "platforms/wechat/prototype/conform-to-design.mjs" <projectDir> \
   [--threshold <0-255, default 40>] \
   [--mask <x,y,w,h>]... \
   [--ref <dir>] [--impl <dir>]
@@ -72,7 +72,7 @@ status bar). `manifest.json` shape:
 **Render a brainstorm HTML screen to a ref PNG** (when there is no Figma export):
 
 ```bash
-node "tools/prototype/render-html-reference.mjs" <input.html> <out.png>
+node "platforms/wechat/prototype/render-html-reference.mjs" <input.html> <out.png>
 ```
 
 **Figma reference path:** alternatively save a Figma MCP `get_screenshot` result

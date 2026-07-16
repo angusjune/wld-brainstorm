@@ -1,0 +1,26 @@
+/* GENERATED FROM profile/tokens.css — do not edit by hand. */
+page {
+  --theme-500: #FFD143;
+  --theme-100: #FFF9D9;
+  --theme-600: #DBAE31;
+  --danger-500: #FF5A4F;
+  --text-primary: rgba(0, 0, 0, 0.9);
+  --text-secondary: rgba(0, 0, 0, 0.5);
+  --text-tertiary: rgba(0, 0, 0, 0.35);
+  --text-on-theme: rgba(0, 0, 0, 0.9);
+  --surface: #FFFFFF;
+  --bg: #F5F5F5;
+  --divider: rgba(0, 0, 0, 0.06);
+  --radius-pill: 999px;
+  --radius-card: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Noto Sans CJK SC", sans-serif;
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+/* END GENERATED */
+
+.wc-sans,
+.wc-sans-ss,
+.wc-sans-std {
+  font-family: system-ui, -apple-system, sans-serif;
+}
