@@ -7,10 +7,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>WLD Design</title>
-  <link rel="stylesheet" href="tokens.css">
-  <link rel="stylesheet" href="components.css">
-  <link rel="stylesheet" href="phone-mockup.css">
+  <title>Design Brainstorm</title>
+  <link rel="stylesheet" href="/profile/tokens.css">
+  <link rel="stylesheet" href="/profile/components.css">
+  <link rel="stylesheet" href="/assets/phone-mockup.css">
   <style>
     /*
      * FRAME TEMPLATE
@@ -35,13 +35,16 @@
       --frame-text-primary: #1d1d1f;
       --frame-text-secondary: #86868b;
       --frame-text-tertiary: #aeaeb2;
-      --frame-accent: #FFD143;
-      --frame-accent-hover: #DBAE31;
-      --frame-success: #98E059;
-      --frame-warning: #F7852C;
-      --frame-error: #FF5A4F;
-      --frame-selected-bg: #FFF9D9;
-      --frame-selected-border: #FFD143;
+      /* Brand hooks: shared machinery declares the slot, the product profile
+         fills it from its own tokens. Defaults are deliberately neutral so a
+         profile that defines nothing still renders a sane frame. */
+      --frame-accent: var(--brand-accent, #0A84FF);
+      --frame-accent-hover: var(--brand-accent-hover, #0060DF);
+      --frame-success: var(--brand-success, #34C759);
+      --frame-warning: var(--brand-warning, #FF9500);
+      --frame-error: var(--brand-error, #FF3B30);
+      --frame-selected-bg: var(--brand-selected-bg, rgba(10, 132, 255, 0.12));
+      --frame-selected-border: var(--brand-accent, #0A84FF);
     }
 
     @media (prefers-color-scheme: dark) {
@@ -53,10 +56,10 @@
         --frame-text-primary: #f5f5f7;
         --frame-text-secondary: #86868b;
         --frame-text-tertiary: #636366;
-        --frame-accent: #FFD143;
-        --frame-accent-hover: #FFEF7E;
-        --frame-selected-bg: rgba(255, 209, 67, 0.15);
-        --frame-selected-border: #FFD143;
+        --frame-accent: var(--brand-accent, #0A84FF);
+        --frame-accent-hover: var(--brand-accent-hover-dark, #6BB6FF);
+        --frame-selected-bg: var(--brand-selected-bg-dark, rgba(10, 132, 255, 0.15));
+        --frame-selected-border: var(--brand-accent, #0A84FF);
       }
     }
 
@@ -154,7 +157,7 @@
     }
     .option.selected .letter {
       background: var(--frame-accent);
-      color: rgba(0, 0, 0, 0.9);
+      color: var(--brand-accent-text, #FFFFFF);
     }
     .option .content {
       flex: 1;
@@ -277,7 +280,7 @@
 </head>
 <body>
   <div class="frame-header">
-    <h1>WLD Design</h1>
+    <h1>Design</h1>
   </div>
 
   <div class="frame-main">

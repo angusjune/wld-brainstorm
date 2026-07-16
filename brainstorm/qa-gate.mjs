@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * WLD Brainstorm QA Gate
+ * Brainstorm QA Gate
  *
  * Deterministic checker for generated brainstorm screen HTML. Codifies the
  * mechanical checks of the SKILL.md "Pre-user QA gate" and Common Mistakes
@@ -11,7 +11,7 @@
  *   node qa-gate.mjs [--json] [--assets <dir>] <file-or-dir> [...]
  *
  * Accepts full page-template documents (generated screens) and bare
- * .wld-page fragments (production templates). Exit code 1 when any
+ * page-class fragments (production templates). Exit code 1 when any
  * error-severity finding exists; warnings never fail the gate.
  *
  * Judgment checks that need eyes (overflow, copy tone, legal text retention)

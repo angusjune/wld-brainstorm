@@ -413,6 +413,16 @@
   border-top: 0.5px solid var(--wld-divider);
 }
 
+/* Inside a presentation phone mockup the bar anchors to the mockup, not the
+   viewport. This rule lives here rather than in assets/phone-mockup.css because
+   a profile may depend on shared machinery, never the other way round. */
+.phone-screen .wld-bottom-bar {
+  position: absolute;
+  left: 0;
+  width: 375px;
+  transform: none;
+}
+
 /* Footer (for home screens — links + disclaimer above tab bar) */
 .wld-footer {
   display: flex;

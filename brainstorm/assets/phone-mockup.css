@@ -1,11 +1,11 @@
 /* =============================================================================
-   WLD Design System — Phone Mockup Frame
+   Phone Mockup Frame — shared machinery, names no product
    Wraps POC demo screens in a realistic iPhone frame for presentations.
 
    Usage:
      <div class="phone-mockup">
        <div class="phone-screen">
-         <!-- Your WLD screen goes here -->
+         <!-- Your screen goes here -->
        </div>
      </div>
 
@@ -42,7 +42,9 @@
 .phone-screen {
   width: 375px;
   height: 812px;
-  background: var(--wld-bg, #F5F5F5);
+  /* Rarely visible — the page element fills the screen. A profile may override
+     --phone-screen-bg; this file must not reach into a product's tokens. */
+  background: var(--phone-screen-bg, #F5F5F5);
   border-radius: 36px;
   overflow: hidden;
   overflow-y: auto;
@@ -55,19 +57,13 @@
   display: none;
 }
 
-/* Ensure WLD page fills the screen */
-.phone-screen .wld-page {
+/* Ensure the page element fills the screen. Selected structurally rather than
+   by class name: the page class belongs to the product profile, and shared
+   machinery must not know it. A phone-screen holds exactly one page element. */
+.phone-screen > * {
   width: 375px;
   min-height: 812px;
   border-radius: 0;
-}
-
-/* Fix bottom bar positioning inside mockup */
-.phone-screen .wld-bottom-bar {
-  position: absolute;
-  left: 0;
-  width: 375px;
-  transform: none;
 }
 
 

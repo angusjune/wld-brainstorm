@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 /**
- * WLD Brainstorm Server
+ * Brainstorm Server
  *
- * A local dev server for previewing WLD phone-mockup screens with live reload.
+ * A local dev server for previewing phone-mockup screens with live reload.
  * - Serves screen HTML files with hot-reload via SSE
  * - Watches the screen directory and pushes reload events on changes
  *
@@ -29,7 +29,7 @@ const PORT = parseInt(getArg('port', '3210'), 10);
 const HOST = getArg('host', '127.0.0.1');
 const PROJECT_DIR = getArg('project-dir', process.cwd());
 const SESSION_ID = `${process.pid}-${Date.now()}`;
-const SESSION_DIR = path.join(PROJECT_DIR, '.wld-brainstorm', SESSION_ID);
+const SESSION_DIR = path.join(PROJECT_DIR, '.brainstorm', SESSION_ID);
 const SCREEN_DIR = path.join(SESSION_DIR, 'screens');
 const STATE_DIR = path.join(SESSION_DIR, 'state');
 const ASSETS_DIR = path.resolve(__dirname, 'assets');
@@ -183,7 +183,7 @@ function ensureStylesheet(html, href) {
 // --- Helper script injection ---
 const HELPER_SCRIPT = `
 <script>
-window.__WLD_SSE_URL = '/api/events';
+window.__BRAINSTORM_SSE_URL = '/api/events';
 </script>
 <script src="/helper.js"></script>
 `;
@@ -278,7 +278,7 @@ const server = http.createServer((req, res) => {
         <style>body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f0f0f0;font-family:system-ui}</style>
         </head><body>
         <div style="text-align:center;color:#888">
-          <h2 style="color:#333">WLD Brainstorm</h2>
+          <h2 style="color:#333">Brainstorm</h2>
           <p>Waiting for the agent to generate screens...</p>
           <p style="font-size:13px">This page will auto-refresh when screens are ready.</p>
         </div></body></html>

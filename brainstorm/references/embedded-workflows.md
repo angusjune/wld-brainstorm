@@ -105,4 +105,4 @@ Workflow:
 
 7. Every image must return `200`. Fix paths before handoff. Then tell the user to open `url`; the arena starts automatically and supports restart.
 
-Battle stats are derived from structure plus pixels: 重量, 攻击, 防御, 稳定, 耐久, and spin. The output is throwaway under `.wld-beyblade/` and never writes back to Figma.
+Battle stats are derived from structure plus pixels: 重量, 攻击, 防御, 稳定, 耐久, and spin. The output is throwaway under `.beyblade/` and never writes back to Figma.
