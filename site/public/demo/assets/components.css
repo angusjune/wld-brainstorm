@@ -1,19 +1,10 @@
 /* =============================================================================
    WLD Design System — Component Styles
    Requires tokens.css to be loaded first.
-   ============================================================================= */
 
-   /* =============================================================================
-   STYLE RESETS
+   This file is part of the product profile, not shared machinery: the class
+   names are generic, but the design decisions are WLD's. See ADR 0004.
    ============================================================================= */
-
-* {
-  -webkit-font-smoothing: antialiased;
-  font-family: system-ui, -apple-system, sans-serif;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
 
 /* =============================================================================
@@ -339,7 +330,7 @@
 
 /* =============================================================================
    PAGE SHELL — Body, Bottom Bar, and Product Navigation
-   Presentation-only WeChat chrome lives in mockup-chrome.css.
+   Presentation-only chrome lives in the active platform pack, not here.
    ============================================================================= */
 
 .wld-page {
@@ -420,6 +411,16 @@
   padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   background: var(--wld-surface);
   border-top: 0.5px solid var(--wld-divider);
+}
+
+/* Inside a presentation phone mockup the bar anchors to the mockup, not the
+   viewport. This rule lives here rather than in assets/phone-mockup.css because
+   a profile may depend on shared machinery, never the other way round. */
+.phone-screen .wld-bottom-bar {
+  position: absolute;
+  left: 0;
+  width: 375px;
+  transform: none;
 }
 
 /* Footer (for home screens — links + disclaimer above tab bar) */

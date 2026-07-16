@@ -1,19 +1,39 @@
-# 微粒贷设计 Brainstorm
+# Brainstorm 设计 Skill
 
-微粒贷设计 Skill，可进行交互式头脑风暴：澄清需求 → 生成多个方案 → 选择某个方案进行细化。适用于从零设计微粒贷界面，或探索已有设计的其他可能性。
+交互式设计头脑风暴：澄清需求 → 生成多个方案 → 选择某个方案进行细化。适用于从零设计界面，或探索已有设计的其他可能性。
 
-## 目录内容
+内置**微粒贷（WLD）产品档案**，开箱即用。换成别的产品，只需重写 `profile/` 一个目录 —— 见下面的「适配其他产品」。
 
-- `SKILL.md`：主流程说明，覆盖三方案头脑风暴、精简、细节校验、反馈迭代、推送 Figma、小程序 Demo 和爆旋陀螺战斗。
-- `assets/`：WLD 设计规范、CSS tokens、组件样式、微信预览 chrome、生产页面模板和产品知识快照。
-- `references/`：方案发散方法、嵌入分支流程、Figma MCP 使用说明。
-- `profile/tools/`：微粒贷借款金额、利息、还款额等细节校验工具（属于产品档案）。
-- `platforms/wechat/prototype/`：微信小程序 Demo 模板、校验脚本、视觉对齐工具，以及可选的微信开发者工具驱动技能包（`references/miniprogram-dev-skill/`，安装 `wechatide` CLI 后可直接打开项目、编译、截图并推送真机预览）。
-- `tools/beyblade/`：爆旋陀螺战斗所需的前端资源。
+## 目录结构
+
+分三层。只有第一层是跟产品绑定的。
+
+**产品档案 `profile/`** —— 换产品时你唯一要重写的目录
+
+- `PROFILE.md`：模板表、路由表、产品铁律、passes、速查表。Step 3 会读它。
+- `profile.json`：脚本读的配置（平台、page class、路径）。
+- `tokens.css`：**唯一的 token 来源**。`components.css`、`DESIGN.md`：组件样式与设计语言。
+- `screens/`：生产页面模板（Ground Truth，直接决定输出质量）。
+- `rules.mjs`：产品 QA 规则（可选，删掉只跑通用检查）。
+- `product-memory.md`、`pm-*-cache/`：产品知识快照（状态机、业务规律、历史坑点）。
+- `passes/`、`tools/`：微粒贷细节校验（借款金额、利息、还款额）。
+- `miniprogram/`：小程序 Demo 模板（`app.wxss` 的 token 段是**生成**的，别手改）。
+
+**平台包 `platforms/`** —— 同平台的产品共用
+
+- `wechat/`：微信预览外壳、小程序工具链与 Prototype 分支。
+- `ios/`：iOS 预览外壳。
+- 每个包用 `platform.json` 声明自己的 chrome、变体和贡献的分支。
+
+**通用机制** —— 不认识任何产品和平台
+
+- `SKILL.md`：主流程（澄清 → 多方案 → 精简 → 质检 → 定稿 → 分支）。
+- `assets/`：预览框架、手机 mockup、reset。
+- `references/`：方案发散方法、嵌入 pass/分支、Figma MCP 说明。
 - `server.cjs`、`helper.js`：本地热更新预览服务。
-- `qa-gate.mjs`：生成页面的质量检查。
-- `quality-benchmark/`：`brainstorm` 输出质量基准，包含固定 prompt、qa-gate fixture 和报告脚本。
-- `package.json`、`scripts/`：可独立运行的维护命令，包括 QA gate、质量基准报告和自测。
+- `qa-gate.mjs`：通用质量检查（产品规则由 `profile/rules.mjs` 提供）。
+- `tools/beyblade/`：爆旋陀螺战斗资源。
+- `quality-benchmark/`、`scripts/`、`package.json`：质量基准、维护命令与自测。
 
 ## 使用 Skill
 
@@ -37,9 +57,9 @@
 
 1. **澄清需求**：与你进行多轮对话，澄清需求。
 2. **启动本地预览服务**：启动 SSE 热更新的本地 Node 服务 (`server.cjs`)，让你可以在浏览器中实时预览界面修改。
-3. **基准模板与产品规则对齐**：读取 `profile/screens/` 的 HTML 模板及 `DESIGN.md` 设计规范。针对核心页面，还会通过 `product-memory.md` 提取关联的业务逻辑和常见设计坑点，确保设计在视觉和逻辑上都不偏离微粒贷产品规范。
-4. **多方案生成与 UI 装配**：依据需求生成 3 种不同方向（交互或视觉）的方案。页面会自动注入微信顶栏和手机外壳样式 (`phone-mockup.css`)，供用户直观对比。
-5. **质检**：在交付设计前，内部调用 **Simplify（精简设计）** 和 **Fix Details（细节校验）** 流程来自我修正冗余元素、数值计算错漏及样式缺陷；若当前环境支持（如安装了 Playwright MCP、Chrome DevTools MCP 或其他浏览器自动化工具），还会自动访问页面并截图，完成真正的视觉 QA 自检与纠错。
+3. **基准模板与产品规则对齐**：先读 `profile/PROFILE.md`（模板表、路由、产品铁律），再读 `profile/screens/` 的 HTML 模板及 `profile/DESIGN.md`。针对核心页面，还会通过 `product-memory.md` 提取关联的业务逻辑和常见设计坑点，确保设计在视觉和逻辑上都不偏离产品规范。
+4. **多方案生成与 UI 装配**：依据需求生成 3 种不同方向（交互或视觉）的方案。页面会自动注入当前平台包的预览外壳和手机 mockup 样式 (`phone-mockup.css`)，供用户直观对比。
+5. **质检**：在交付设计前，内部调用 **Simplify（精简设计）** 以及产品档案声明的 pass（微粒贷档案提供 **Fix Details 细节校验**），自我修正冗余元素、数值计算错漏及样式缺陷；若当前环境支持（如安装了 Playwright MCP、Chrome DevTools MCP 或其他浏览器自动化工具），还会自动访问页面并截图，完成真正的视觉 QA 自检与纠错。
 6. **生成交互式demo或推送至figma**：方案定稿后，可直接通过内部指令将页面 **推送到 Figma 画布**、**生成微信小程序 Demo** 或 **开启爆旋陀螺战斗**。
 
 ## 开发与测试 Skill
@@ -63,7 +83,9 @@ npm run benchmark:report -- quality-benchmark/runs/<new> --compare quality-bench
 本目录内的自测命令：
 
 ```bash
+npm test              # 全部
 npm run test:qa-gate
+npm run test:wxss-tokens      # 小程序 token 段是否与 tokens.css 同步
 npm run test:quality-benchmark
 ```
 
@@ -79,29 +101,28 @@ npm run validate
 
 - 根目录存在 `SKILL.md`。
 - 目录内没有 `.git/`、`node_modules/`、`.env`、`__pycache__/`、`.DS_Store`。
-- `SKILL.md` 和 `references/` 中只引用本目录内文件。
+- `SKILL.md`、产品档案文档和 `references/` 中只引用本目录内文件。
 - 目录体积小于 100MB。
 
 ## 适配其他产品
 
-该 Skill 的底层工作流不仅限于微粒贷（WLD），只需替换核心资产与规则文件，也适配其他产品。
+**重写 `profile/` 一个目录就行**，别的地方基本不用动。详细步骤见 `profile/README.md`。
 
-### 核心替换项
+按重要性排序，前两项决定输出质量：
 
-1. **样式与规范 (`assets/`)**：
-   - 替换 `tokens.css` 和 `components.css` 为新产品的样式组件库。
-   - 修改 `DESIGN.md` 以体现新产品的设计语言和约束。
-2. **生产模板基准 (`profile/screens/`)**：
-   - 清空原微粒贷的页面，放入新产品的核心页面模板（如首页、表单页、详情页等）。
-   - **重要**：这些模板是模型生成界面的基准（Ground Truth），直接决定了模型的输出结构质量。
-3. **业务知识库 (`profile/product-memory.md` 及 `pm-memory-cache/`)**：
-   - 重新梳理新界面的业务规则（Patterns）与易错陷阱（Pitfalls）。如果不需要，可将相关内容清空。
-4. **`SKILL.md`**：
-   - 将文案中的 "WLD" 和微粒贷替换为新产品。
-   - **重要** `Step 3: Read Production Templates` 里的表格，使之与你新放入的页面模板一一对应。
+1. `profile/screens/` —— 换成你产品的生产界面模板。模型是「照着模板改」而不是「凭空生成」，这批模板直接决定输出质量。
+2. `profile/tokens.css` —— 换成你的色板、字体、间距。这是唯一的 token 来源。
+3. `profile/PROFILE.md` —— 重写模板表、路由表、产品铁律。
+4. `profile/profile.json` —— 改 `product`、`platform`、`pageClass`。
+5. 其余（`components.css`、`rules.mjs`、产品知识快照、小程序模板）都可以边用边补，删掉也能跑。
 
-### 适配时的注意事项
+改完跑 `npm run validate && npm test`。
 
-- **提供纯净的参考模板**：不要喂给大模型随意拼凑的页面。请尽量从真实环境或 Figma Dev Mode 中提取结构完整、且使用全局 CSS Class 的 HTML 文件。
-- **避免硬编码样式**：模型会模仿模板的写法，如果你的模板里有大量的内联 `<style>` 或硬编码颜色，生成的代码也会一样混乱，请尽量将它们抽象到 `tokens.css` 中。
-- **同步调整 QA**：`qa-gate.mjs` 中内置了与微粒贷强绑定的自动化检查规则（例如必须存在微信假顶栏 `preview-chrome`、背景色必须是 `#F5F5F5` 等）。在适配新产品时必须同步删除或修改这些检查，否则会自动拦截生成的正常界面。
+### 几个要点
+
+- **`SKILL.md` 不用改。** 它只写方法，不认识任何产品。只有 frontmatter 里的 `description` 两行需要改成你的产品，好让 agent 认得出来。
+- **不用动 `qa-gate.mjs`。** 它只跑通用检查；产品规则在 `profile/rules.mjs` 里，是可选的。删掉 `rules.mjs`，新产品的界面照样过检 —— 不会被上一个产品的规则拦下来。
+- **class 前缀是 profile 自己的。** `wld-` 只是微粒贷的前缀，通用机制里没有任何地方写死它，换成 `acme-` 不会有别的东西跟着坏。
+- **不是微信？** 把 `profile.json` 的 `platform` 改成 `ios`，预览外壳就跟着换，12 个页面模板一行都不用改。
+- **提供纯净的参考模板**：不要喂给大模型随意拼凑的页面。尽量从真实环境或 Figma Dev Mode 中提取结构完整、且使用全局 CSS class 的 HTML。
+- **避免硬编码样式**：模型会模仿模板的写法。模板里如果全是内联 `<style>` 和硬编码颜色，生成的代码也会一样混乱 —— 尽量抽到 `tokens.css`。

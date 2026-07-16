@@ -142,63 +142,25 @@
   --wld-radio-size: 20px;
   --wld-radio-size-sm: 16px;
   --wld-circle-btn-size: 84px;
+
+  /* ===== SHARED-MACHINERY HOOKS =====
+     Slots declared by shared machinery (the presentation frame, the phone
+     mockup) and the platform pack, filled here from this profile's own tokens.
+     This is the one-way contract: shared machinery never names a product, and a
+     profile that leaves these unset just gets neutral defaults.
+
+     Every value below is a reference, never a literal — tokens.css above is the
+     single source of truth for the palette. */
+
+  --brand-accent: var(--wld-theme-500);
+  --brand-accent-hover: var(--wld-theme-600);
+  --brand-accent-hover-dark: var(--wld-theme-300);
+  --brand-accent-text: var(--wld-text-on-theme);
+  --brand-success: var(--wld-success-500);
+  --brand-warning: var(--wld-emphasis-500);
+  --brand-error: var(--wld-danger-500);
+  --brand-selected-bg: var(--wld-theme-100);
+  --brand-selected-bg-dark: rgba(255, 209, 67, 0.15);
+  --phone-screen-bg: var(--wld-bg);
+  --chrome-navbar-bg: var(--wld-surface);
 }
-
-
-/* =============================================================================
-   Tailwind Config Extension
-   Add this to your tailwind.config.js → theme.extend
-   =============================================================================
-
-module.exports = {
-  theme: {
-    extend: {
-      colors: {
-        wld: {
-          theme: {
-            100: '#FFF9D9',
-            300: '#FFEF7E',
-            500: '#FFD143',
-            550: '#F2BD2A',
-            600: '#DBAE31',
-            700: '#B78B22',
-          },
-          emphasis: { 500: '#F7852C' },
-          info: { 100: '#E0EDFF', 500: '#5C8EE6', 700: '#3153B7' },
-          danger: { 100: '#FFE9DA', 500: '#FF5A4F', 600: '#E63A3A', 700: '#B72736' },
-          success: { 100: '#F3FCCD', 500: '#98E059', 700: '#56A12B' },
-          bg: '#F5F5F5',
-          section: '#FAFAFA',
-          surface: '#FFFFFF',
-          header: '#071724',
-        },
-      },
-      fontFamily: {
-        wld: ['-apple-system', 'BlinkMacSystemFont', '"PingFang SC"', '"Helvetica Neue"', '"Noto Sans CJK SC"', 'sans-serif'],
-        'wld-number': ['"WeChat Sans SS"', '"DIN Alternate"', '-apple-system', 'sans-serif'],
-      },
-      fontSize: {
-        'wld-numbers': ['44px', { lineHeight: '1.2', fontWeight: '500' }],
-        'wld-display': ['24px', { lineHeight: '1.4', fontWeight: '600' }],
-        'wld-h1': ['20px', { lineHeight: '1.4', fontWeight: '600' }],
-        'wld-h2': ['18px', { lineHeight: '1.5', fontWeight: '600' }],
-        'wld-body1': ['16px', { lineHeight: '1.5', fontWeight: '400' }],
-        'wld-body2': ['14px', { lineHeight: '1.5', fontWeight: '400' }],
-        'wld-caption': ['12px', { lineHeight: '1.5', fontWeight: '400' }],
-      },
-      borderRadius: {
-        'wld-pill': '999px',
-        'wld-card': '12px',
-        'wld-icon': '20px',
-      },
-      spacing: {
-        'wld-page': '20px',
-        'wld-list': '30px',
-        'wld-card': '20px',
-        'wld-gap': '12px',
-      },
-    },
-  },
-}
-
-============================================================================= */
