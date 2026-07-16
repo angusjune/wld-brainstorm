@@ -5,7 +5,7 @@
  *
  * Scores every case in a benchmark run with the brainstorm QA gate and
  * renders each screen through the REAL brainstorm server (so the
- * <wld-wechat-chrome> expansion and frame styles match what users see),
+ * <preview-chrome> expansion and frame styles match what users see),
  * then writes report.json + report.md into the run directory.
  *
  * Usage from the brainstorm skill directory:

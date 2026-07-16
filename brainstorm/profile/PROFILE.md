@@ -82,8 +82,8 @@ When content ends high on the screen, the CTA sits right after it. A CTA pinned 
 Use the placeholder from the production template:
 
 ```html
-<wld-wechat-chrome variant="home" title="微粒贷"></wld-wechat-chrome>
-<wld-wechat-chrome variant="inner" title="提前还清借款"></wld-wechat-chrome>
+<preview-chrome variant="home" title="微粒贷"></preview-chrome>
+<preview-chrome variant="inner" title="提前还清借款"></preview-chrome>
 ```
 
 Never hand-write status bar, navbar, capsule, or back-arrow markup. The server expands the placeholder. This chrome is presentation only — it is not WLD production code.
@@ -135,7 +135,7 @@ Theme: #FFD143 | Text: rgba(0,0,0,0.9)
 Bg: #F5F5F5 (inner pages) | #FFFFFF (home screens)
 Emphasis: #F7852C | Promo text: #EE8A27 | Info: #5C8EE6 | Danger: #FF5A4F
 Font: var(--wld-font-family) | Numbers: var(--wld-font-number) 44px weight 500
-Buttons: border-radius 999px | Preview chrome: <wld-wechat-chrome> expands to 88px WeChat navbar
+Buttons: border-radius 999px | Preview chrome: <preview-chrome> expands to 88px WeChat navbar
 Page: 375x812 | Cards: white, 12px radius
 ```
 

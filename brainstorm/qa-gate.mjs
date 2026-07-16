@@ -20,40 +20,32 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const SEVERITY = {
+// Universal checks only — these hold for any product on any platform. Product
+// laws (urgency copy, button shape, background rules …) live in the profile's
+// optional rules.mjs, so a fresh profile is not rejected on day one for failing
+// to look like the profile that happens to ship here. See ADR 0005.
+const CORE_SEVERITY = {
   'missing-stylesheet': 'error', // required design-system stylesheets not linked
   'no-phone-mockup': 'error', // screen not wrapped in .phone-mockup/.phone-screen
-  'no-wld-page': 'error', // no .wld-page at all — invented outside the design system
+  'no-page-class': 'error', // no page class at all — invented outside the design system
   'custom-js': 'error', // screens must be static (unless the user asked for JS)
-  'no-wechat-chrome': 'error', // missing <wld-wechat-chrome> placeholder
-  'handmade-chrome': 'error', // hand-built navbar/capsule markup
-  'bg-mismatch': 'error', // home/inner background rules violated
-  'urgency-copy': 'error', // pressure language is banned in WLD
-  'generic-font': 'error', // font-family must go through var(--wld-font-*)
-  'token-color': 'error', // hardcoded literal that equals a --wld-* token value
-  'white-on-gold': 'error', // text on gold is always rgba(0,0,0,0.9)
-  'square-button': 'error', // wld buttons are always pill-shaped
+  'no-chrome': 'error', // missing <preview-chrome> placeholder
+  'handmade-chrome': 'error', // hand-built chrome markup
+  'generic-font': 'error', // font-family must go through a token
+  'token-color': 'error', // hardcoded literal that equals a token value
   'manual-frame-styles': 'warning', // server injects frame styles automatically
-  'multi-gold-cta': 'warning', // >1 gold CTA (dual-offer home is a known exception)
-  'nontoken-color': 'warning', // off-palette literal (bank logos may be legitimate)
-  'thick-border': 'warning', // borders >= 2px are off-system
-  'emoji': 'warning', // WLD does not use emoji
-  'amount-weight': 'warning', // 44px amounts use weight 500, not 600
-  'thousands-separator': 'warning', // production writes ¥60000, never ¥60,000
+  'nontoken-color': 'warning', // off-palette literal (brand logos may be legitimate)
+  'emoji': 'warning', // prefer the profile's icon set over emoji
 };
 
-const URGENCY_RE = /立即领取|秒杀|限时抢|马上抢|仅剩|手慢无|倒计时|抢购/g;
-const WHITE_VALUE_RE = /#fff\b|#ffffff\b|(?<![-\w])white(?![-\w])|rgba?\(\s*255\s*,\s*255\s*,\s*255/i;
-const GOLD_BG_RE = /background[^;:]*:\s*[^;]*(#ffd143|var\(--wld-theme-500\)|var\(--wld-btn-primary-bg\))/i;
-const WHITE_BG_RE = /background[^;:]*:\s*[^;]*(var\(--wld-surface\)|#fff\b|#ffffff\b|(?<![-\w])white(?![-\w])|rgba?\(\s*255\s*,\s*255\s*,\s*255)/i;
 const COLOR_LITERAL_RE = /#[0-9a-fA-F]{3,8}\b|rgba?\([^)]*\)/g;
-const PILL_RADIUS_RE = /^(999px|50%|var\(--wld-radius-pill\))$/;
 // Production uses plain ✓/arrows in SVGs; only proper pictographs are flagged.
 const EMOJI_ALLOWLIST = new Set(['✓', '✔', '✕', '✗', '→', '←', '·', '↑', '↓']);
+const CHROME_TAG_RE = /<preview-chrome\b[^>]*>/i;
 
 // ---- Small text utilities (conventions shared with scripts/validate-plugin.mjs) ----
 
@@ -89,6 +81,29 @@ function normalizeColor(value) {
 
 function isColorLiteral(value) {
   return /^#[0-9a-f]{3,8}$/i.test(value) || /^rgba?\([^)]*\)$/i.test(value);
+}
+
+// ---- Profile / platform / rule-pack loading ----
+
+function readJson(file, fallback) {
+  try {
+    return JSON.parse(fs.readFileSync(file, 'utf8'));
+  } catch {
+    return fallback;
+  }
+}
+
+// A profile without rules.mjs is valid and passes the core checks — that is the
+// point: a forking team's first run must not be blocked by another product's
+// laws. See ADR 0005.
+async function loadProfileRules(profileDir, profile) {
+  const rel = profile.rules;
+  if (!rel) return { severity: {}, rules: [] };
+  const file = path.resolve(profileDir, rel);
+  if (!fs.existsSync(file)) return { severity: {}, rules: [] };
+  const mod = await import(pathToFileURL(file).href);
+  const pack = mod.default || mod;
+  return { severity: pack.severity || {}, rules: pack.rules || [] };
 }
 
 // ---- Token map from tokens.css ----
@@ -162,10 +177,10 @@ function elementsWithClass(cleaned, className) {
   return found;
 }
 
-// ---- Screen segmentation (one segment per .wld-page) ----
+// ---- Screen segmentation (one segment per page-class element) ----
 
-function segmentScreens(cleaned) {
-  const pages = elementsWithClass(cleaned, 'wld-page');
+function segmentScreens(cleaned, pageClass) {
+  const pages = elementsWithClass(cleaned, pageClass);
   return pages.map((page, i) => ({
     index: i + 1,
     start: page.start,
@@ -174,44 +189,52 @@ function segmentScreens(cleaned) {
   }));
 }
 
-function findBorrowTab(segmentText) {
-  const itemRe = /<(button|div)\b[^>]*class\s*=\s*"([^"]*\bwld-tabbar-item\b[^"]*)"[^>]*>/g;
-  const items = [];
-  let match;
-  while ((match = itemRe.exec(segmentText)) !== null) {
-    items.push({ cls: match[2], start: match.index });
-  }
-  for (let i = 0; i < items.length; i += 1) {
-    const end = i + 1 < items.length ? items[i + 1].start : Math.min(items[i].start + 400, segmentText.length);
-    if (segmentText.slice(items[i].start, end).includes('借钱')) return items[i];
-  }
-  return null;
-}
-
 // ---- Per-file check runner ----
 
-function checkFile(file, tokenMap) {
+function checkFile(file, env) {
   const raw = fs.readFileSync(file, 'utf8');
   const cleaned = stripHtmlComments(raw);
   const findings = [];
+  const { tokenMap, profile, platform, rulePack, severity } = env;
+  const pageClass = profile.pageClass || 'page';
   const add = (code, message, index) => {
-    findings.push({ code, severity: SEVERITY[code], message, line: lineNumberAt(cleaned, index ?? 0) });
+    findings.push({ code, severity: severity[code] || 'warning', message, line: lineNumberAt(cleaned, index ?? 0) });
   };
 
   const isFullDoc = /<html[\s>]/i.test(cleaned);
   const contexts = extractCssContexts(cleaned);
-  const screens = segmentScreens(cleaned);
+  const screens = segmentScreens(cleaned, pageClass);
+
+  // The API handed to profile rules. Everything a rule needs comes through here,
+  // so a rule pack never reaches into the engine's internals.
+  const api = {
+    add,
+    profile,
+    platform,
+    tokenMap,
+    pageClass,
+    contexts,
+    screens,
+    text: cleaned,
+    utils: { elementsWithClass, maskNonConsumingColors, normalizeColor, isColorLiteral },
+  };
+  const rulesIn = (scope) => rulePack.rules.filter((r) => r.scope === scope);
 
   // -- Shell checks (generated page-template documents only) --
   if (isFullDoc) {
-    for (const sheet of ['tokens.css', 'components.css', 'phone-mockup.css']) {
+    const required = [
+      path.basename(profile.tokens || 'tokens.css'),
+      path.basename(profile.components || 'components.css'),
+      'phone-mockup.css',
+    ];
+    for (const sheet of required) {
       if (!new RegExp(`<link[^>]*href\\s*=\\s*"[^"]*${sheet}`, 'i').test(cleaned)) {
         add('missing-stylesheet', `required stylesheet ${sheet} is not linked`);
       }
     }
     const phoneScreenCount = elementsWithClass(cleaned, 'phone-screen').length;
     if (screens.length > 0 && phoneScreenCount < screens.length) {
-      add('no-phone-mockup', `${screens.length} .wld-page screen(s) but only ${phoneScreenCount} .phone-screen wrapper(s) — always wrap screens in .phone-mockup > .phone-screen`, screens[0].start);
+      add('no-phone-mockup', `${screens.length} .${pageClass} screen(s) but only ${phoneScreenCount} .phone-screen wrapper(s) — always wrap screens in .phone-mockup > .phone-screen`, screens[0].start);
     }
   }
 
@@ -228,55 +251,32 @@ function checkFile(file, tokenMap) {
   }
 
   if (screens.length === 0) {
-    add('no-wld-page', 'no .wld-page found — screen was invented outside the WLD design system; copy from profile/screens/ templates');
+    add('no-page-class', `no .${pageClass} found — screen was invented outside the design system; copy from ${profile.screens || './screens'} templates`);
   }
 
   // -- Per-screen checks --
+  // Chrome is only required when the active platform pack actually has any; a
+  // chrome-less platform must not fail every screen.
+  const platformHasChrome = Boolean(platform && platform.variants && Object.keys(platform.variants).length);
   for (const screen of screens) {
-    const chromeMatch = screen.text.match(/<wld-wechat-chrome\b[^>]*>/i);
-    if (!chromeMatch) {
-      add('no-wechat-chrome', `screen ${screen.index}: missing <wld-wechat-chrome> placeholder`, screen.start);
+    if (platformHasChrome && !CHROME_TAG_RE.test(screen.text)) {
+      add('no-chrome', `screen ${screen.index}: missing <preview-chrome> placeholder`, screen.start);
     }
-    const handmade = screen.text.match(/class\s*=\s*"[^"]*\bwld-(navbar|capsule)/);
+    const handmade = screen.text.match(/class\s*=\s*"[^"]*(chrome-(?:navbar|capsule|statusbar|titlebar))/);
     if (handmade) {
-      add('handmade-chrome', `screen ${screen.index}: hand-built WeChat chrome markup (.wld-${handmade[1]}) — use the <wld-wechat-chrome> placeholder instead`, screen.start + handmade.index);
+      add('handmade-chrome', `screen ${screen.index}: hand-built chrome markup (.${handmade[1]}) — use the <preview-chrome> placeholder instead`, screen.start + handmade.index);
     }
-
-    const goldCtas = elementsWithClass(screen.text, 'wld-btn-primary').length
-      + elementsWithClass(screen.text, 'wld-btn-circle').length;
-    if (goldCtas > 1) {
-      add('multi-gold-cta', `screen ${screen.index}: ${goldCtas} gold CTAs — one primary gold action per screen (dual-offer home cards are the known exception)`, screen.start);
-    }
-
-    if (chromeMatch) {
-      const variant = /(?:variant|type)\s*=\s*"home"/i.test(chromeMatch[0]) ? 'home' : 'inner';
-      const borrowTab = findBorrowTab(screen.text);
-      const pageForcedWhite = WHITE_BG_RE.test(screen.openTag)
-        || contexts.some((ctx) => ctx.selector && /(^|[\s,])[.#][\w-]*wld-page/.test(ctx.selector) && WHITE_BG_RE.test(ctx.body));
-      if (variant === 'home' && borrowTab && !borrowTab.cls.includes('--inactive')) {
-        if (!pageForcedWhite && !WHITE_BG_RE.test(screen.text)) {
-          add('bg-mismatch', `screen ${screen.index}: borrow-tab home screen without a white background — home screens use #FFFFFF (var(--wld-surface))`, screen.start);
-        }
-      } else if (variant === 'inner' && pageForcedWhite) {
-        add('bg-mismatch', `screen ${screen.index}: inner screen forces white on .wld-page — inner pages keep the default #F5F5F5`, screen.start);
-      }
-    }
+    for (const rule of rulesIn('screen')) rule.run(screen, api);
   }
+
+  for (const rule of rulesIn('document')) rule.run({ text: cleaned, screens, contexts }, api);
 
   // -- Copy / text checks (whole document) --
   let match;
-  URGENCY_RE.lastIndex = 0;
-  while ((match = URGENCY_RE.exec(cleaned)) !== null) {
-    add('urgency-copy', `banned urgency copy "${match[0]}" — WLD never pressures borrowing`, match.index);
-  }
   const emojiRe = /\p{Extended_Pictographic}/gu;
   while ((match = emojiRe.exec(cleaned)) !== null) {
     if (EMOJI_ALLOWLIST.has(match[0])) continue;
-    add('emoji', `emoji "${match[0]}" — WLD does not use emoji; use the SVG icon set`, match.index);
-  }
-  const separatorRe = /¥\s?\d{1,3}(?:,\d{3})+(?:\.\d+)?/g;
-  while ((match = separatorRe.exec(cleaned)) !== null) {
-    add('thousands-separator', `"${match[0]}" — production amounts never use thousands separators (write ${match[0].replace(/,/g, '')})`, match.index);
+    add('emoji', `emoji "${match[0]}" — prefer the profile's icon set`, match.index);
   }
 
   // -- CSS-context checks --
@@ -289,42 +289,19 @@ function checkFile(file, tokenMap) {
       if (tokens) {
         add('token-color', `hardcodes ${match[0]}; use var(${tokens.join(' or ')})`, ctx.start + match.index);
       } else {
-        add('nontoken-color', `off-palette color ${match[0]} — no matching --wld-* token`, ctx.start + match.index);
+        add('nontoken-color', `off-palette color ${match[0]} — no matching token in ${profile.tokens || 'tokens.css'}`, ctx.start + match.index);
       }
     }
 
+    // Prefix-agnostic: any token reference is fine, a bare font stack is not.
     const fontRe = /font-family\s*:\s*([^;"}]+)/gi;
     while ((match = fontRe.exec(ctx.body)) !== null) {
-      if (!match[1].includes('var(--wld-font')) {
-        add('generic-font', `font-family "${match[1].trim()}" — use var(--wld-font-family) or var(--wld-font-number)`, ctx.start + match.index);
+      if (!/var\(\s*--/.test(match[1])) {
+        add('generic-font', `font-family "${match[1].trim()}" — use a font token from ${profile.tokens || 'tokens.css'}`, ctx.start + match.index);
       }
     }
 
-    const borderRe = /(?:^|[;{\s])border(?:-(?:top|right|bottom|left))?(?:-width)?\s*:\s*(\d+(?:\.\d+)?)px/gi;
-    while ((match = borderRe.exec(ctx.body)) !== null) {
-      if (parseFloat(match[1]) >= 2) {
-        add('thick-border', `${match[1]}px border — WLD avoids borders >= 2px`, ctx.start + match.index);
-      }
-    }
-
-    if (/(font-size\s*:\s*44px|var\(--wld-text-numbers\))/.test(ctx.body) && /font-weight\s*:\s*600/.test(ctx.body)) {
-      add('amount-weight', '44px amount at font-weight 600 — large amounts use weight 500', ctx.start);
-    }
-
-    const isGoldElement = ctx.element && /\bwld-btn-(primary|circle)\b/.test(ctx.element.cls);
-    const colorMatch = ctx.body.match(/(?:^|[;{\s])color\s*:\s*([^;}]+)/i);
-    const hasWhiteText = colorMatch && WHITE_VALUE_RE.test(colorMatch[1]);
-    if (hasWhiteText && (isGoldElement || GOLD_BG_RE.test(ctx.body))) {
-      add('white-on-gold', 'white text on a gold surface — text on gold is always rgba(0,0,0,0.9)', ctx.start);
-    }
-
-    const isButtonCtx = (ctx.element && /\bwld-btn\b/.test(ctx.element.cls)) || (ctx.selector && /wld-btn/.test(ctx.selector));
-    if (isButtonCtx) {
-      const radiusMatch = ctx.body.match(/border-radius\s*:\s*([^;}]+)/i);
-      if (radiusMatch && !PILL_RADIUS_RE.test(radiusMatch[1].trim())) {
-        add('square-button', `button border-radius ${radiusMatch[1].trim()} — WLD buttons are always pill-shaped (999px)`, ctx.start);
-      }
-    }
+    for (const rule of rulesIn('css')) rule.run(ctx, api);
   }
 
   findings.sort((a, b) => a.line - b.line);
@@ -347,7 +324,7 @@ function collectHtmlFiles(target) {
     .sort();
 }
 
-function main() {
+async function main() {
   const argv = process.argv.slice(2);
   const targets = [];
   let json = false;
@@ -363,9 +340,21 @@ function main() {
     return;
   }
 
-  const tokenMap = buildTokenValueMap(profileDir);
+  const profile = readJson(path.join(profileDir, 'profile.json'), {});
+  const platform = profile.platform
+    ? readJson(path.join(__dirname, 'platforms', profile.platform, 'platform.json'), null)
+    : null;
+  const rulePack = await loadProfileRules(profileDir, profile);
+  const env = {
+    tokenMap: buildTokenValueMap(profileDir),
+    profile,
+    platform,
+    rulePack,
+    severity: { ...CORE_SEVERITY, ...rulePack.severity },
+  };
+
   const files = targets.flatMap(collectHtmlFiles);
-  const results = files.map((file) => checkFile(file, tokenMap));
+  const results = files.map((file) => checkFile(file, env));
   const errors = results.reduce((n, r) => n + r.errors, 0);
   const warnings = results.reduce((n, r) => n + r.warnings, 0);
 

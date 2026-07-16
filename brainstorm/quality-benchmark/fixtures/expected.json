@@ -8,7 +8,7 @@
     "generic-font",
     "handmade-chrome",
     "multi-gold-cta",
-    "no-wechat-chrome",
+    "no-chrome",
     "nontoken-color",
     "square-button",
     "thick-border",
@@ -18,5 +18,5 @@
     "white-on-gold"
   ],
   "bad-bg.html": ["bg-mismatch"],
-  "off-system.html": ["no-wld-page"]
+  "off-system.html": ["no-page-class"]
 }

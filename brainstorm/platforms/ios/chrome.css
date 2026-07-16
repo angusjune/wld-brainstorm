@@ -1,0 +1,147 @@
+/* =============================================================================
+   iOS — Presentation Chrome
+
+   Part of the `ios` platform pack. Belongs to the platform, not to any product:
+   every iOS app has this same status bar, navigation bar and home indicator,
+   whatever the product's design system looks like.
+
+   Presentation only — this reproduces iOS's shell around a screen; it is never
+   production code. Write <preview-chrome variant="home|inner" title="…"> in
+   brainstorm HTML and server.cjs expands it from this pack's snippets/.
+
+   Self-contained by design: it borrows no token from the product profile, so
+   swapping profile/ cannot break the chrome. A profile may optionally override
+   --chrome-navbar-bg.
+
+   Note the shape difference from the wechat pack, which is the point of having
+   two: iOS has no capsule, its nav bar is 44px (not 88px including status), it
+   uses a text back-label rather than a bare chevron, and it adds a bottom home
+   indicator that WeChat has no equivalent for. Anything in shared machinery
+   that assumed WeChat's shape had to become configurable to support this.
+   ============================================================================= */
+
+:root {
+  --chrome-black: #000000;
+  --chrome-tint: #007AFF;             /* iOS system blue — back button, actions */
+  --chrome-separator: rgba(60, 60, 67, 0.29);
+  --chrome-home-indicator: #000000;
+}
+
+/* --- Status bar (44px on notched devices) --- */
+.chrome-statusbar {
+  height: 44px;
+  padding: 0 24px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-bottom: 2px;
+  color: var(--chrome-black);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  font-variant-numeric: tabular-nums;
+}
+
+.chrome-statusbar-time {
+  letter-spacing: -0.2px;
+}
+
+.chrome-statusbar-icons {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.chrome-statusbar-icons svg {
+  display: block;
+  color: var(--chrome-black);
+}
+
+/* --- Navigation bar (44px, sits below the status bar) --- */
+.chrome-navbar {
+  background: var(--chrome-navbar-bg, #FFFFFF);
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.chrome-titlebar {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 0 8px;
+  border-bottom: 0.33px solid var(--chrome-separator);
+}
+
+.chrome-navbar--home .chrome-titlebar {
+  border-bottom: none;
+}
+
+/* Large title, used by root screens */
+.chrome-navbar--home .chrome-largetitle {
+  display: block;
+  padding: 0 16px 8px;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: var(--chrome-black);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+}
+
+.chrome-largetitle {
+  display: none;
+}
+
+.chrome-navbar-back {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0 4px;
+  cursor: pointer;
+  color: var(--chrome-tint);
+  font-size: 17px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+}
+
+.chrome-navbar-back svg {
+  width: 12px;
+  height: 20px;
+  display: block;
+}
+
+.chrome-navbar--home .chrome-navbar-back {
+  visibility: hidden;
+}
+
+.chrome-navbar-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--chrome-black);
+  white-space: nowrap;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+}
+
+.chrome-navbar--home .chrome-navbar-title {
+  display: none;
+}
+
+/* --- Home indicator (bottom) --- */
+.chrome-home-indicator {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 134px;
+  height: 5px;
+  border-radius: 100px;
+  background: var(--chrome-home-indicator);
+  opacity: 0.9;
+  z-index: 20;
+  pointer-events: none;
+}

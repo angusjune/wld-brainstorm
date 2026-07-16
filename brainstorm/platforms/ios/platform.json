@@ -1,0 +1,12 @@
+{
+  "name": "ios",
+  "displayName": "iOS",
+  "chrome": "./chrome.css",
+  "chromeHeight": "88px",
+  "defaultVariant": "inner",
+  "variants": {
+    "home": "./snippets/chrome-home.html",
+    "inner": "./snippets/chrome-inner.html"
+  },
+  "branches": []
+}

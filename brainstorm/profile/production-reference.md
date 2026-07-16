@@ -10,7 +10,7 @@ Current app state and terminology. The app is called **微粒贷 (Weilidai / WeB
 
 2-tab bottom navigation: 借钱 (Borrow) and 我的 (My Account). Tab bar: 51px, frosted white bg (`rgba(251,251,251,0.85)`), 0.5px top border.
 
-Top of every HTML mockup screen: **presentation-only WeChat mini-program chrome** — status bar (44px) + title bar (44px) = 88px. Title centered ("微粒贷"), capsule button (···⊙) right. Inner pages: back arrow left. In brainstorm HTML, use `<wld-wechat-chrome>` so the server expands the shared snippet; do not hand-write this chrome as production UI.
+Top of every HTML mockup screen: **presentation-only WeChat mini-program chrome** — status bar (44px) + title bar (44px) = 88px. Title centered ("微粒贷"), capsule button (···⊙) right. Inner pages: back arrow left. In brainstorm HTML, use `<preview-chrome>` so the server expands the shared snippet; do not hand-write this chrome as production UI.
 
 ---
 
@@ -126,7 +126,7 @@ Same as Screen 1 + promotional banner below circle button:
 
 | Component | Usage | Details |
 |-----------|-------|---------|
-| **Preview Chrome** | Every HTML mockup screen | `<wld-wechat-chrome>` expands to 88px WeChat chrome; presentation-only |
+| **Preview Chrome** | Every HTML mockup screen | `<preview-chrome>` expands to 88px WeChat chrome; presentation-only |
 | **Tab Bar** | Home screens only | 2 tabs: 借钱 (active) + 我的 (inactive), 51px |
 | **Interest Rate Bar** | Home screens | 30px, centered, 12px secondary, optional orange tag |
 | **Circle Button** | Home screens (借钱) | 84px gold circle, 18px Semibold text; Amount input uses a full-width gold pill 下一步 instead |

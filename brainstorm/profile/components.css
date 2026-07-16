@@ -330,7 +330,7 @@
 
 /* =============================================================================
    PAGE SHELL — Body, Bottom Bar, and Product Navigation
-   Presentation-only WeChat chrome lives in mockup-chrome.css.
+   Presentation-only chrome lives in the active platform pack, not here.
    ============================================================================= */
 
 .wld-page {

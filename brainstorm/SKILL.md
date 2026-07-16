@@ -22,12 +22,15 @@ Resolve this skill directory as `skillDir`. Every path below is relative to `ski
 - `production-reference.md` — Current app screens, structure, and terminology
 - `rules.mjs` — Optional product QA rules loaded by `qa-gate.mjs`
 
-**Shared machinery** (in `assets/`) — names no product:
+**Platform packs** (in `platforms/`) — the surface's furniture, shared by any product on it. The profile's `platform` field selects exactly one:
+- `wechat/` — WeChat Mini Program: status bar, 88px navbar, capsule; contributes the Prototype branch
+- `ios/` — iOS: status bar, 44px nav bar, home indicator
+- Each pack's `platform.json` declares its chrome stylesheet, its chrome variants, and any branches it contributes.
+
+**Shared machinery** (in `assets/`) — names no product and no platform:
 - `reset.css` — The only style rule belonging to no product (auto-injected by the server)
-- `mockup-chrome.css` — Presentation-only WeChat status/navbar/capsule chrome
 - `phone-mockup.css` — iPhone frame + gallery layout for presentations
 - `frame-template.html` — Source for frame styles (auto-injected by the server into every served HTML page). Do NOT copy this file directly.
-- `snippets/wechat-chrome-home.html`, `snippets/wechat-chrome-inner.html` — Server-expanded preview chrome snippets
 
 The profile's screen table lists every production template on disk, and `npm run validate` checks the two against each other in both directions.
 
@@ -71,7 +74,7 @@ The profile's screen table lists every production template on disk, and `npm run
   <meta charset="UTF-8">
   <link rel="stylesheet" href="/profile/tokens.css">
   <link rel="stylesheet" href="/profile/components.css">
-  <link rel="stylesheet" href="/assets/mockup-chrome.css">
+  <link rel="stylesheet" href="/platform/chrome.css">
   <link rel="stylesheet" href="/assets/phone-mockup.css">
 </head>
 <body>
@@ -89,7 +92,9 @@ The profile's screen table lists every production template on disk, and `npm run
 </html>
 ```
 
-Two URL prefixes, mapped by the server: `/profile/` is the product profile (tokens, components, icons) and `/assets/` is shared machinery. Screens never name the product directory, so swapping `profile/` needs no screen edits. The server also injects `reset.css`, frame styles and `helper.js` — do not link or add those yourself.
+Three URL prefixes, mapped by the server: `/profile/` is the product profile, `/platform/` is the active platform pack, and `/assets/` is shared machinery. Screens name neither the product nor the platform by identity, so swapping either needs no screen edits. The server also injects `reset.css`, the platform's chrome stylesheet, frame styles and `helper.js` — do not link or add those yourself.
+
+**Preview chrome** is always written as `<preview-chrome variant="…" title="…">`. The server expands it using the active platform pack; which variants exist is the pack's business, and the profile documents which to use where.
 
 **File naming:** Semantic names: `solutions.html`, `home.html`, `detail.html`. Iterations: `home-v2.html`. Never reuse filenames.
 

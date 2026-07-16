@@ -34,16 +34,8 @@ const SCREEN_DIR = path.join(SESSION_DIR, 'screens');
 const STATE_DIR = path.join(SESSION_DIR, 'state');
 const ASSETS_DIR = path.resolve(__dirname, 'assets');
 const PROFILE_DIR = path.resolve(__dirname, 'profile');
-const SNIPPETS_DIR = path.join(ASSETS_DIR, 'snippets');
+const PLATFORMS_DIR = path.resolve(__dirname, 'platforms');
 const HELPER_PATH = path.join(__dirname, 'helper.js');
-
-// URL prefix -> directory. `/assets/` is shared machinery; `/profile/` is the
-// product profile (tokens, components, icons). Screens reference these URLs, so
-// a fork that swaps profile/ needs no edits to any screen.
-const STATIC_MOUNTS = [
-  { prefix: '/assets/', dir: ASSETS_DIR },
-  { prefix: '/profile/', dir: PROFILE_DIR },
-];
 
 fs.mkdirSync(SCREEN_DIR, { recursive: true });
 fs.mkdirSync(STATE_DIR, { recursive: true });
@@ -94,19 +86,55 @@ try {
   }
 } catch {}
 
-// --- Presentation-only WeChat chrome snippets ---
-function readSnippet(name) {
+// --- Presentation-only chrome, resolved from the active platform pack ---
+// Nothing here knows what WeChat is: the tag is always <preview-chrome>, and
+// which variants exist and what they render comes from the pack the profile
+// selects. Swapping platform is a profile.json edit, not a code change.
+const CHROME_TAG = 'preview-chrome';
+
+function readJson(file, fallback) {
   try {
-    return fs.readFileSync(path.join(SNIPPETS_DIR, name), 'utf8');
+    return JSON.parse(fs.readFileSync(file, 'utf8'));
   } catch {
-    return '';
+    return fallback;
   }
 }
 
-const WECHAT_CHROME_SNIPPETS = {
-  home: readSnippet('wechat-chrome-home.html'),
-  inner: readSnippet('wechat-chrome-inner.html'),
-};
+const PROFILE = readJson(path.join(PROFILE_DIR, 'profile.json'), {});
+const PLATFORM_NAME = PROFILE.platform || null;
+const PLATFORM_DIR = PLATFORM_NAME ? path.join(PLATFORMS_DIR, PLATFORM_NAME) : null;
+const PLATFORM = PLATFORM_DIR ? readJson(path.join(PLATFORM_DIR, 'platform.json'), null) : null;
+
+if (PLATFORM_NAME && !PLATFORM) {
+  console.error(`Unknown platform "${PLATFORM_NAME}" — no platforms/${PLATFORM_NAME}/platform.json. Check profile/profile.json.`);
+  process.exit(1);
+}
+
+// variant name -> rendered snippet, loaded from the active pack.
+const CHROME_VARIANTS = {};
+if (PLATFORM && PLATFORM.variants) {
+  for (const [variant, rel] of Object.entries(PLATFORM.variants)) {
+    try {
+      CHROME_VARIANTS[variant] = fs.readFileSync(path.resolve(PLATFORM_DIR, rel), 'utf8');
+    } catch {
+      console.error(`Platform "${PLATFORM_NAME}" declares variant "${variant}" but ${rel} is unreadable.`);
+      process.exit(1);
+    }
+  }
+}
+
+const CHROME_CSS_URL = PLATFORM && PLATFORM.chrome
+  ? `/platform/${String(PLATFORM.chrome).replace(/^\.\//, '')}`
+  : null;
+
+// URL prefix -> directory. `/assets/` is shared machinery, `/profile/` is the
+// product profile, `/platform/` is the active platform pack. Screens name none
+// of them by identity, so swapping either needs no edits to any screen.
+const STATIC_MOUNTS = [
+  { prefix: '/assets/', dir: ASSETS_DIR },
+  { prefix: '/profile/', dir: PROFILE_DIR },
+  ...(PLATFORM_DIR ? [{ prefix: '/platform/', dir: PLATFORM_DIR }] : []),
+];
 
 function escapeHtml(value) {
   return String(value)
@@ -126,19 +154,25 @@ function parseTagAttrs(rawAttrs) {
   return attrs;
 }
 
-function renderWechatChrome(attrs) {
-  const variant = attrs.variant === 'home' || attrs.type === 'home' ? 'home' : 'inner';
-  const title = escapeHtml(attrs.title || '');
-  const snippet = WECHAT_CHROME_SNIPPETS[variant];
+function renderChrome(attrs) {
+  const requested = attrs.variant || attrs.type;
+  const variant = Object.prototype.hasOwnProperty.call(CHROME_VARIANTS, requested)
+    ? requested
+    : (PLATFORM && PLATFORM.defaultVariant) || null;
+  const snippet = variant ? CHROME_VARIANTS[variant] : null;
   if (!snippet) return '';
-  return snippet.replaceAll('{{title}}', title);
+  return snippet.replaceAll('{{title}}', escapeHtml(attrs.title || ''));
 }
 
-function expandWechatChrome(html) {
-  return html.replace(
-    /<wld-wechat-chrome\b([^>]*)\/?>\s*(?:<\/wld-wechat-chrome>)?/gi,
-    (_, rawAttrs) => renderWechatChrome(parseTagAttrs(rawAttrs)),
-  );
+const CHROME_TAG_RE = new RegExp(
+  `<${CHROME_TAG}\\b([^>]*)\\/?>\\s*(?:<\\/${CHROME_TAG}>)?`,
+  'gi',
+);
+
+// A pack with no variants (or no platform at all) expands the tag to nothing,
+// which is what a chrome-less product wants.
+function expandChrome(html) {
+  return html.replace(CHROME_TAG_RE, (_, rawAttrs) => renderChrome(parseTagAttrs(rawAttrs)));
 }
 
 function ensureStylesheet(html, href) {
@@ -155,9 +189,9 @@ window.__WLD_SSE_URL = '/api/events';
 `;
 
 function injectHelper(html) {
-  html = expandWechatChrome(html);
+  html = expandChrome(html);
   html = ensureStylesheet(html, '/assets/reset.css');
-  html = ensureStylesheet(html, '/assets/mockup-chrome.css');
+  if (CHROME_CSS_URL) html = ensureStylesheet(html, CHROME_CSS_URL);
   // Inject frame styles before </head> (or before </body> as fallback)
   if (FRAME_STYLES_TAG) {
     if (html.includes('</head>')) {
@@ -239,7 +273,7 @@ const server = http.createServer((req, res) => {
         <link rel="stylesheet" href="/assets/reset.css">
         <link rel="stylesheet" href="/profile/tokens.css">
         <link rel="stylesheet" href="/profile/components.css">
-        <link rel="stylesheet" href="/assets/mockup-chrome.css">
+        <link rel="stylesheet" href="/platform/chrome.css">
         <link rel="stylesheet" href="/assets/phone-mockup.css">
         <style>body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f0f0f0;font-family:system-ui}</style>
         </head><body>

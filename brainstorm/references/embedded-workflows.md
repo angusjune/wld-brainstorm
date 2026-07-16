@@ -53,7 +53,7 @@ Required input: an approved brainstorm screen/flow. If the user only has a text 
 
 **Mini Program pitfalls:**
 - No `100vh` inside `wld-page` — use `height:100%`. `wld-page` already owns the viewport height, nav offset, safe-area padding, and scrolling; `100vh` overflows it and can clip bottom CTAs. (`verify-miniprogram.mjs` warns on this.)
-- Don't draw the status bar or 胶囊 capsule (`··· ⊙`) — it is system chrome WeChat renders itself, and a hand-drawn copy sits under the real one. Set the title only through `wld-page`'s `navTitle` / `navSubtitle` / `navBack`. A brainstorm source draws a fake status bar + capsule (`<wld-wechat-chrome>` / `mockup-chrome.css`) — that is presentation chrome: reproduce the title via `wld-page` props and drop the rest.
+- Don't draw the status bar or 胶囊 capsule (`··· ⊙`) — it is system chrome WeChat renders itself, and a hand-drawn copy sits under the real one. Set the title only through `wld-page`'s `navTitle` / `navSubtitle` / `navBack`. A brainstorm source draws a fake status bar + capsule (`<preview-chrome>`, expanded from the platform pack) — that is presentation chrome: reproduce the title via `wld-page` props and drop the rest.
 
 Workflow:
 
