@@ -6,7 +6,7 @@
  * Guarantees:
  * 1. Every fixture in quality-benchmark/fixtures/ produces exactly the finding
  *    codes listed in expected.json.
- * 2. Every bundled production template in assets/screens/ has 0 errors.
+ * 2. Every bundled production template in profile/screens/ has 0 errors.
  */
 
 import fs from 'node:fs';
@@ -17,7 +17,7 @@ import { spawnSync } from 'node:child_process';
 const BRAINSTORM_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const GATE = path.join(BRAINSTORM_DIR, 'qa-gate.mjs');
 const FIXTURES_DIR = path.join(BRAINSTORM_DIR, 'quality-benchmark/fixtures');
-const SCREENS_DIR = path.join(BRAINSTORM_DIR, 'assets/screens');
+const SCREENS_DIR = path.join(BRAINSTORM_DIR, 'profile/screens');
 
 let failures = 0;
 

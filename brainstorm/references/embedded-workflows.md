@@ -11,7 +11,7 @@ Run after every generated `solutions.html` and after every flow screen.
 Completion criterion: the file keeps all required product facts and legal/rate copy, has one clear primary action per screen, and contains no removable copy, decoration, or duplicate element that does not help the user complete the task.
 
 1. Read the generated HTML.
-2. Read `assets/product-memory.md` and load matching pitfalls from `assets/pm-memory-cache/common-pitfalls.yaml` when the screen has a COMP_ID. Treat loaded rules as must-keep product constraints.
+2. Read `profile/product-memory.md` and load matching pitfalls from `profile/pm-memory-cache/common-pitfalls.yaml` when the screen has a COMP_ID. Treat loaded rules as must-keep product constraints.
 3. Remove or merge anything that fails these checks:
    - The user does not need it to complete the task.
    - The text says something already obvious from nearby UI.
@@ -21,28 +21,9 @@ Completion criterion: the file keeps all required product facts and legal/rate c
 4. Never remove product rules, legal/compliance text, error states, navigation, selected user data, status indicators, tap targets, or the primary CTA.
 5. Re-read the result and make sure the HTML still follows the production template's CTA form, background color, chrome, and tab bar rules.
 
-## Fix Details Pass
+## Profile-contributed passes
 
-Invoke after the Simplify Pass in Step 4 and Step 5.
-
-Completion criterion: every visible amount, rate, term, selection state, CTA label, and regulated copy in the current generated file is either consistent, corrected in the HTML, or explicitly listed as blocked on a missing input.
-
-1. Extract every displayed fact from the generated HTML:
-   - Amounts: 可借额度, 输入金额, 省利息, 首次还, 每月还, 总利息, 还款总额.
-   - Rates: 年利率（单利）, 优惠年利率, daily-rate copy such as `1千元用1天只需 X 元`.
-   - Terms: 期数, 还款方式, 收款账户, 用途.
-   - Copy: CTA labels, coupon chips, headings, dialog buttons, agreement and footnote text.
-   - Selection state: selected coupon, selected term, selected card, selected repayment method.
-2. Run four checks:
-   - **Calculation correctness:** use `node tools/fix-details/calc.mjs '<params-json>'` for loan math (run `node tools/fix-details/calc.mjs --help` for the full field list). Minimum params: `{"annualRate":0.144,"principal":60000,"term":12,"loanDate":"2026-06-08"}` — `annualRate` is a decimal (0.144 = 14.4%), `principal` in 元, `term` in months, `loanDate` as `YYYY-MM-DD`; optional `coupons`, `repaymentType`, `earlyRepaymentDate`. Never hand-compute interest or repayment amounts. Treat differences over ¥1 as real mismatches. If the screen has no loan numbers to check (e.g. a pure restyle), skip this check.
-   - **Intra-screen consistency:** values on the same screen must agree, such as amount not exceeding quota and selected coupon matching the shown rate path.
-   - **Inter-screen consistency:** shared values across the flow, dialogs, sheets, and backdrops must stay equal.
-   - **UX copy:** units, decimal places, rate口径, terminology, CTA action, and regulated language must be consistent with production templates.
-3. Coupon rules:
-   - `INTEREST_REDUCTION` / `前N天0利息` does not change the headline annual rate; it only reduces interest for N days.
-   - `DESIGNATED_RATE` / `优惠年利率 X%` and `DISCOUNT` / `利率打X折` change the rate path and all derived repayment values.
-4. If required inputs such as 借款日期 are missing, do not guess. Either ask the user or mark the exact value as blocked. When needed, sweep a plausible date band with `calc.mjs` and flag only values impossible across the whole band.
-5. Correct provable mistakes directly in the HTML. Keep a short note of what changed so Step 4/5 can tell the user before opening the preview.
+Passes beyond Simplify are contributed by the active product profile, not by this file. Read the Passes table in `profile/PROFILE.md` and run each pass it lists, in order, after Simplify. The bundled WLD profile contributes a Fix Details pass (`profile/passes/fix-details.md`), which verifies loan arithmetic; a profile that declares no passes runs Simplify only.
 
 ## Push to Figma Branch
 
@@ -77,7 +58,7 @@ Required input: an approved brainstorm screen/flow. If the user only has a text 
 Workflow:
 
 1. Confirm source, flow order, states, interactions, and copy. Ask only for missing decisions that affect implementation.
-2. Read `assets/DESIGN.md`, the closest production templates in `assets/screens/`, and these template anchors from `tools/prototype/assets/miniprogram-template`: `app.json`, `app.js`, `app.wxss`, `project.config.json`, `pages/prototype-home/`, `pages/prototype-loan-input/`, and relevant components.
+2. Read `profile/DESIGN.md`, the closest production templates in `profile/screens/`, and these template anchors from `tools/prototype/assets/miniprogram-template`: `app.json`, `app.js`, `app.wxss`, `project.config.json`, `pages/prototype-home/`, `pages/prototype-loan-input/`, and relevant components.
 3. Create a separate demo project named `wld-miniprogram-demo-{slug}` under the current working directory unless the user gives another output path.
 4. Copy the bundled Mini Program template into that demo project. Do not edit the bundled template, generated provider folders, product knowledge caches, or `node_modules`.
 5. Implement real Mini Program files: `.wxml`, `.wxss`, `.js`, `.json`, `app.json`, `app.wxss`, and `project.config.json`. Use Mini Program components and APIs, not browser HTML/DOM code.

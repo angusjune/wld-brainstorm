@@ -10,9 +10,9 @@
  * Checks:
  *   1. SKILL.md exists at the package root.
  *   2. No forbidden entries (.git/, node_modules/, .env, __pycache__/, .DS_Store).
- *   3. SKILL.md and references/*.md reference only in-package files.
+ *   3. SKILL.md, profile docs and references/*.md reference only in-package files.
  *   4. Package size < 100 MB.
- *   5. SKILL.md screen table matches assets/screens/ on disk (both directions).
+ *   5. profile/PROFILE.md screen table matches profile/screens/ on disk (both directions).
  *
  * Usage: node scripts/validate-plugin.mjs [--json]
  */
@@ -64,18 +64,21 @@ if (totalBytes >= SIZE_LIMIT_BYTES) {
 // Check 3: SKILL.md + references/*.md reference only in-package files.
 // Inspect backtick code spans that look like concrete in-package file paths.
 const docsToScan = [path.join(ROOT, 'SKILL.md')];
-const refsDir = path.join(ROOT, 'references');
-if (fs.existsSync(refsDir)) {
-  for (const f of fs.readdirSync(refsDir)) {
-    if (f.endsWith('.md')) docsToScan.push(path.join(refsDir, f));
+for (const doc of [path.join(ROOT, 'profile', 'PROFILE.md'), path.join(ROOT, 'profile', 'README.md')]) {
+  if (fs.existsSync(doc)) docsToScan.push(doc);
+}
+for (const dir of [path.join(ROOT, 'references'), path.join(ROOT, 'profile', 'passes')]) {
+  if (!fs.existsSync(dir)) continue;
+  for (const f of fs.readdirSync(dir)) {
+    if (f.endsWith('.md')) docsToScan.push(path.join(dir, f));
   }
 }
 
 // A token is a "concrete in-package path" when it starts with a known top-level
 // segment or is a known root file, and carries a file extension (so we skip
 // prose, dirs-as-concepts, and generated-output examples like `home.html`).
-const IN_PKG_PREFIXES = ['assets/', 'references/', 'tools/', 'scripts/', 'quality-benchmark/'];
-const ROOT_FILES = new Set(['server.cjs', 'helper.js', 'qa-gate.mjs', 'package.json', 'production-reference.md']);
+const IN_PKG_PREFIXES = ['assets/', 'profile/', 'platforms/', 'references/', 'tools/', 'scripts/', 'quality-benchmark/'];
+const ROOT_FILES = new Set(['server.cjs', 'helper.js', 'qa-gate.mjs', 'package.json']);
 
 function looksLikeInPackagePath(tok) {
   if (/^https?:\/\//.test(tok)) return false;
@@ -105,37 +108,41 @@ for (const docPath of docsToScan) {
   }
 }
 
-// Check 5: SKILL.md screen table <-> assets/screens/ (both directions)
-const screensDir = path.join(ROOT, 'assets', 'screens');
+// Check 5: profile/PROFILE.md screen table <-> profile/screens/ (both directions).
+// PROFILE.md names templates and nothing else, so every .html it mentions must
+// exist and vice versa — no need to guess which names are templates.
+const screensDir = path.join(ROOT, 'profile', 'screens');
+const profileDoc = path.join(ROOT, 'profile', 'PROFILE.md');
 if (!fs.existsSync(screensDir)) {
-  errors.push('缺少 assets/screens/ 目录');
+  errors.push('缺少 profile/screens/ 目录');
+} else if (!fs.existsSync(profileDoc)) {
+  errors.push('缺少 profile/PROFILE.md');
 } else {
-  const skill = fs.readFileSync(path.join(ROOT, 'SKILL.md'), 'utf8');
+  const profileText = fs.readFileSync(profileDoc, 'utf8');
   const mentioned = new Set(
-    (skill.match(/`([^`]+\.html)`/g) || []).map((s) => s.slice(1, -1).trim()),
+    (profileText.match(/`([^`]+\.html)`/g) || []).map((s) => s.slice(1, -1).trim()),
   );
   const onDisk = fs
     .readdirSync(screensDir)
     .filter((f) => f.endsWith('.html'))
     .sort();
 
-  // Forward: every template on disk must be documented in SKILL.md.
+  // Forward: every template on disk must be documented in PROFILE.md.
+  let undocumented = 0;
   for (const f of onDisk) {
     if (!mentioned.has(f)) {
-      errors.push(`模板存在但未在 SKILL.md 列出: assets/screens/${f}`);
+      undocumented += 1;
+      errors.push(`模板存在但未在 profile/PROFILE.md 列出: profile/screens/${f}`);
     }
   }
-  // Reverse: every screen file named in SKILL.md must exist on disk.
+  // Reverse: every template named in PROFILE.md must exist on disk.
   const diskSet = new Set(onDisk);
   for (const f of mentioned) {
-    // Only Chinese-named template files live in screens/; skip generated-output
-    // examples (home.html, solutions.html, loan-input.html, *-v2.html …).
-    const isTemplateName = /[一-鿿]/.test(f);
-    if (isTemplateName && !diskSet.has(f)) {
-      errors.push(`SKILL.md 列出的模板在磁盘上不存在: assets/screens/${f}`);
+    if (!diskSet.has(f)) {
+      errors.push(`profile/PROFILE.md 列出的模板在磁盘上不存在: profile/screens/${f}`);
     }
   }
-  notes.push(`screens: ${onDisk.length} 个模板, ${onDisk.length - errors.filter((e) => e.includes('未在 SKILL.md')).length} 个已文档化`);
+  notes.push(`screens: ${onDisk.length} 个模板, ${onDisk.length - undocumented} 个已文档化`);
 }
 
 const json = process.argv.includes('--json');

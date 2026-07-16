@@ -118,7 +118,7 @@ Same as Screen 1 + promotional banner below circle button:
 
 ## Additional production templates
 
-`收银台` (cashier), `借款详情` (loan details), `欢迎页` (welcome), `更换还款卡` (change repayment card), and `我的Tab` (account tab) also exist in `assets/screens/` — each file's header comment describes its purpose, layout, and background.
+`收银台` (cashier), `借款详情` (loan details), `欢迎页` (welcome), `更换还款卡` (change repayment card), and `我的Tab` (account tab) also exist in `profile/screens/` — each file's header comment describes its purpose, layout, and background.
 
 ---
 

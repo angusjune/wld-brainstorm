@@ -6,19 +6,19 @@ How the bundled `brainstorm` skill consumes product knowledge snapshots.
 
 The skill reads from two cache directories that ship inside this self-contained package.
 
-**Memory cache** — `assets/pm-memory-cache/` (consumed by the Step 3 injection flow):
+**Memory cache** — `profile/pm-memory-cache/` (consumed by the Step 3 injection flow):
 
 | Cache file | Contains | Consumed by |
 |---|---|---|
-| `assets/pm-memory-cache/product-patterns.yaml` | validated product rules that must hold | brainstorm Step 3 + embedded Simplify Pass |
-| `assets/pm-memory-cache/common-pitfalls.yaml` | design gotchas that must be avoided | brainstorm Step 3 + embedded Simplify Pass |
+| `profile/pm-memory-cache/product-patterns.yaml` | validated product rules that must hold | brainstorm Step 3 + embedded Simplify Pass |
+| `profile/pm-memory-cache/common-pitfalls.yaml` | design gotchas that must be avoided | brainstorm Step 3 + embedded Simplify Pass |
 
-**Spec cache** — `assets/pm-spec-cache/` (bundled reference data, consulted on demand — not part of the core Step 3 flow):
+**Spec cache** — `profile/pm-spec-cache/` (bundled reference data, consulted on demand — not part of the core Step 3 flow):
 
 | Cache file | Contains |
 |---|---|
-| `assets/pm-spec-cache/index.yaml` | global index: `component_name` -> `component_id` -> `spec_path` |
-| `assets/pm-spec-cache/components/COMP_WLD_*.yaml` | per-component `state_machine`, `rules`, `ui_contract`, `data_dictionary` |
+| `profile/pm-spec-cache/index.yaml` | global index: `component_name` -> `component_id` -> `spec_path` |
+| `profile/pm-spec-cache/components/COMP_WLD_*.yaml` | per-component `state_machine`, `rules`, `ui_contract`, `data_dictionary` |
 
 Only specs with `lifecycle_status: active` or `draft` are cached. `deprecated` and `archived` specs are excluded from the bundle.
 
@@ -33,7 +33,7 @@ For **maintainers:** treat the cache as read-only unless explicitly preparing a 
 
 ## Screen ↔ COMP_ID mapping
 
-| Screen file (in `assets/screens/`) | COMP_ID |
+| Screen file (in `profile/screens/`) | COMP_ID |
 |---|---|
 | `输入金额.html` | `COMP_WLD_LOAN_AMOUNT` |
 | `个人中心.html` | _(not yet in bundled KB)_ |
@@ -74,10 +74,10 @@ Read the cache YAML fresh each task. Quote loaded entries verbatim under labelle
 
 ## Conflict resolution
 
-If a product rule contradicts an `assets/screens/` template, **the rule wins**. Templates are visual snapshots; bundled product rules are validated constraints. Flag the conflict before changing the template.
+If a product rule contradicts an `profile/screens/` template, **the rule wins**. Templates are visual snapshots; bundled product rules are validated constraints. Flag the conflict before changing the template.
 
 ## What NOT to do
 
-- Don't hand-edit `assets/pm-memory-cache/*.yaml` or `assets/pm-spec-cache/**/*.yaml` during normal use.
+- Don't hand-edit `profile/pm-memory-cache/*.yaml` or `profile/pm-spec-cache/**/*.yaml` during normal use.
 - Don't paraphrase pattern/pitfall bodies; quote verbatim so the `source` field stays meaningful.
 - Don't infer additional rules from the loaded entries; only use what's explicitly stated.

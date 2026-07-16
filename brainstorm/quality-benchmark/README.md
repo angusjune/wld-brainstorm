@@ -4,7 +4,7 @@
 
 ## 什么时候使用
 
-- 修改 `SKILL.md`、`references/`、`assets/screens/`、设计 token、组件样式或产品知识注入方式后，用它做改动前后的质量对比。
+- 修改 `SKILL.md`、`references/`、`profile/screens/`、设计 token、组件样式或产品知识注入方式后，用它做改动前后的质量对比。
 - 修改 `qa-gate.mjs` 后，用它确认 gate 仍能抓到机械问题，同时不会误伤生产模板。
 - 准备发布或上传 publishable skill directory 前，用它抽样检查典型 PM prompt 的真实产出。
 - 只改安装说明、普通 README、provider manifest 文案时，通常不需要跑完整质量基准；跑 `npm run validate` 即可。

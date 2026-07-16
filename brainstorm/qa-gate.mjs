@@ -93,10 +93,12 @@ function isColorLiteral(value) {
 
 // ---- Token map from tokens.css ----
 
-function buildTokenValueMap(assetsDir) {
-  const css = fs.readFileSync(path.join(assetsDir, 'tokens.css'), 'utf8');
+function buildTokenValueMap(profileDir) {
+  const css = fs.readFileSync(path.join(profileDir, 'tokens.css'), 'utf8');
   const map = new Map();
-  const declarationRe = /(--wld-[a-z0-9-]+)\s*:\s*([^;]+);/gi;
+  // Prefix-agnostic on purpose: each profile owns its own token prefix, so this
+  // matches any custom property rather than a hardcoded --wld-. See ADR 0004.
+  const declarationRe = /(--[a-z0-9-]+)\s*:\s*([^;]+);/gi;
   let match;
   while ((match = declarationRe.exec(css)) !== null) {
     const value = match[2].trim();
@@ -226,7 +228,7 @@ function checkFile(file, tokenMap) {
   }
 
   if (screens.length === 0) {
-    add('no-wld-page', 'no .wld-page found — screen was invented outside the WLD design system; copy from assets/screens/ templates');
+    add('no-wld-page', 'no .wld-page found — screen was invented outside the WLD design system; copy from profile/screens/ templates');
   }
 
   // -- Per-screen checks --
@@ -349,19 +351,19 @@ function main() {
   const argv = process.argv.slice(2);
   const targets = [];
   let json = false;
-  let assetsDir = path.resolve(__dirname, 'assets');
+  let profileDir = path.resolve(__dirname, 'profile');
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--json') json = true;
-    else if (argv[i] === '--assets') assetsDir = path.resolve(argv[++i]);
+    else if (argv[i] === '--profile') profileDir = path.resolve(argv[++i]);
     else targets.push(argv[i]);
   }
   if (targets.length === 0) {
-    console.error('Usage: node qa-gate.mjs [--json] [--assets <dir>] <file-or-dir> [...]');
+    console.error('Usage: node qa-gate.mjs [--json] [--profile <dir>] <file-or-dir> [...]');
     process.exitCode = 2;
     return;
   }
 
-  const tokenMap = buildTokenValueMap(assetsDir);
+  const tokenMap = buildTokenValueMap(profileDir);
   const files = targets.flatMap(collectHtmlFiles);
   const results = files.map((file) => checkFile(file, tokenMap));
   const errors = results.reduce((n, r) => n + r.errors, 0);

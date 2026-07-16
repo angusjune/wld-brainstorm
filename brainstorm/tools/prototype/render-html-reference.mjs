@@ -6,7 +6,7 @@
  * design-conformance loop (see conform-design.md).
  *
  * Usage:
- *   node render-html-reference.mjs <htmlFile> <outPng> [--width 375] [--height 812] [--assets <dir>]
+ *   node render-html-reference.mjs <htmlFile> <outPng> [--width 375] [--height 812] [--assets <dir>] [--profile <dir>]
  *
  * Needs a headless Chrome/Chromium (set CHROME_PATH, or default macOS path).
  */
@@ -38,6 +38,7 @@ function parseArgs(argv) {
     if (a === '--width') out.width = Number(argv[++i]);
     else if (a === '--height') out.height = Number(argv[++i]);
     else if (a === '--assets') out.assets = argv[++i];
+    else if (a === '--profile') out.profile = argv[++i];
     else out._.push(a);
   }
   return out;
@@ -47,7 +48,7 @@ function main() {
   const args = parseArgs(process.argv.slice(2));
   const [htmlFile, outPng] = args._;
   if (!htmlFile || !outPng) {
-    console.error('Usage: node render-html-reference.mjs <htmlFile> <outPng> [--width 375] [--height 812] [--assets <dir>]');
+    console.error('Usage: node render-html-reference.mjs <htmlFile> <outPng> [--width 375] [--height 812] [--assets <dir>] [--profile <dir>]');
     process.exitCode = 2;
     return;
   }
@@ -58,13 +59,18 @@ function main() {
     return;
   }
   const assetsDir = path.resolve(args.assets || path.join(__dirname, '..', '..', 'assets'));
+  const profileDir = path.resolve(args.profile || path.join(__dirname, '..', '..', 'profile'));
   let fragment = fs.readFileSync(path.resolve(htmlFile), 'utf8');
-  // Resolve server-style asset paths to absolute file:// for standalone render.
+  // Resolve server-style mount paths to absolute file:// for standalone render.
   fragment = fragment.replaceAll('/assets/', `file://${assetsDir}/`);
+  fragment = fragment.replaceAll('/profile/', `file://${profileDir}/`);
 
-  const css = ['tokens.css', 'components.css', 'phone-mockup.css']
-    .map((f) => fs.readFileSync(path.join(assetsDir, f), 'utf8'))
-    .join('\n');
+  const css = [
+    path.join(assetsDir, 'reset.css'),
+    path.join(profileDir, 'tokens.css'),
+    path.join(profileDir, 'components.css'),
+    path.join(assetsDir, 'phone-mockup.css'),
+  ].map((f) => fs.readFileSync(f, 'utf8')).join('\n');
 
   const isFull = /<html[\s>]/i.test(fragment);
   const html = isFull ? fragment : `<!DOCTYPE html><html><head><meta charset="utf-8"><style>

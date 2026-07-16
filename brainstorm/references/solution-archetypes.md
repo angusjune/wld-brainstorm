@@ -1,6 +1,6 @@
 # Brainstorm Solution Archetypes
 
-Use this reference before generating the three-option `solutions.html` page. These are examples of directions to choose from, not fixed layouts. Keep visual execution grounded in `assets/screens/` templates.
+Use this reference before generating the three-option `solutions.html` page. These are examples of directions to choose from, not fixed layouts. Keep visual execution grounded in `profile/screens/` templates.
 
 ## UX Strategy Archetypes
 

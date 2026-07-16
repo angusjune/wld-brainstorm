@@ -1,25 +1,4 @@
 <!--
-  WLD Design — Presentation Frame Template
-  Consistent wrapper for both POC and Brainstorm skills.
-
-  Shared frame template for WLD brainstorm previews.
-
-  Features:
-  - OS-aware light/dark theming
-  - Fixed header with project title + status
-  - Scrollable main content area
-  - CSS helpers for A/B/C design solution cards
-  - Phone mockup integration (loads phone-mockup.css)
-  - Indicator bar at bottom
-
-  Usage (POC):
-    Copy this file into the project directory, replace <!-- CONTENT --> with
-    phone-mockup gallery HTML. Link tokens.css, components.css, phone-mockup.css.
-
-  Usage (Brainstorm):
-    The brainstorm server injects this frame automatically. Write screen HTML
-    into screenDir; the server wraps it in the phone-mockup + frame.
-
   For the 3-solution comparison step, use the .options / .option classes
   to present choices A, B, C before building screens.
 -->
@@ -105,20 +84,6 @@
       font-weight: 500;
       color: var(--frame-text-secondary);
     }
-    .frame-header .frame-status {
-      font-size: 0.7rem;
-      color: var(--frame-success);
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    .frame-header .frame-status::before {
-      content: '';
-      width: 6px;
-      height: 6px;
-      background: var(--frame-success);
-      border-radius: 50%;
-    }
 
     .frame-main {
       flex: 1;
@@ -127,22 +92,6 @@
     #frame-content {
       padding: 2rem;
       min-height: 100%;
-    }
-
-    .frame-indicator {
-      background: var(--frame-bg-secondary);
-      border-top: 1px solid var(--frame-border);
-      padding: 0.5rem 1.5rem;
-      flex-shrink: 0;
-      text-align: center;
-    }
-    .frame-indicator span {
-      font-size: 0.75rem;
-      color: var(--frame-text-secondary);
-    }
-    .frame-indicator .selected-text {
-      color: var(--frame-accent-hover);
-      font-weight: 500;
     }
 
     /* ===== TYPOGRAPHY ===== */
@@ -329,17 +278,12 @@
 <body>
   <div class="frame-header">
     <h1>WLD Design</h1>
-    <div class="frame-status">Ready</div>
   </div>
 
   <div class="frame-main">
     <div id="frame-content">
       <!-- CONTENT -->
     </div>
-  </div>
-
-  <div class="frame-indicator">
-    <span id="indicator-text">Click an option above, then return to the terminal</span>
   </div>
 
 </body>

@@ -1,0 +1,10 @@
+{
+  "product": "WLD",
+  "productName": "微粒贷",
+  "platform": "wechat",
+  "pageClass": "wld-page",
+  "tokens": "./tokens.css",
+  "components": "./components.css",
+  "screens": "./screens",
+  "rules": "./rules.mjs"
+}

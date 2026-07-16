@@ -7,7 +7,7 @@
 - `SKILL.md`：主流程说明，覆盖三方案头脑风暴、精简、细节校验、反馈迭代、推送 Figma、小程序 Demo 和爆旋陀螺战斗。
 - `assets/`：WLD 设计规范、CSS tokens、组件样式、微信预览 chrome、生产页面模板和产品知识快照。
 - `references/`：方案发散方法、嵌入分支流程、Figma MCP 使用说明。
-- `tools/fix-details/`：借款金额、利息、还款额等细节校验工具。
+- `profile/tools/`：微粒贷借款金额、利息、还款额等细节校验工具（属于产品档案）。
 - `tools/prototype/`：微信小程序 Demo 模板、校验脚本、视觉对齐工具，以及可选的微信开发者工具驱动技能包（`references/miniprogram-dev-skill/`，安装 `wechatide` CLI 后可直接打开项目、编译、截图并推送真机预览）。
 - `tools/beyblade/`：爆旋陀螺战斗所需的前端资源。
 - `server.cjs`、`helper.js`：本地热更新预览服务。
@@ -37,7 +37,7 @@
 
 1. **澄清需求**：与你进行多轮对话，澄清需求。
 2. **启动本地预览服务**：启动 SSE 热更新的本地 Node 服务 (`server.cjs`)，让你可以在浏览器中实时预览界面修改。
-3. **基准模板与产品规则对齐**：读取 `assets/screens/` 的 HTML 模板及 `DESIGN.md` 设计规范。针对核心页面，还会通过 `product-memory.md` 提取关联的业务逻辑和常见设计坑点，确保设计在视觉和逻辑上都不偏离微粒贷产品规范。
+3. **基准模板与产品规则对齐**：读取 `profile/screens/` 的 HTML 模板及 `DESIGN.md` 设计规范。针对核心页面，还会通过 `product-memory.md` 提取关联的业务逻辑和常见设计坑点，确保设计在视觉和逻辑上都不偏离微粒贷产品规范。
 4. **多方案生成与 UI 装配**：依据需求生成 3 种不同方向（交互或视觉）的方案。页面会自动注入微信顶栏和手机外壳样式 (`phone-mockup.css`)，供用户直观对比。
 5. **质检**：在交付设计前，内部调用 **Simplify（精简设计）** 和 **Fix Details（细节校验）** 流程来自我修正冗余元素、数值计算错漏及样式缺陷；若当前环境支持（如安装了 Playwright MCP、Chrome DevTools MCP 或其他浏览器自动化工具），还会自动访问页面并截图，完成真正的视觉 QA 自检与纠错。
 6. **生成交互式demo或推送至figma**：方案定稿后，可直接通过内部指令将页面 **推送到 Figma 画布**、**生成微信小程序 Demo** 或 **开启爆旋陀螺战斗**。
@@ -91,10 +91,10 @@ npm run validate
 1. **样式与规范 (`assets/`)**：
    - 替换 `tokens.css` 和 `components.css` 为新产品的样式组件库。
    - 修改 `DESIGN.md` 以体现新产品的设计语言和约束。
-2. **生产模板基准 (`assets/screens/`)**：
+2. **生产模板基准 (`profile/screens/`)**：
    - 清空原微粒贷的页面，放入新产品的核心页面模板（如首页、表单页、详情页等）。
    - **重要**：这些模板是模型生成界面的基准（Ground Truth），直接决定了模型的输出结构质量。
-3. **业务知识库 (`assets/product-memory.md` 及 `pm-memory-cache/`)**：
+3. **业务知识库 (`profile/product-memory.md` 及 `pm-memory-cache/`)**：
    - 重新梳理新界面的业务规则（Patterns）与易错陷阱（Pitfalls）。如果不需要，可将相关内容清空。
 4. **`SKILL.md`**：
    - 将文案中的 "WLD" 和微粒贷替换为新产品。

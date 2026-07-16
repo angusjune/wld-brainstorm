@@ -33,8 +33,17 @@ const SESSION_DIR = path.join(PROJECT_DIR, '.wld-brainstorm', SESSION_ID);
 const SCREEN_DIR = path.join(SESSION_DIR, 'screens');
 const STATE_DIR = path.join(SESSION_DIR, 'state');
 const ASSETS_DIR = path.resolve(__dirname, 'assets');
+const PROFILE_DIR = path.resolve(__dirname, 'profile');
 const SNIPPETS_DIR = path.join(ASSETS_DIR, 'snippets');
 const HELPER_PATH = path.join(__dirname, 'helper.js');
+
+// URL prefix -> directory. `/assets/` is shared machinery; `/profile/` is the
+// product profile (tokens, components, icons). Screens reference these URLs, so
+// a fork that swaps profile/ needs no edits to any screen.
+const STATIC_MOUNTS = [
+  { prefix: '/assets/', dir: ASSETS_DIR },
+  { prefix: '/profile/', dir: PROFILE_DIR },
+];
 
 fs.mkdirSync(SCREEN_DIR, { recursive: true });
 fs.mkdirSync(STATE_DIR, { recursive: true });
@@ -147,6 +156,7 @@ window.__WLD_SSE_URL = '/api/events';
 
 function injectHelper(html) {
   html = expandWechatChrome(html);
+  html = ensureStylesheet(html, '/assets/reset.css');
   html = ensureStylesheet(html, '/assets/mockup-chrome.css');
   // Inject frame styles before </head> (or before </body> as fallback)
   if (FRAME_STYLES_TAG) {
@@ -200,11 +210,12 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // --- Serve assets at /assets/ (tokens.css, components.css, phone-mockup.css) ---
-  if (pathname.startsWith('/assets/')) {
-    const filePath = path.join(ASSETS_DIR, pathname.slice(8));
+  // --- Serve static mounts: /assets/ (shared) and /profile/ (the product) ---
+  const mount = STATIC_MOUNTS.find(m => pathname.startsWith(m.prefix));
+  if (mount) {
+    const filePath = path.join(mount.dir, pathname.slice(mount.prefix.length));
     const resolved = path.resolve(filePath);
-    if (!resolved.startsWith(path.resolve(ASSETS_DIR))) {
+    if (!resolved.startsWith(path.resolve(mount.dir))) {
       res.writeHead(403);
       res.end('Forbidden');
       return;
@@ -225,8 +236,9 @@ const server = http.createServer((req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(injectHelper(`
         <!DOCTYPE html><html><head><meta charset="UTF-8">
-        <link rel="stylesheet" href="/assets/tokens.css">
-        <link rel="stylesheet" href="/assets/components.css">
+        <link rel="stylesheet" href="/assets/reset.css">
+        <link rel="stylesheet" href="/profile/tokens.css">
+        <link rel="stylesheet" href="/profile/components.css">
         <link rel="stylesheet" href="/assets/mockup-chrome.css">
         <link rel="stylesheet" href="/assets/phone-mockup.css">
         <style>body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f0f0f0;font-family:system-ui}</style>
