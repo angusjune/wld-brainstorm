@@ -3,3 +3,6 @@ node_modules
 dist
 .netlify
 ref-only-*
+
+# Benchmark screenshots are regenerable (quality-benchmark/README.md)
+brainstorm/quality-benchmark/runs/**/*.png

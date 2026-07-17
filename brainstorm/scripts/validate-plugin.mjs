@@ -13,6 +13,7 @@
  *   3. SKILL.md, profile docs and references/*.md reference only in-package files.
  *   4. Package size < 100 MB.
  *   5. profile/PROFILE.md screen table matches profile/screens/ on disk (both directions).
+ *   6. Root-absolute src/href in screen templates resolve through a server mount.
  *
  * Usage: node scripts/validate-plugin.mjs [--json]
  */
@@ -143,6 +144,47 @@ if (!fs.existsSync(screensDir)) {
     }
   }
   notes.push(`screens: ${onDisk.length} 个模板, ${onDisk.length - undocumented} 个已文档化`);
+}
+
+// Check 6: every root-absolute src/href in the screen corpus resolves through a
+// real server mount to a file on disk. Guards the class of break the profile
+// refactor introduced (templates pointing at /assets/icons/ after icons moved to
+// profile/) — the QA gate doesn't inspect img srcs, so only this catches it.
+if (fs.existsSync(screensDir)) {
+  const profileConfig = (() => {
+    try {
+      return JSON.parse(fs.readFileSync(path.join(ROOT, 'profile', 'profile.json'), 'utf8'));
+    } catch {
+      return {};
+    }
+  })();
+  const mounts = {
+    '/assets/': path.join(ROOT, 'assets'),
+    '/profile/': path.join(ROOT, 'profile'),
+    ...(profileConfig.platform
+      ? { '/platform/': path.join(ROOT, 'platforms', profileConfig.platform) }
+      : {}),
+  };
+  let refCount = 0;
+  for (const f of fs.readdirSync(screensDir).filter((n) => n.endsWith('.html'))) {
+    const html = fs.readFileSync(path.join(screensDir, f), 'utf8');
+    const refRe = /(?:src|href)\s*=\s*"(\/[^"]+)"/g;
+    let m;
+    while ((m = refRe.exec(html)) !== null) {
+      refCount += 1;
+      const url = m[1];
+      const prefix = Object.keys(mounts).find((p) => url.startsWith(p));
+      if (!prefix) {
+        errors.push(`profile/screens/${f} 引用了未挂载的绝对路径: ${url}（服务只挂载 ${Object.keys(mounts).join(' ')}）`);
+        continue;
+      }
+      const target = path.join(mounts[prefix], url.slice(prefix.length));
+      if (!fs.existsSync(target)) {
+        errors.push(`profile/screens/${f} 引用了不存在的文件: ${url}`);
+      }
+    }
+  }
+  notes.push(`screen asset refs: ${refCount} 个绝对路径引用已校验`);
 }
 
 const json = process.argv.includes('--json');
