@@ -1,6 +1,6 @@
 {
-  "run": "profile-seam",
-  "generatedAt": "2026-07-17T10:12:27.221Z",
+  "run": "merged-profile",
+  "generatedAt": "2026-07-20T02:59:42.710Z",
   "totals": {
     "errors": 0,
     "warnings": 0,
@@ -34,7 +34,7 @@
       "id": "early-repay-partial",
       "files": [
         {
-          "name": "early-repay-partial.html",
+          "name": "repay-partial.html",
           "errors": 0,
           "warnings": 0,
           "findings": []
@@ -49,7 +49,7 @@
       "errors": 0,
       "warnings": 0,
       "renders": [
-        "early-repay-partial.html.png",
+        "repay-partial.html.png",
         "solutions.html.png"
       ]
     },
@@ -80,7 +80,7 @@
       "id": "loan-input-visual",
       "files": [
         {
-          "name": "loan-amount.html",
+          "name": "amount-input.html",
           "errors": 0,
           "warnings": 0,
           "findings": []
@@ -95,7 +95,7 @@
       "errors": 0,
       "warnings": 0,
       "renders": [
-        "loan-amount.html.png",
+        "amount-input.html.png",
         "solutions.html.png"
       ]
     },
@@ -103,7 +103,7 @@
       "id": "me-tab-service",
       "files": [
         {
-          "name": "me.html",
+          "name": "me-tab.html",
           "errors": 0,
           "warnings": 0,
           "findings": []
@@ -118,7 +118,7 @@
       "errors": 0,
       "warnings": 0,
       "renders": [
-        "me.html.png",
+        "me-tab.html.png",
         "solutions.html.png"
       ]
     },
@@ -146,5 +146,18 @@
       ]
     }
   ],
-  "compare": null
+  "compare": {
+    "against": "profile-seam",
+    "composites": [
+      "compare-profile-seam/cashier-redesign__cashier.html.png",
+      "compare-profile-seam/cashier-redesign__solutions.html.png",
+      "compare-profile-seam/early-repay-partial__solutions.html.png",
+      "compare-profile-seam/home-repay-reminder__home.html.png",
+      "compare-profile-seam/home-repay-reminder__solutions.html.png",
+      "compare-profile-seam/loan-input-visual__solutions.html.png",
+      "compare-profile-seam/me-tab-service__solutions.html.png",
+      "compare-profile-seam/overdue-flow__home-overdue.html.png",
+      "compare-profile-seam/overdue-flow__solutions.html.png"
+    ]
+  }
 }
