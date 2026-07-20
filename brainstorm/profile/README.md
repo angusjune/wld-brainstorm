@@ -16,14 +16,12 @@
 |------|------|----------|
 | 1 | `screens/` | **最重要**。换成你自己产品的生产界面模板。模型是「照着模板改」，不是「凭空生成」，所以这批模板直接决定输出质量。 |
 | 2 | `tokens.css` | 换成你的色板、字体、间距、圆角。这是**唯一的 token 来源**，别处不要再抄一份。 |
-| 3 | `PROFILE.md` | 重写模板表、路由表、产品铁律、速查表。这是 agent 读的那份。 |
-| 4 | `profile.json` | 改字段（见下）。脚本读的是这份。 |
-| 5 | `components.css` | 换成你的组件样式。可以先留个空壳——先让 `screens/` 自带样式跑起来，等重复够多了再抽出来。 |
-| 6 | `DESIGN.md` | 换成你的设计语言：品牌气质、色彩用法、Do's & Don'ts。 |
-| 7 | `rules.mjs` | **可选**。你自己的 QA 规则。删掉也行——删了只跑通用检查，不会拦你。 |
-| 8 | `product-memory.md`、`pm-*-cache/` | **可选**。产品状态机、业务规律、历史坑点。没有就把 `product-memory.md` 里的映射表清空，Step 3 会静默跳过。 |
-| 9 | `production-reference.md` | 换成你的线上产品说明和术语表。 |
-| 10 | `miniprogram/` | 只有要用小程序 Demo 分支才需要。不用就删掉整个目录。 |
+| 3 | `PROFILE.md` | 重写模板表、路由表、产品铁律、设计语言、速查表，frontmatter 改成你的字段（见下）。agent 读正文，脚本读 frontmatter，都是这一份。 |
+| 4 | `components.css` | 换成你的组件样式。可以先留个空壳——先让 `screens/` 自带样式跑起来，等重复够多了再抽出来。 |
+| 5 | `rules.mjs` | **可选**。你自己的 QA 规则，文件存在就会被 `qa-gate` 加载。删掉也行——删了只跑通用检查，不会拦你。 |
+| 6 | `PRODUCT.md`、`pm-*-cache/` | **可选**。产品状态机、业务规律、历史坑点。没有就把 `PRODUCT.md` 里的映射表清空，Step 3 会静默跳过。 |
+| 7 | `production-reference.md` | 换成你的线上产品说明和术语表。 |
+| 8 | `miniprogram/` | 只有要用小程序 Demo 分支才需要。不用就删掉整个目录。 |
 
 改完跑一遍：
 
@@ -34,7 +32,9 @@ npm test           # 跑 QA gate 和质量基准
 
 ---
 
-## `profile.json` 字段
+## `PROFILE.md` frontmatter 字段
+
+脚本（`server.cjs`、`qa-gate.mjs`、`npm run validate`、站点构建）读的机器配置，就是 `PROFILE.md` 头部 `---` 之间的几行：
 
 | 字段 | 说明 |
 |------|------|
@@ -42,10 +42,8 @@ npm test           # 跑 QA gate 和质量基准
 | `productName` | 产品全名，用于展示 |
 | `platform` | 平台包的名字，决定预览外壳。目前是 `wechat` |
 | `pageClass` | 包住每一屏的那个 class。`qa-gate` 靠它判断「这一屏是照模板做的，不是凭空编的」 |
-| `tokens` | token 文件路径 |
-| `components` | 组件样式路径 |
-| `screens` | 生产模板目录 |
-| `rules` | 产品 QA 规则模块。删掉这个文件，就只跑通用检查 |
+
+文件名都是约定死的：`tokens.css`、`components.css`、`screens/`、`rules.mjs`（可选，存在即加载），不用配置。
 
 ---
 

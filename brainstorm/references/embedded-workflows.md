@@ -11,7 +11,7 @@ Run after every generated `solutions.html` and after every flow screen.
 Completion criterion: the file keeps all required product facts and legal/rate copy, has one clear primary action per screen, and contains no removable copy, decoration, or duplicate element that does not help the user complete the task.
 
 1. Read the generated HTML.
-2. Read `profile/product-memory.md` and load matching pitfalls from `profile/pm-memory-cache/common-pitfalls.yaml` when the screen has a COMP_ID. Treat loaded rules as must-keep product constraints.
+2. Read `profile/PRODUCT.md` and load matching pitfalls from `profile/pm-memory-cache/common-pitfalls.yaml` when the screen has a COMP_ID. Treat loaded rules as must-keep product constraints.
 3. Remove or merge anything that fails these checks:
    - The user does not need it to complete the task.
    - The text says something already obvious from nearby UI.
@@ -31,7 +31,7 @@ Use when Step 6 choice is **B**.
 
 Required inputs: the approved brainstorm HTML or session directory, and a target Figma page link. If either is missing, ask for it and stop this branch until provided.
 
-Before using Figma, read `references/figma-mcp.md`. If no writable Figma MCP tool is available, stop and explain that this branch requires writable Figma access.
+If no writable Figma MCP tool is available, stop and explain that this branch requires writable Figma access.
 
 Workflow:
 

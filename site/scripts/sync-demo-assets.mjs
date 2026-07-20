@@ -11,13 +11,23 @@ import { fileURLToPath } from 'node:url'
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const REPO = path.resolve(HERE, '../..')
 const SKILL = path.join(REPO, 'brainstorm')
-const ASSETS = path.join(SKILL, 'assets')
 const PROFILE = path.join(SKILL, 'profile')
-// Resolve the platform pack the way server.cjs does, from the profile's config,
-// rather than hardcoding wechat here.
-const PROFILE_CONFIG = JSON.parse(fs.readFileSync(path.join(PROFILE, 'profile.json'), 'utf8'))
+// Resolve the platform pack the way server.cjs does, from the frontmatter of
+// profile/PROFILE.md (flat `key: value` lines), rather than hardcoding wechat.
+function readFrontmatter(text) {
+  const block = text.match(/^---\n([\s\S]*?)\n---/)
+  const config = {}
+  for (const line of (block ? block[1] : '').split('\n')) {
+    const m = line.match(/^([\w-]+):\s*(.*)$/)
+    if (m) config[m[1]] = m[2].trim()
+  }
+  return config
+}
+const PROFILE_CONFIG = readFrontmatter(fs.readFileSync(path.join(PROFILE, 'PROFILE.md'), 'utf8'))
+if (!PROFILE_CONFIG.platform) {
+  throw new Error('sync-demo-assets: no `platform:` in profile/PROFILE.md frontmatter')
+}
 const PLATFORM = path.join(SKILL, 'platforms', PROFILE_CONFIG.platform)
-const PLATFORM_CONFIG = JSON.parse(fs.readFileSync(path.join(PLATFORM, 'platform.json'), 'utf8'))
 const BEYBLADE_SRC = path.join(SKILL, 'tools/beyblade/assets')
 const CANNED = path.join(HERE, '../src/beyblade-demo')
 const OUT = path.join(HERE, '../public/demo')
@@ -47,22 +57,34 @@ function escapeHtml(value) {
     .replace(/"/g, '&quot;')
 }
 
-export function expandChrome(html, snippets, defaultVariant = 'inner') {
+// A platform pack is a single chrome.html: one <style> block plus the nav
+// markup stamped into each <preview-chrome> tag (same split server.cjs does).
+export function splitChrome(chromeHtml) {
+  const styleRe = /<style[^>]*>([\s\S]*?)<\/style>/i
+  const styleMatch = chromeHtml.match(styleRe)
+  return {
+    css: styleMatch ? styleMatch[1] : '',
+    markup: chromeHtml.replace(styleRe, '').trim(),
+  }
+}
+
+export function expandChrome(html, chromeMarkup) {
   return html.replace(
     /<preview-chrome\b([^>]*)\/?>\s*(?:<\/preview-chrome>)?/gi,
     (_, rawAttrs) => {
+      if (!chromeMarkup) return ''
       const attrs = parseTagAttrs(rawAttrs)
-      const requested = attrs.variant || attrs.type
-      const variant = Object.prototype.hasOwnProperty.call(snippets, requested) ? requested : defaultVariant
-      const snippet = snippets[variant]
-      if (!snippet) return ''
-      return snippet.replaceAll('{{title}}', escapeHtml(attrs.title || ''))
+      const variant = attrs.variant || attrs.type
+      const variantClass = variant ? `chrome-navbar--${variant}` : ''
+      return chromeMarkup
+        .replaceAll('{{variant_class}}', escapeHtml(variantClass))
+        .replaceAll('{{title}}', escapeHtml(attrs.title || ''))
     },
   )
 }
 
-export function composeScreenDocument(fragment, title, snippets, defaultVariant) {
-  const body = expandChrome(fragment, snippets, defaultVariant)
+export function composeScreenDocument(fragment, title, chromeMarkup) {
+  const body = expandChrome(fragment, chromeMarkup)
     .replace(/src="\/assets\//g, 'src="assets/')
     .replace(/src="\/profile\//g, 'src="assets/')
   return `<!DOCTYPE html>
@@ -71,11 +93,13 @@ export function composeScreenDocument(fragment, title, snippets, defaultVariant)
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeHtml(title)}</title>
-<link rel="stylesheet" href="assets/reset.css">
 <link rel="stylesheet" href="assets/tokens.css">
 <link rel="stylesheet" href="assets/components.css">
 <link rel="stylesheet" href="assets/chrome.css">
-<style>body { margin: 0; background: #fff; }</style>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: #fff; }
+</style>
 </head>
 <body>
 ${body}
@@ -99,23 +123,18 @@ export function rewriteArenaHtml(html) {
 }
 
 function sync() {
-  // Chrome variants come from the active platform pack, as they do at runtime.
-  const snippets = {}
-  for (const [variant, rel] of Object.entries(PLATFORM_CONFIG.variants || {})) {
-    snippets[variant] = fs.readFileSync(mustExist(path.resolve(PLATFORM, rel)), 'utf8')
-  }
+  // Chrome comes from the active platform pack's chrome.html, as at runtime.
+  const chrome = splitChrome(fs.readFileSync(mustExist(path.join(PLATFORM, 'chrome.html')), 'utf8'))
 
   fs.rmSync(OUT, { recursive: true, force: true })
   fs.mkdirSync(path.join(OUT, 'assets'), { recursive: true })
 
   // Flattened into one assets/ dir for the static site; the three layers stay
   // distinct in the skill itself.
-  fs.copyFileSync(mustExist(path.join(ASSETS, 'reset.css')), path.join(OUT, 'assets/reset.css'))
-  fs.copyFileSync(mustExist(path.join(ASSETS, 'phone-mockup.css')), path.join(OUT, 'assets/phone-mockup.css'))
   for (const css of ['tokens.css', 'components.css']) {
     fs.copyFileSync(mustExist(path.join(PROFILE, css)), path.join(OUT, 'assets', css))
   }
-  fs.copyFileSync(mustExist(path.resolve(PLATFORM, PLATFORM_CONFIG.chrome)), path.join(OUT, 'assets/chrome.css'))
+  fs.writeFileSync(path.join(OUT, 'assets/chrome.css'), chrome.css)
   fs.cpSync(mustExist(path.join(PROFILE, 'icons')), path.join(OUT, 'assets/icons'), { recursive: true })
 
   const screensDir = mustExist(path.join(PROFILE, 'screens'))
@@ -126,7 +145,7 @@ function sync() {
   for (const file of screenFiles) {
     const fragment = fs.readFileSync(path.join(screensDir, file), 'utf8')
     const title = path.basename(file, '.html')
-    fs.writeFileSync(path.join(OUT, file), composeScreenDocument(fragment, title, snippets, PLATFORM_CONFIG.defaultVariant))
+    fs.writeFileSync(path.join(OUT, file), composeScreenDocument(fragment, title, chrome.markup))
   }
 
   fs.mkdirSync(path.join(OUT, 'beyblade'), { recursive: true })

@@ -66,14 +66,13 @@ function main() {
   fragment = fragment.replaceAll('/profile/', `file://${profileDir}/`);
 
   const css = [
-    path.join(assetsDir, 'reset.css'),
     path.join(profileDir, 'tokens.css'),
     path.join(profileDir, 'components.css'),
-    path.join(assetsDir, 'phone-mockup.css'),
   ].map((f) => fs.readFileSync(f, 'utf8')).join('\n');
 
   const isFull = /<html[\s>]/i.test(fragment);
   const html = isFull ? fragment : `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+    *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
     html,body{margin:0;padding:0;width:${args.width}px;background:var(--wld-bg,#F5F5F5);}
     ${css}
   </style></head><body>${fragment}</body></html>`;

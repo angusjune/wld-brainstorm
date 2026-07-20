@@ -12,29 +12,23 @@ Resolve this skill directory as `skillDir`. Every path below is relative to `ski
 **This file is the method — it names no product.** Every product-specific fact (which screens exist, the design laws, the palette, the passes to run) lives in `profile/PROFILE.md`. The bundled profile is WLD (微粒贷); replacing `profile/` is how this skill is pointed at a different product.
 
 **The product profile** (in `profile/`) — everything specific to this product, and the only directory a forking team rewrites:
-- `PROFILE.md` — **Read this at Step 3.** Screen table, template routing, product laws, passes, quick reference
-- `profile.json` — Machine-readable profile config (platform, page class, paths)
+- `PROFILE.md` — **Read this at Step 3.** Its frontmatter is the machine-readable profile config (product, platform, page class); its body carries the screen table, template routing, design language, product laws, passes, and quick reference
 - `tokens.css` — All CSS custom properties (the single source of truth for the palette)
 - `components.css` — Full CSS for every component
-- `DESIGN.md` — Colors, typography, buttons, components, layout rules
 - `screens/` — Production screen templates (the ground truth)
-- `product-memory.md` — Bridge to bundled product knowledge (screen ↔ COMP_ID mapping, filter rules, injection format)
+- `PRODUCT.md` — Bridge to bundled product knowledge (screen ↔ COMP_ID mapping, filter rules, injection format)
 - `production-reference.md` — Current app screens, structure, and terminology
 - `rules.mjs` — Optional product QA rules loaded by `qa-gate.mjs`
 
 **Platform packs** (in `platforms/`) — the surface's furniture, shared by any product on it. The profile's `platform` field selects exactly one:
 - `wechat/` — WeChat Mini Program: status bar, 88px navbar, capsule; contributes the Prototype branch
 - `ios/` — iOS: status bar, 44px nav bar, home indicator
-- Each pack's `platform.json` declares its chrome stylesheet, its chrome variants, and any branches it contributes.
+- Each pack is a single `chrome.html` — one style block plus the nav markup the server stamps into each `<preview-chrome>` tag — plus any branches it contributes under `branches/`.
 
 **Shared machinery** (in `assets/`) — names no product and no platform:
-- `reset.css` — The only style rule belonging to no product (auto-injected by the server)
-- `phone-mockup.css` — iPhone frame + gallery layout for presentations
-- `frame-template.html` — Source for frame styles (auto-injected by the server into every served HTML page). Do NOT copy this file directly.
+- `frame-template.html` — Source for frame styles, including the reset and the phone mockup + gallery layout (auto-injected by the server into every served HTML page). Do NOT copy this file directly.
 
 The profile's screen table lists every production template on disk, and `npm run validate` checks the two against each other in both directions.
-
-**Figma MCP reference:** when this skill tells you to use Figma MCP tools directly, first read `references/figma-mcp.md`.
 
 **Brainstorm-specific files** (in this directory):
 - `server.cjs` — Local Node.js server with SSE hot-reload
@@ -74,8 +68,6 @@ The profile's screen table lists every production template on disk, and `npm run
   <meta charset="UTF-8">
   <link rel="stylesheet" href="/profile/tokens.css">
   <link rel="stylesheet" href="/profile/components.css">
-  <link rel="stylesheet" href="/platform/chrome.css">
-  <link rel="stylesheet" href="/assets/phone-mockup.css">
 </head>
 <body>
   <div class="frame-header">
@@ -92,7 +84,7 @@ The profile's screen table lists every production template on disk, and `npm run
 </html>
 ```
 
-Three URL prefixes, mapped by the server: `/profile/` is the product profile, `/platform/` is the active platform pack, and `/assets/` is shared machinery. Screens name neither the product nor the platform by identity, so swapping either needs no screen edits. The server also injects `reset.css`, the platform's chrome stylesheet, frame styles and `helper.js` — do not link or add those yourself.
+Three URL prefixes, mapped by the server: `/profile/` is the product profile, `/platform/` is the active platform pack, and `/assets/` is shared machinery. Screens name neither the product nor the platform by identity, so swapping either needs no screen edits. The server also injects the platform pack's chrome styles, the frame styles (which include the reset and phone mockup) and `helper.js` — do not link or add those yourself.
 
 **Preview chrome** is always written as `<preview-chrome variant="…" title="…">`. The server expands it using the active platform pack; which variants exist is the pack's business, and the profile documents which to use where.
 
@@ -108,7 +100,7 @@ Interview the user relentlessly about every aspect of the plan until a shared un
 
 Examples:
 
-1. **What is the core user action?** — e.g. "A) Complete the primary task (default), B) Check status, C) …"
+1. **What is the core user action?** — "A) Complete the primary task (default), B) Check status, C) …"
 2. **How many screens?** — "A) One screen (default), B) 2-3 step flow, C) Home + detail pages"
 3. **What data needs to be shown?** — Amounts, lists, forms, status results?
 
@@ -132,13 +124,13 @@ node "<skill-dir>/server.cjs" \
 
 Save `screenDir` and `url` from the JSON response. You will write all screen HTML files to `screenDir` and use `url` for all subsequent API calls. Tell user to open the URL.
 
-**Server features:** Serves newest `.html` from `screenDir`, auto-injects helper.js + reset + frame styles, hot-reloads via SSE, serves shared machinery at `/assets/*` and the product profile at `/profile/*`, auto-shuts down after 30 min idle.
+**Server features:** Serves newest `.html` from `screenDir`, auto-injects helper.js + frame styles + the platform pack's chrome styles, hot-reloads via SSE, serves shared machinery at `/assets/*` and the product profile at `/profile/*`, auto-shuts down after 30 min idle.
 
 ### Step 3: Read Production Templates
 
 **CRITICAL — Do this before writing ANY screen HTML (including solutions).**
 
-**Read `profile/PROFILE.md` now.** It carries this product's screen table, template routing, design laws, preview-chrome placeholder, and passes. Everything in Steps 4–6 assumes you have read it. Also read `profile/DESIGN.md` for colour/typography/component rules.
+**Read `profile/PROFILE.md` now.** It carries this product's screen table, template routing, design language (colour/typography/component rules), product laws, preview-chrome placeholder, and passes. Everything in Steps 4–6 assumes you have read it.
 
 Then read the closest matching template from `profile/screens/`, using the routing table in the profile.
 
@@ -188,7 +180,7 @@ Write `solutions.html` to `screenDir` using the Page Template. Inside `#frame-co
 </div>
 ```
 
-`<page-class>` is the page class from `profile/profile.json` (the bundled WLD profile uses `wld-page`).
+`<page-class>` is the `pageClass` from `profile/PROFILE.md`'s frontmatter (the bundled WLD profile uses `wld-page`).
 
 Caption each solution with its intent:
 - UX mode: `Hypothesis` + `Tradeoff`
@@ -212,7 +204,7 @@ The gate is deterministic. It always runs universal checks (off-token colours, e
 - No custom JavaScript unless user explicitly requested interactivity
 
 **Verify screenshot:** Navigate to the saved `url` from Step 2 with Playwright MCP (`mcp__playwright__browser_navigate` + `mcp__playwright__browser_take_screenshot` with `fullPage: true`). Check for:
-- Preview chrome renders correctly (88px, capsule button visible)
+- Preview chrome renders correctly (matches the active platform pack's shell)
 - All 3 phones visible and properly spaced
 - Text readable, no overflow or clipping
 - Colours match the profile's palette and quick reference
@@ -260,7 +252,7 @@ Ask the user to choose one of these paths after they have seen the approved scre
 |--------|--------|------------|
 | A | Feedback | Edit the current HTML in `screenDir`; the browser hot-reloads through SSE. Repeat until the user is satisfied. |
 | B | Push to Figma | Use the Push to Figma branch in `references/embedded-workflows.md`. Requires the approved brainstorm source and a target Figma page link. |
-| C | Prototype | Only offered when the active platform pack contributes it (`platform.json` → `branches`). Follow the branch doc the pack names — on `wechat` that is `platforms/wechat/branches/prototype.md`, which builds a Mini Program demo. Do not offer this choice when the pack contributes no branches. |
+| C | Prototype | Only offered when the active platform pack ships a `branches/` directory. Follow the branch doc inside it — on `wechat` that is `platforms/wechat/branches/prototype.md`, which builds a Mini Program demo. Do not offer this choice when the pack contributes no branches. |
 | D | Beyblade battle | Use the Beyblade Battle branch in `references/embedded-workflows.md`. Uses 2-7 approved brainstorm screens as battle entrants. |
 
 **Critical for A:** Always edit the SAME file for iterative changes. Only create new files for new screens.
@@ -312,5 +304,4 @@ Method mistakes. **The profile's product laws are the other half of this table**
 
 The active product's palette, typography, and chrome are in the Quick reference section of `profile/PROFILE.md`. `profile/tokens.css` is the single source of truth for every value.
 
-**Full design specs:** Read `profile/DESIGN.md`.
 **Production screens & terminology:** Read `profile/production-reference.md`.

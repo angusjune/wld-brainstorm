@@ -40,7 +40,7 @@ Computed with `node profile/tools/calc.mjs '{"annualRate":0.144,"principal":6000
 
 ## Product-knowledge injection (Step 3)
 
-本期应还 / 收银台 / 个人中心-有借款 均未映射 COMP_ID（product-memory.md 标注
+本期应还 / 收银台 / 个人中心-有借款 均未映射 COMP_ID（PRODUCT.md 标注
 “not yet in bundled KB”），**无捆绑产品规则覆盖这些屏幕，设计仅依据视觉模板**。
 未凭空补造 patterns/pitfalls。
 

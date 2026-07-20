@@ -4,11 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>个人中心-双offer</title>
-<link rel="stylesheet" href="assets/reset.css">
 <link rel="stylesheet" href="assets/tokens.css">
 <link rel="stylesheet" href="assets/components.css">
 <link rel="stylesheet" href="assets/chrome.css">
-<style>body { margin: 0; background: #fff; }</style>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: #fff; }
+</style>
 </head>
 <body>
 <!-- ==========================================================================
@@ -44,7 +46,11 @@
     </div>
   </div>
   <div class="chrome-titlebar">
-    <button class="chrome-navbar-back" aria-hidden="true"></button>
+    <button class="chrome-navbar-back" aria-label="返回">
+      <svg viewBox="0 0 12 20" fill="none" aria-hidden="true">
+        <path d="M10 2L2 10L10 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
     <span class="chrome-navbar-title">微粒贷</span>
     <div class="chrome-capsule" aria-hidden="true">
       <div class="chrome-capsule-dots">
@@ -61,7 +67,6 @@
     </div>
   </div>
 </nav>
-
 
   <!-- ===== PAGE BODY ===== -->
   <div class="wld-page-body">

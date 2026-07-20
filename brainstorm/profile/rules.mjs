@@ -1,11 +1,11 @@
 /**
  * WLD (微粒贷) product QA rules.
  *
- * Loaded by qa-gate.mjs because profile.json points at this file. Everything
+ * Loaded by qa-gate.mjs because this file exists at profile/rules.mjs. Everything
  * here is a WLD law, not a universal one — which is exactly why it lives in the
- * profile rather than the gate. A forking team deletes this file (and the
- * `rules` key in profile.json) and still passes the core checks on day one, then
- * adds their own laws as they discover them. See ADR 0005.
+ * profile rather than the gate. A forking team deletes this file and still
+ * passes the core checks on day one, then adds their own laws as they discover
+ * them. See ADR 0005.
  *
  * A rule is { id, scope, run }:
  *   scope 'document' -> run({ text, screens, contexts }, api)

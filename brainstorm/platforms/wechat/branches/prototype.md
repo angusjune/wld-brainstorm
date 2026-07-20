@@ -1,6 +1,6 @@
 # Prototype Branch (WeChat Mini Program)
 
-A branch contributed by the `wechat` platform pack: it builds a WeChat Mini Program, so it only exists when the profile targets this platform. `SKILL.md` offers it at Step 6 because platform.json lists it.
+A branch contributed by the `wechat` platform pack: it builds a WeChat Mini Program, so it only exists when the profile targets this platform. `SKILL.md` offers it at Step 6 because this pack ships it in `branches/`.
 
 All paths are relative to the `brainstorm/` skill directory.
 
@@ -17,7 +17,7 @@ Required input: an approved brainstorm screen/flow. If the user only has a text 
 Workflow:
 
 1. Confirm source, flow order, states, interactions, and copy. Ask only for missing decisions that affect implementation.
-2. Read `profile/DESIGN.md`, the closest production templates in `profile/screens/`, and these template anchors from `profile/miniprogram/template`: `app.json`, `app.js`, `app.wxss`, `project.config.json`, `pages/prototype-home/`, `pages/prototype-loan-input/`, and relevant components.
+2. Read the design language in `profile/PROFILE.md`, the closest production templates in `profile/screens/`, and these template anchors from `profile/miniprogram/template`: `app.json`, `app.js`, `app.wxss`, `project.config.json`, `pages/prototype-home/`, `pages/prototype-loan-input/`, and relevant components.
 3. Create a separate demo project named `wld-miniprogram-demo-{slug}` under the current working directory unless the user gives another output path.
 4. Copy the bundled Mini Program template into that demo project. Do not edit the bundled template, generated provider folders, product knowledge caches, or `node_modules`.
 5. Implement real Mini Program files: `.wxml`, `.wxss`, `.js`, `.json`, `app.json`, `app.wxss`, and `project.config.json`. Use Mini Program components and APIs, not browser HTML/DOM code.

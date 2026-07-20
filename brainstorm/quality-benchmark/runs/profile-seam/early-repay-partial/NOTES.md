@@ -26,7 +26,7 @@ browser screenshot verification skipped per benchmark instructions.
 
 ## Product knowledge
 
-- `提前还清.html` 在 product-memory.md 中映射为 “not yet in bundled KB” —— 无 bundled
+- `提前还清.html` 在 PRODUCT.md 中映射为 “not yet in bundled KB” —— 无 bundled
   product rules 覆盖此屏，设计仅依赖视觉模板与 PROFILE.md 产品法则（按 bridge 文件要求一行说明）。
 
 ## Source templates

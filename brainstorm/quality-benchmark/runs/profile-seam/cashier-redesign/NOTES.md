@@ -14,7 +14,7 @@ Benchmark mode: Step 1 questions skipped; every default recorded here. Step 2
 - **Source production templates:** `profile/screens/收银台.html`（主模板）；
   `profile/screens/更换还款卡.html`（圆形银行标 chip 图样）；
   `profile/screens/本期应还.html`（金额摘要参照）。
-- **Product rules loaded:** 无 —— `profile/product-memory.md` 的映射表中收银台没有
+- **Product rules loaded:** 无 —— `profile/PRODUCT.md` 的映射表中收银台没有
   COMP_ID，按 filter rule 跳过：**没有捆绑的产品规则覆盖此屏，设计仅依据视觉模板。**
 - **Non-goals:** 不新增还款方式；不发明银行卡限额等产品事实；无交互 JS；
   不改动金额、卡号、法定文案。

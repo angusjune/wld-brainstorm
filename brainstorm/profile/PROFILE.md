@@ -1,11 +1,17 @@
+---
+product: WLD
+productName: 微粒贷
+platform: wechat
+pageClass: wld-page
+---
+
 # WLD (微粒贷) Product Profile
 
-Everything in this file is specific to 微粒贷. `SKILL.md` holds the method and points here for product facts.
+Everything in this file is specific to 微粒贷. `SKILL.md` holds the method and points here for product facts. The frontmatter above is the machine-readable half of the profile — `server.cjs`, `qa-gate.mjs`, `npm run validate` and the site build read `platform` and `pageClass` from it.
 
 Read this file at Step 3, before writing any screen HTML.
 
-- **Product:** WLD (微粒贷 / Weilidai / WeBank Micro-Loan)
-- **Platform:** `wechat` — runs as a WeChat Mini Program
+- **Product:** WLD (微粒贷 / Weilidai / WeBank Micro-Loan) — runs as a WeChat Mini Program
 - **Page class:** `.wld-page` — every screen is wrapped in it
 - **Token prefix:** `--wld-*` (this profile's own prefix; nothing shared depends on it)
 
@@ -51,6 +57,49 @@ Production-accurate HTML in `profile/screens/`, exported from Figma. **This tabl
 
 ---
 
+## Design language
+
+**Trustworthy, Simple, Calm.** The interface should inspire financial confidence through restraint — never pressure, never overwhelm. Text is concise and factual; the tone is neutral and informative, not promotional. The brand speaks quietly but clearly.
+
+**Visual tone:** clean, minimal, and warm. The design lives in a narrow palette — white surfaces, a light grey background, and a single gold accent reserved for primary actions. Text hierarchy is achieved through opacity (0.9 / 0.5 / 0.35), not competing colors. Light mode only.
+
+**References:** WeChat native UI; Apple's iOS design language — whitespace, system fonts, information density balance.
+
+**Anti-references:** flashy lending apps (red/orange urgency colors, countdown timers, gamified rewards, aggressive promo banners); traditional banking UIs (dense data tables, corporate gradients, stiff formal layouts); anything that creates artificial urgency or emotional pressure around borrowing.
+
+### Principles
+
+1. **One gold action per screen** — the gold accent is the single most powerful visual element. Reserve it for exactly one primary CTA per screen; all other actions use secondary or outline styles.
+2. **Hierarchy through opacity, not color** — three opacity levels on black (0.9 / 0.5 / 0.35) create the reading order. Avoid colored text except links (`--wld-info-500`) and promotional highlights (`--wld-emphasis-500` / `--wld-promo-500`).
+3. **Earn every pixel** — no decorative filler. Remove background patterns, "温馨提示" boilerplate, redundant icons, and anything that doesn't help the user decide or act. If text can be shorter, make it shorter (body text ≤15 characters where possible).
+4. **WeChat-native context** — mockups keep the presentation-only preview chrome; users should never feel they've left WeChat.
+5. **Calm information density** — enough whitespace to feel calm, enough information to feel confident: 20px card padding, 12px section gaps, 20px page margins. Never cram; never leave screens feeling empty.
+
+### Typography
+
+- Body: `var(--wld-font-family)`. Numbers: `var(--wld-font-number)` (WeChat Sans SS) — only for large currency amounts.
+- Headlines 20–24px semibold; body 14–16px regular; 12px captions sparingly, for hints only. Hierarchy comes from opacity, not competing weights.
+- **Large currency amounts:** 44px, **weight 500** (not semibold), `letter-spacing: -0.5px`, `line-height: 1.2`. The ¥ prefix may be smaller (20px, as in the dual-offer cards). The 预估可借 label above the amount is 14px semibold.
+
+### Elevation
+
+Minimal shadows: cards may use `var(--wld-shadow-card)`; avoid heavy drop shadows. Depth comes from border contrast and surface color variation.
+
+### Component notes
+
+The values live in `tokens.css` and the CSS lives in `components.css`; these are the behavioral rules the CSS alone does not say:
+
+- **Quick amount chips** (输入金额): `border-radius: 4px`, padding 5px 10px, 14px text, `rgba(0,0,0,0.06)` background. They are NOT buttons — never make them pills.
+- **Settings/options row** (输入金额 loan config): label (14px semibold, left) + value (14px regular, right-aligned) + chevron, inside a white 12px-radius card, 0.5px dividers indented 20px. A distinct pattern from Select/Cell.
+- **Checkbox:** round or square (2px radius), 20px or 16px. Checked = gold background + black check mark SVG:
+  `<svg viewBox="0 0 16 16" fill="none"><path d="M4 8.5l2.5 2.5L12 5" stroke="rgba(0,0,0,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+- **Radio:** round only. Checked = gold border + gold inner dot (10px) — NOT a gold-filled background.
+- **Info icon:** 18×18 SVG circle (stroke `rgba(0,0,0,0.35)`, 1px) with a centered "i" (11px, semibold, same color). Never emoji or unicode.
+- **Status icons:** 60×60 gold circles; icon tint is black (`rgba(0,0,0,0.9)`).
+- **Buttons loading:** text becomes invisible and the spinner appears centered — never text + spinner together.
+
+---
+
 ## Product laws
 
 Non-negotiable. These win over anything a template appears to show.
@@ -63,6 +112,10 @@ Non-negotiable. These win over anything a template appears to show.
 - **No thousands separators.** Production writes `¥60000`, never `¥60,000` — consistently on every screen.
 - **Large currency amounts are `font-weight: 500`**, not semibold.
 - **Never `font-family: sans-serif`.** Use `var(--wld-font-family)`.
+- **Body text is never `#000`.** Use the opacity scale (`--wld-text-primary/-secondary/-tertiary`).
+- **Dividers are 0.5px** (`--wld-divider`); no thick borders (2px+) on elements.
+- **No emojis anywhere.** Use the profile's icon set or inline SVGs.
+- **Home screens keep the tab bar** (借钱 / 我的).
 - **Required rate, agreement, repayment and risk text stays** whenever the template has it.
 - **One primary gold CTA per screen.**
 
@@ -96,7 +149,7 @@ Each template defines its own CSS classes in a `<style>` block at the bottom (`.
 
 ## Product rules and pitfalls
 
-After reading the template, read `profile/product-memory.md` to find the screen's COMP_ID. If one exists, load matching entries from `profile/pm-memory-cache/product-patterns.yaml` and `profile/pm-memory-cache/common-pitfalls.yaml` per that file's filter rule, and inject them under its labelled headers before generating solutions.
+After reading the template, read `profile/PRODUCT.md` to find the screen's COMP_ID. If one exists, load matching entries from `profile/pm-memory-cache/product-patterns.yaml` and `profile/pm-memory-cache/common-pitfalls.yaml` per that file's filter rule, and inject them under its labelled headers before generating solutions.
 
 Patterns describe state splits, hidden product variants, and default-selection rules the visual template alone does not capture (e.g. 首借/非首借 keyboard CTA differs; the 期数 sheet has two independent variants). Pitfalls are must-avoid constraints, not cleanup suggestions.
 
@@ -166,5 +219,4 @@ Page: 375x812 | Cards: white, 12px radius
 
 Values are restated here for convenience only — `profile/tokens.css` is the single source of truth.
 
-**Full design specs:** `profile/DESIGN.md`
 **Production screens & terminology:** `profile/production-reference.md`

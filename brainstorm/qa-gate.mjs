@@ -85,21 +85,27 @@ function isColorLiteral(value) {
 
 // ---- Profile / platform / rule-pack loading ----
 
-function readJson(file, fallback) {
-  try {
-    return JSON.parse(fs.readFileSync(file, 'utf8'));
-  } catch {
-    return fallback;
+// The profile's machine-readable config is the frontmatter block at the top of
+// profile/PROFILE.md: flat `key: value` lines between two `---` fences.
+function readProfileConfig(profileDir) {
+  let text = '';
+  try { text = fs.readFileSync(path.join(profileDir, 'PROFILE.md'), 'utf8'); } catch {}
+  const block = text.match(/^---\n([\s\S]*?)\n---/);
+  const config = {};
+  if (block) {
+    for (const line of block[1].split('\n')) {
+      const m = line.match(/^([\w-]+):\s*(.*)$/);
+      if (m) config[m[1]] = m[2].trim();
+    }
   }
+  return config;
 }
 
 // A profile without rules.mjs is valid and passes the core checks — that is the
 // point: a forking team's first run must not be blocked by another product's
-// laws. See ADR 0005.
-async function loadProfileRules(profileDir, profile) {
-  const rel = profile.rules;
-  if (!rel) return { severity: {}, rules: [] };
-  const file = path.resolve(profileDir, rel);
+// laws. See ADR 0005. Rules load by convention: the file exists, or there are none.
+async function loadProfileRules(profileDir) {
+  const file = path.join(profileDir, 'rules.mjs');
   if (!fs.existsSync(file)) return { severity: {}, rules: [] };
   const mod = await import(pathToFileURL(file).href);
   const pack = mod.default || mod;
@@ -222,11 +228,7 @@ function checkFile(file, env) {
 
   // -- Shell checks (generated page-template documents only) --
   if (isFullDoc) {
-    const required = [
-      path.basename(profile.tokens || 'tokens.css'),
-      path.basename(profile.components || 'components.css'),
-      'phone-mockup.css',
-    ];
+    const required = ['tokens.css', 'components.css'];
     for (const sheet of required) {
       if (!new RegExp(`<link[^>]*href\\s*=\\s*"[^"]*${sheet}`, 'i').test(cleaned)) {
         add('missing-stylesheet', `required stylesheet ${sheet} is not linked`);
@@ -251,13 +253,13 @@ function checkFile(file, env) {
   }
 
   if (screens.length === 0) {
-    add('no-page-class', `no .${pageClass} found — screen was invented outside the design system; copy from ${profile.screens || './screens'} templates`);
+    add('no-page-class', `no .${pageClass} found — screen was invented outside the design system; copy from profile/screens/ templates`);
   }
 
   // -- Per-screen checks --
   // Chrome is only required when the active platform pack actually has any; a
   // chrome-less platform must not fail every screen.
-  const platformHasChrome = Boolean(platform && platform.variants && Object.keys(platform.variants).length);
+  const platformHasChrome = Boolean(platform && platform.hasChrome);
   for (const screen of screens) {
     if (platformHasChrome && !CHROME_TAG_RE.test(screen.text)) {
       add('no-chrome', `screen ${screen.index}: missing <preview-chrome> placeholder`, screen.start);
@@ -289,7 +291,7 @@ function checkFile(file, env) {
       if (tokens) {
         add('token-color', `hardcodes ${match[0]}; use var(${tokens.join(' or ')})`, ctx.start + match.index);
       } else {
-        add('nontoken-color', `off-palette color ${match[0]} — no matching token in ${profile.tokens || 'tokens.css'}`, ctx.start + match.index);
+        add('nontoken-color', `off-palette color ${match[0]} — no matching token in tokens.css`, ctx.start + match.index);
       }
     }
 
@@ -297,7 +299,7 @@ function checkFile(file, env) {
     const fontRe = /font-family\s*:\s*([^;"}]+)/gi;
     while ((match = fontRe.exec(ctx.body)) !== null) {
       if (!/var\(\s*--/.test(match[1])) {
-        add('generic-font', `font-family "${match[1].trim()}" — use a font token from ${profile.tokens || 'tokens.css'}`, ctx.start + match.index);
+        add('generic-font', `font-family "${match[1].trim()}" — use a font token from tokens.css`, ctx.start + match.index);
       }
     }
 
@@ -340,11 +342,16 @@ async function main() {
     return;
   }
 
-  const profile = readJson(path.join(profileDir, 'profile.json'), {});
+  const profile = readProfileConfig(profileDir);
+  // A platform pack is a directory holding a chrome.html; that file's presence
+  // is what makes the pack contribute preview chrome.
   const platform = profile.platform
-    ? readJson(path.join(__dirname, 'platforms', profile.platform, 'platform.json'), null)
+    ? {
+        name: profile.platform,
+        hasChrome: fs.existsSync(path.join(__dirname, 'platforms', profile.platform, 'chrome.html')),
+      }
     : null;
-  const rulePack = await loadProfileRules(profileDir, profile);
+  const rulePack = await loadProfileRules(profileDir);
   const env = {
     tokenMap: buildTokenValueMap(profileDir),
     profile,

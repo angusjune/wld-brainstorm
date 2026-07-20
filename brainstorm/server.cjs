@@ -88,44 +88,48 @@ try {
 
 // --- Presentation-only chrome, resolved from the active platform pack ---
 // Nothing here knows what WeChat is: the tag is always <preview-chrome>, and
-// which variants exist and what they render comes from the pack the profile
-// selects. Swapping platform is a profile.json edit, not a code change.
+// what it renders comes from the single chrome.html of the pack the profile
+// selects. Swapping platform is a PROFILE.md frontmatter edit, not a code change.
 const CHROME_TAG = 'preview-chrome';
 
-function readJson(file, fallback) {
-  try {
-    return JSON.parse(fs.readFileSync(file, 'utf8'));
-  } catch {
-    return fallback;
+// The profile's machine-readable config is the frontmatter block at the top of
+// profile/PROFILE.md: flat `key: value` lines between two `---` fences.
+function readProfileConfig(profileDir) {
+  let text = '';
+  try { text = fs.readFileSync(path.join(profileDir, 'PROFILE.md'), 'utf8'); } catch {}
+  const block = text.match(/^---\n([\s\S]*?)\n---/);
+  const config = {};
+  if (block) {
+    for (const line of block[1].split('\n')) {
+      const m = line.match(/^([\w-]+):\s*(.*)$/);
+      if (m) config[m[1]] = m[2].trim();
+    }
   }
+  return config;
 }
 
-const PROFILE = readJson(path.join(PROFILE_DIR, 'profile.json'), {});
+const PROFILE = readProfileConfig(PROFILE_DIR);
 const PLATFORM_NAME = PROFILE.platform || null;
 const PLATFORM_DIR = PLATFORM_NAME ? path.join(PLATFORMS_DIR, PLATFORM_NAME) : null;
-const PLATFORM = PLATFORM_DIR ? readJson(path.join(PLATFORM_DIR, 'platform.json'), null) : null;
 
-if (PLATFORM_NAME && !PLATFORM) {
-  console.error(`Unknown platform "${PLATFORM_NAME}" — no platforms/${PLATFORM_NAME}/platform.json. Check profile/profile.json.`);
+if (PLATFORM_DIR && !fs.existsSync(PLATFORM_DIR)) {
+  console.error(`Unknown platform "${PLATFORM_NAME}" — no platforms/${PLATFORM_NAME}/ directory. Check the frontmatter in profile/PROFILE.md.`);
   process.exit(1);
 }
 
-// variant name -> rendered snippet, loaded from the active pack.
-const CHROME_VARIANTS = {};
-if (PLATFORM && PLATFORM.variants) {
-  for (const [variant, rel] of Object.entries(PLATFORM.variants)) {
-    try {
-      CHROME_VARIANTS[variant] = fs.readFileSync(path.resolve(PLATFORM_DIR, rel), 'utf8');
-    } catch {
-      console.error(`Platform "${PLATFORM_NAME}" declares variant "${variant}" but ${rel} is unreadable.`);
-      process.exit(1);
-    }
-  }
+// The pack's chrome.html carries one <style> block (injected once into every
+// served page) and the nav markup stamped into each <preview-chrome> tag. A
+// pack without chrome.html is chrome-less: the tag expands to nothing.
+const CHROME_STYLE_RE = /<style[^>]*>[\s\S]*?<\/style>/i;
+let CHROME_STYLE_TAG = '';
+let CHROME_MARKUP = '';
+if (PLATFORM_DIR) {
+  let chromeHtml = '';
+  try { chromeHtml = fs.readFileSync(path.join(PLATFORM_DIR, 'chrome.html'), 'utf8'); } catch {}
+  const styleMatch = chromeHtml.match(CHROME_STYLE_RE);
+  if (styleMatch) CHROME_STYLE_TAG = styleMatch[0];
+  CHROME_MARKUP = chromeHtml.replace(CHROME_STYLE_RE, '').trim();
 }
-
-const CHROME_CSS_URL = PLATFORM && PLATFORM.chrome
-  ? `/platform/${String(PLATFORM.chrome).replace(/^\.\//, '')}`
-  : null;
 
 // URL prefix -> directory. `/assets/` is shared machinery, `/profile/` is the
 // product profile, `/platform/` is the active platform pack. Screens name none
@@ -154,14 +158,16 @@ function parseTagAttrs(rawAttrs) {
   return attrs;
 }
 
+// Which variants exist is the pack's business: a variant attribute becomes a
+// chrome-navbar--<variant> modifier class, and the pack's own CSS decides what
+// (if anything) that modifier changes. No attribute means the default shell.
 function renderChrome(attrs) {
-  const requested = attrs.variant || attrs.type;
-  const variant = Object.prototype.hasOwnProperty.call(CHROME_VARIANTS, requested)
-    ? requested
-    : (PLATFORM && PLATFORM.defaultVariant) || null;
-  const snippet = variant ? CHROME_VARIANTS[variant] : null;
-  if (!snippet) return '';
-  return snippet.replaceAll('{{title}}', escapeHtml(attrs.title || ''));
+  if (!CHROME_MARKUP) return '';
+  const variant = attrs.variant || attrs.type;
+  const variantClass = variant ? `chrome-navbar--${variant}` : '';
+  return CHROME_MARKUP
+    .replaceAll('{{variant_class}}', escapeHtml(variantClass))
+    .replaceAll('{{title}}', escapeHtml(attrs.title || ''));
 }
 
 const CHROME_TAG_RE = new RegExp(
@@ -175,11 +181,6 @@ function expandChrome(html) {
   return html.replace(CHROME_TAG_RE, (_, rawAttrs) => renderChrome(parseTagAttrs(rawAttrs)));
 }
 
-function ensureStylesheet(html, href) {
-  if (html.includes(href) || !html.includes('</head>')) return html;
-  return html.replace('</head>', `  <link rel="stylesheet" href="${href}">\n</head>`);
-}
-
 // --- Helper script injection ---
 const HELPER_SCRIPT = `
 <script>
@@ -190,14 +191,14 @@ window.__BRAINSTORM_SSE_URL = '/api/events';
 
 function injectHelper(html) {
   html = expandChrome(html);
-  html = ensureStylesheet(html, '/assets/reset.css');
-  if (CHROME_CSS_URL) html = ensureStylesheet(html, CHROME_CSS_URL);
-  // Inject frame styles before </head> (or before </body> as fallback)
-  if (FRAME_STYLES_TAG) {
+  // Inject the pack's chrome styles + frame styles (reset, phone mockup,
+  // frame layout) before </head> (or before <body> as fallback)
+  const styleTags = [CHROME_STYLE_TAG, FRAME_STYLES_TAG].filter(Boolean).join('\n');
+  if (styleTags) {
     if (html.includes('</head>')) {
-      html = html.replace('</head>', FRAME_STYLES_TAG + '\n</head>');
+      html = html.replace('</head>', styleTags + '\n</head>');
     } else if (html.includes('<body')) {
-      html = html.replace('<body', FRAME_STYLES_TAG + '\n<body');
+      html = html.replace('<body', styleTags + '\n<body');
     }
   }
   // Inject helper script before </body> or at the end
@@ -270,11 +271,8 @@ const server = http.createServer((req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(injectHelper(`
         <!DOCTYPE html><html><head><meta charset="UTF-8">
-        <link rel="stylesheet" href="/assets/reset.css">
         <link rel="stylesheet" href="/profile/tokens.css">
         <link rel="stylesheet" href="/profile/components.css">
-        <link rel="stylesheet" href="/platform/chrome.css">
-        <link rel="stylesheet" href="/assets/phone-mockup.css">
         <style>body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f0f0f0;font-family:system-ui}</style>
         </head><body>
         <div style="text-align:center;color:#888">

@@ -1,4 +1,4 @@
-# Product Memory Bridge
+# Product Knowledge
 
 How the bundled `brainstorm` skill consumes product knowledge snapshots.
 

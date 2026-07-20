@@ -1,3 +1,4 @@
+
 /* =============================================================================
    WeChat Mini Program — Presentation Chrome
 
@@ -6,8 +7,8 @@
    capsule, whatever the product's design system looks like.
 
    Presentation only — this reproduces WeChat's shell around a screen; it is
-   never production code. Write <preview-chrome variant="home|inner" title="…">
-   in brainstorm HTML and server.cjs expands it from this pack's snippets/.
+   never production code. Copy this file's style block once and its nav markup
+   into each phone in the standalone brainstorm HTML.
 
    Self-contained by design: it borrows no token from the product profile, so
    swapping profile/ cannot break the chrome. A profile may optionally override

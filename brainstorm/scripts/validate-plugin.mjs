@@ -151,9 +151,17 @@ if (!fs.existsSync(screensDir)) {
 // refactor introduced (templates pointing at /assets/icons/ after icons moved to
 // profile/) — the QA gate doesn't inspect img srcs, so only this catches it.
 if (fs.existsSync(screensDir)) {
+  // The profile's machine-readable config is PROFILE.md's frontmatter block.
   const profileConfig = (() => {
     try {
-      return JSON.parse(fs.readFileSync(path.join(ROOT, 'profile', 'profile.json'), 'utf8'));
+      const text = fs.readFileSync(path.join(ROOT, 'profile', 'PROFILE.md'), 'utf8');
+      const block = text.match(/^---\n([\s\S]*?)\n---/);
+      const config = {};
+      for (const line of (block ? block[1] : '').split('\n')) {
+        const m = line.match(/^([\w-]+):\s*(.*)$/);
+        if (m) config[m[1]] = m[2].trim();
+      }
+      return config;
     } catch {
       return {};
     }

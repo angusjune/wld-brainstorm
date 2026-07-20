@@ -15,7 +15,7 @@ Task: 在"我的"页面加一个在线客服入口，顺便把整体布局优化
 2. **How many screens:** 1 屏 — 「我的」Tab 默认态。不做消息未读态 / 会话页（属客服系统本身）。
 3. **Data shown:** 与模板一致（道明、已实名、补充信息、借还记录/优惠券/更换还款卡/微卡/开具证明/帮助中心、专属福利行）。新增入口文案为「在线客服」。方案 B 的副文案「人工服务 9:00-21:00」为占位 —— **真实客服时段是缺失输入**，落地前需确认（Fix Details pass 按规则不猜测，已标注）。
 4. **Source production template:** `profile/screens/我的Tab.html`（路由表 Account / profile (我的) tab 行）。
-5. **Product rules loaded:** `product-memory.md` 的映射表中「我的Tab」无 COMP_ID —— 无捆绑产品规则覆盖此屏，设计仅依据视觉模板（按 profile 规则跳过注入）。
+5. **Product rules loaded:** `PRODUCT.md` 的映射表中「我的Tab」无 COMP_ID —— 无捆绑产品规则覆盖此屏，设计仅依据视觉模板（按 profile 规则跳过注入）。
 6. **Diversity mode:** Mixed（默认）— 方案 A、B 为 UX 变体（入口层级与分组不同），方案 C 为视觉变体。
 7. **Chosen direction (user unavailable):** 方案 A「高频入口置顶」— 推荐默认：同时满足「客服入口一屏可见」与「整体布局优化」（高频功能一行直达 + 低频账户功能改为列表行）。
 8. **Non-goals / constraints:** 不加悬浮客服气泡、不加未读角标、不改 Tab 栏与预览 chrome、无促销/催促文案、静态页面无 JS。

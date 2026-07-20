@@ -20,7 +20,7 @@ Task: 首页要能提醒用户最近7天内要还的钱，给我三个方案看�
 - Screens/states: 个人中心 with active loan, repayment due in 3 days
 - Data: ¥55000 可借 / ¥60000 总额度 / 7月20日应还 ¥537.20 / 提前还清 1笔
 - Source templates: `profile/screens/个人中心-有借款.html` (base), `profile/screens/本期应还.html` (repayment terminology: 应还 / 自动还款)
-- Product rules loaded: none — 个人中心-有借款.html is mapped to "(not yet in bundled KB)" in `profile/product-memory.md`, so no bundled product rules cover this screen; the design relies on the visual template alone (per the bridge's filter rule, nothing was invented to fill the gap)
+- Product rules loaded: none — 个人中心-有借款.html is mapped to "(not yet in bundled KB)" in `profile/PRODUCT.md`, so no bundled product rules cover this screen; the design relies on the visual template alone (per the bridge's filter rule, nothing was invented to fill the gap)
 - Non-goals: no change to the borrow flow, no new screens, no interactivity
 
 ## Benchmark deviations applied
