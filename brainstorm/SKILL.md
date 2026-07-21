@@ -1,11 +1,11 @@
 ---
 name: brainstorm
-description: 用于基于内置产品档案进行移动端 UI 头脑风暴：生成3个方案、迭代完整流程，并在定稿后继续精简、校验细节、推送 Figma、构建平台原型或运行界面陀螺 battle。Use when exploring or finishing mobile screens with the bundled product profile.
+description: 用于基于内置产品档案进行移动端 UI 头脑风暴：生成3个方案、迭代完整流程，并在定稿后继续精简、校验细节、推送 Figma 或构建平台原型。Use when exploring or finishing mobile screens with the bundled product profile.
 ---
 
 # Design Brainstorm
 
-Interactive design and finishing workflow for mobile screens. Users describe ideas, compare solution options in phone mockups, pick a direction, iterate via terminal feedback with live hot-reload preview, then choose whether to keep editing, push to Figma, build a Mini Program prototype, or run a beyblade battle.
+Interactive design and finishing workflow for mobile screens. Users describe ideas, compare solution options in phone mockups, pick a direction, iterate via terminal feedback with live hot-reload preview, then choose whether to keep editing, push to Figma, or build a platform prototype.
 
 Resolve this skill directory as `skillDir`. Every path below is relative to `skillDir`; this directory is self-contained for upload.
 
@@ -35,7 +35,7 @@ The profile's screen table lists every production template on disk, and `npm run
 
 **Brainstorm-specific references**:
 - `references/solution-archetypes.md` — UX and visual exploration archetypes for diversifying 3-solution sets
-- `references/embedded-workflows.md` — Embedded Simplify pass, plus the Push to Figma, Prototype, and Beyblade Battle branches
+- `references/embedded-workflows.md` — Embedded Simplify pass, plus the Push to Figma and Prototype branches
 - **Playwright MCP / Chrome dev tool MCP / browser tool** — Used for screenshot verification when available. If no browser automation tool is available in the current provider, skip verification for that session and tell the user.
 
 ---
@@ -53,7 +53,6 @@ The profile's screen table lists every production template on disk, and `npm run
    - **A. Give feedback** — edit the same HTML file and hot-reload
    - **B. Push to Figma** — draw editable frames in the user's Figma page
    - **C. Prototype** — a branch the platform pack contributes, if it has one
-   - **D. Beyblade battle** — turn selected screens into a local battle arena
 9. Continue the chosen branch until its completion criterion is met.
 
 ---
@@ -254,11 +253,10 @@ Ask the user to choose one of these paths after they have seen the approved scre
 | A | Feedback | Edit the current HTML in `screenDir`; the browser hot-reloads through SSE. Repeat until the user is satisfied. |
 | B | Push to Figma | Use the Push to Figma branch in `references/embedded-workflows.md`. Requires the approved brainstorm source and a target Figma page link. |
 | C | Prototype | Only offered when the active platform pack ships a `branches/` directory. Follow the branch doc inside it — on `wechat` that is `platforms/wechat/branches/prototype.md`, which builds a Mini Program demo. Do not offer this choice when the pack contributes no branches. |
-| D | Beyblade battle | Use the Beyblade Battle branch in `references/embedded-workflows.md`. Uses 2-7 approved brainstorm screens as battle entrants. |
 
 **Critical for A:** Always edit the SAME file for iterative changes. Only create new files for new screens.
 
-**Critical for B/C/D:** Load only the selected branch from `references/embedded-workflows.md`; do not carry unrelated branch instructions into context. If the required input for that branch is missing, ask for it in one short message and do not substitute a screenshot-only or text-only deliverable unless that branch explicitly allows it.
+**Critical for B/C:** Load only the selected branch from `references/embedded-workflows.md`; do not carry unrelated branch instructions into context. If the required input for that branch is missing, ask for it in one short message and do not substitute a screenshot-only or text-only deliverable unless that branch explicitly allows it.
 
 ---
 
