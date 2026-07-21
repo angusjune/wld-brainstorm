@@ -8,7 +8,7 @@ The layer is load-bearing, not decorative: the Step 6 **Prototype** branch build
 
 ## The rule pack is optional on purpose
 
-`scripts/run-qa-gate.mjs` runs only universal checks by default (emoji, off-token colours, required stylesheets). Product rules live in an optional `profile/rules.mjs`, written in JavaScript, and a profile without one still passes.
+`scripts/run-qa-gate.mjs` runs only universal checks by default (emoji, off-token colours, required stylesheets). Product rules live in an optional `profile/quality/rules.mjs`, written in JavaScript, and a profile without one still passes.
 
 This is deliberate even though it weakens what "passed QA" means for a new profile. Today the gate encodes WLD policy as control flow — a Chinese urgency-copy blocklist, a literal `#ffd143`, a `findBorrowTab()` that greps the page for the characters `借钱`, and a background rule that branches on it. That is why the README currently has to warn that `scripts/run-qa-gate.mjs` 「必须同步删除或修改…否则会自动拦截生成的正常界面」: a forking team's first experience is their own screens being rejected for not looking like a loan app. A gate that blocks every newcomer on day one is worse than one that starts permissive and is opted into.
 

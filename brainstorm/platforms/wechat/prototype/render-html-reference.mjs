@@ -66,8 +66,8 @@ function main() {
   fragment = fragment.replaceAll('/profile/', `file://${profileDir}/`);
 
   const css = [
-    path.join(profileDir, 'tokens.css'),
-    path.join(profileDir, 'components.css'),
+    path.join(profileDir, 'design-system', 'tokens.css'),
+    path.join(profileDir, 'design-system', 'components.css'),
   ].map((f) => fs.readFileSync(f, 'utf8')).join('\n');
 
   const isFull = /<html[\s>]/i.test(fragment);

@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
 /**
- * Generate the Mini Program's token block from the product profile's tokens.css.
+ * Generate the Mini Program's token block from the product profile's
+ * design-system/tokens.css.
  *
  * The profile owns its design system in every technology it targets, and
- * tokens.css is the single source of truth for the values (ADR 0004). This
+ * design-system/tokens.css is the single source of truth for the values (ADR 0004). This
  * script exists because the alternative -- hand-maintaining the same palette in
  * WXSS -- is what let the two libraries drift apart: app.wxss had gold as
  * #ffcd00 while tokens.css had #FFD143, and a system-ui font stack while the
@@ -26,7 +27,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SKILL_DIR = path.resolve(__dirname, '..', '..', '..');
 
-const BEGIN = '/* GENERATED FROM profile/tokens.css — do not edit by hand. */';
+const BEGIN = '/* GENERATED FROM profile/design-system/tokens.css — do not edit by hand. */';
 const END = '/* END GENERATED */';
 
 // Resolve var() chains so the WXSS block carries literal values: Mini Program
@@ -128,7 +129,7 @@ function main() {
   const profile = readProfileConfig(profileDir);
   const inferredPrefix = profile.pageClass?.replace(/-page$/, '');
   const tokenPrefix = profile.tokenPrefix || inferredPrefix || '';
-  const decls = parseTokens(fs.readFileSync(path.join(profileDir, 'tokens.css'), 'utf8'));
+  const decls = parseTokens(fs.readFileSync(path.join(profileDir, 'design-system', 'tokens.css'), 'utf8'));
   const block = buildBlock(decls, tokenPrefix);
 
   const existing = fs.existsSync(out) ? fs.readFileSync(out, 'utf8') : '';

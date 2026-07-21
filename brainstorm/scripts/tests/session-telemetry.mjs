@@ -20,7 +20,7 @@ const BRAINSTORM_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url))
 const SERVER = path.join(BRAINSTORM_DIR, 'scripts/serve-preview.cjs');
 const GATE = path.join(BRAINSTORM_DIR, 'scripts/run-qa-gate.mjs');
 const REPORTER = path.join(BRAINSTORM_DIR, 'scripts/report-session-telemetry.mjs');
-const PROFILE_FIXTURE = path.join(BRAINSTORM_DIR, 'profile/quality-benchmark/fixtures/clean-inner.html');
+const PROFILE_FIXTURE = path.join(BRAINSTORM_DIR, 'profile/quality/benchmark/fixtures/clean-inner.html');
 const PROFILE_SCREENS = path.join(BRAINSTORM_DIR, 'profile/screens');
 const CLEAN_SCREEN = fs.existsSync(PROFILE_FIXTURE)
   ? PROFILE_FIXTURE

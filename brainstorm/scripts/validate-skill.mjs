@@ -73,10 +73,14 @@ const docsToScan = [
   path.join(ROOT, 'AGENTS.md'),
   path.join(ROOT, 'README.md'),
 ].filter((file) => fs.existsSync(file));
-for (const doc of [path.join(ROOT, 'profile', 'PROFILE.md'), path.join(ROOT, 'profile', 'README.md')]) {
+for (const doc of [
+  path.join(ROOT, 'profile', 'PROFILE.md'),
+  path.join(ROOT, 'profile', 'README.md'),
+  path.join(ROOT, 'profile', 'knowledge', 'README.md'),
+]) {
   if (fs.existsSync(doc)) docsToScan.push(doc);
 }
-for (const dir of [path.join(ROOT, 'references'), path.join(ROOT, 'profile', 'passes')]) {
+for (const dir of [path.join(ROOT, 'references'), path.join(ROOT, 'profile', 'quality', 'passes')]) {
   if (!fs.existsSync(dir)) continue;
   for (const f of fs.readdirSync(dir)) {
     if (f.endsWith('.md')) docsToScan.push(path.join(dir, f));

@@ -12,6 +12,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url))
 const REPO = path.resolve(HERE, '../..')
 const SKILL = path.join(REPO, 'brainstorm')
 const PROFILE = path.join(SKILL, 'profile')
+const DESIGN_SYSTEM = path.join(PROFILE, 'design-system')
 // Resolve the platform pack the way scripts/serve-preview.cjs does, from the frontmatter of
 // profile/PROFILE.md (flat `key: value` lines), rather than hardcoding wechat.
 function readFrontmatter(text) {
@@ -86,6 +87,7 @@ export function expandChrome(html, chromeMarkup) {
 export function composeScreenDocument(fragment, title, chromeMarkup) {
   const body = expandChrome(fragment, chromeMarkup)
     .replace(/src="\/assets\//g, 'src="assets/')
+    .replace(/src="\/profile\/design-system\//g, 'src="assets/')
     .replace(/src="\/profile\//g, 'src="assets/')
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -132,10 +134,10 @@ function sync() {
   // Flattened into one assets/ dir for the static site; the three layers stay
   // distinct in the skill itself.
   for (const css of ['tokens.css', 'components.css']) {
-    fs.copyFileSync(mustExist(path.join(PROFILE, css)), path.join(OUT, 'assets', css))
+    fs.copyFileSync(mustExist(path.join(DESIGN_SYSTEM, css)), path.join(OUT, 'assets', css))
   }
   fs.writeFileSync(path.join(OUT, 'assets/chrome.css'), chrome.css)
-  fs.cpSync(mustExist(path.join(PROFILE, 'icons')), path.join(OUT, 'assets/icons'), { recursive: true })
+  fs.cpSync(mustExist(path.join(DESIGN_SYSTEM, 'icons')), path.join(OUT, 'assets/icons'), { recursive: true })
 
   const screensDir = mustExist(path.join(PROFILE, 'screens'))
   const screenFiles = fs.readdirSync(screensDir).filter((f) => f.endsWith('.html'))

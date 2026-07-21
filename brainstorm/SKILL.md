@@ -13,12 +13,11 @@ Resolve this skill directory as `skillDir`. Every path below is relative to `ski
 
 **The product profile** (in `profile/`) — everything specific to this product, and the only directory a forking team rewrites:
 - `PROFILE.md` — **Read this at Step 3.** Its frontmatter is the machine-readable profile config (product, platform, page class, token prefix); its body carries the screen table, template routing, design language, product laws, passes, and quick reference
-- `tokens.css` — All CSS custom properties (the single source of truth for the palette)
-- `components.css` — Full CSS for every component
 - `screens/` — Production screen templates (the ground truth)
-- `PRODUCT.md` — Bridge to bundled product knowledge (screen ↔ COMP_ID mapping, filter rules, injection format)
-- `production-reference.md` — Current app screens, structure, and terminology
-- `rules.mjs` — Optional product QA rules loaded by `scripts/run-qa-gate.mjs`
+- `design-system/` — `tokens.css` (the single source of truth), `components.css`, and profile icons
+- `knowledge/` — Optional bundled product-knowledge bridge and read-only caches
+- `quality/` — Optional product rules, passes, deterministic tools, and benchmark data
+- `miniprogram/` — Optional product-owned Mini Program template used by the platform Prototype branch
 
 **Platform packs** (in `platforms/`) — the surface's furniture, shared by any product on it. The profile's `platform` field selects exactly one:
 - `wechat/` — WeChat Mini Program: status bar, 88px navbar, capsule; contributes the Prototype branch
@@ -66,8 +65,8 @@ The profile's screen table lists every production template on disk, and `npm run
 <html>
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="/profile/tokens.css">
-  <link rel="stylesheet" href="/profile/components.css">
+  <link rel="stylesheet" href="/profile/design-system/tokens.css">
+  <link rel="stylesheet" href="/profile/design-system/components.css">
 </head>
 <body>
   <div class="frame-header">
@@ -140,7 +139,7 @@ Then read the closest matching template from `profile/screens/`, using the routi
 
 **Preview chrome:** Use the placeholder form the profile specifies, taken from the production template. Do NOT write status bar, navbar, capsule, or back-arrow markup from scratch — the server expands the placeholder from the active platform pack, which also owns the chrome styles. This chrome is for presentation only, never production code.
 
-**Screen-specific styles:** Each production template defines its own CSS classes in a `<style>` block at the bottom of the file. These are NOT in `components.css`. When adapting a template, copy these local styles along with the HTML structure.
+**Screen-specific styles:** Each production template defines its own CSS classes in a `<style>` block at the bottom of the file. These are NOT in `profile/design-system/components.css`. When adapting a template, copy these local styles along with the HTML structure.
 
 **Product rules and pitfalls:** Follow the profile's product-knowledge section — it names the bridge file, the filter rule, and the injection format. If a product rule conflicts with a template, the rule wins; flag the conflict to the user. If the profile maps no knowledge for this screen, skip silently.
 
@@ -197,7 +196,7 @@ Check if the server (the `url` saved from Step 2 — the port may differ from 32
 node "<skill-dir>/scripts/run-qa-gate.mjs" "<screenDir>/solutions.html"
 ```
 
-The gate is deterministic. It always runs universal checks (off-token colours, emoji, custom JS, missing stylesheets), plus this profile's own rules if it ships a `rules.mjs`. Exit code 1 means at least one error — fix the HTML and re-run until it exits 0. Warnings are advisory. Then eyeball the checks the gate cannot automate:
+The gate is deterministic. It always runs universal checks (off-token colours, emoji, custom JS, missing stylesheets), plus this profile's own rules if it ships `profile/quality/rules.mjs`. Exit code 1 means at least one error — fix the HTML and re-run until it exits 0. Warnings are advisory. Then eyeball the checks the gate cannot automate:
 - Preview chrome uses the profile's placeholder, not hand-built navbar markup
 - No overflow, clipped text, or unreadable captions
 - Every product law in `profile/PROFILE.md` holds
@@ -263,7 +262,7 @@ Ask the user to choose one of these paths after they have seen the approved scre
 ## Design Principles
 
 - **More on writing in design.** Words appear in a design for one reason: to make it easier to understand, and therefore easier to use. They are design material, not decoration. Bring the same intentionality to copy that you would bring to spacing and color. Before writing anything, ask what the design needs to say, and how it can best be said to help the person navigate the experience. If a design is good enough, it is self-explanatory without extra words. Don't add words that aren't 100% necessary
-- **Stay in the design system.** Every component uses the profile's tokens and patterns. Never introduce a colour, radius, or font that isn't in `profile/tokens.css`.
+- **Stay in the design system.** Every component uses the profile's tokens and patterns. Never introduce a colour, radius, or font that isn't in `profile/design-system/tokens.css`.
 
 ---
 
@@ -292,7 +291,7 @@ Method mistakes. **The profile's product laws are the other half of this table**
 | Adding JS interactivity | Screens are static — show states as separate screens |
 | Showing bare HTML pages | Always wrap in `.phone-mockup` |
 | Calling old standalone skills from Step 4/5 | Use the embedded passes in `references/embedded-workflows.md` from this `brainstorm` skill |
-| Hardcoding a colour, radius, or font | Use a token from `profile/tokens.css` — it is the single source of truth |
+| Hardcoding a colour, radius, or font | Use a token from `profile/design-system/tokens.css` — it is the single source of truth |
 | Adding frame styles manually | Server auto-injects frame styles from frame-template.html — no manual linking or copying needed |
 | CTA pinned to screen bottom behind a void | Place the CTA where the source template places it (often centered right after content) |
 | Editing a product fact in this file | Product facts belong in `profile/`; this file names no product |
@@ -301,6 +300,6 @@ Method mistakes. **The profile's product laws are the other half of this table**
 
 ## Quick Reference
 
-The active product's palette, typography, and chrome are in the Quick reference section of `profile/PROFILE.md`. `profile/tokens.css` is the single source of truth for every value.
+The active product's palette, typography, and chrome are in the Quick reference section of `profile/PROFILE.md`. `profile/design-system/tokens.css` is the single source of truth for every value.
 
-**Production screens & terminology:** Read `profile/production-reference.md`.
+**Production screens & terminology:** Read `profile/PROFILE.md` and the closest matching template in `profile/screens/`.

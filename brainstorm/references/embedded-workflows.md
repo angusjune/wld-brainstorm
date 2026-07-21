@@ -11,7 +11,7 @@ Run after every generated `solutions.html` and after every flow screen.
 Completion criterion: the file keeps all required product facts and legal/rate copy, has one clear primary action per screen, and contains no removable copy, decoration, or duplicate element that does not help the user complete the task.
 
 1. Read the generated HTML.
-2. Read `profile/PRODUCT.md` and load matching pitfalls from `profile/pm-memory-cache/common-pitfalls.yaml` when the screen has a COMP_ID. Treat loaded rules as must-keep product constraints.
+2. Read `profile/knowledge/README.md` and load matching pitfalls from `profile/knowledge/memory-cache/common-pitfalls.yaml` when the screen has a COMP_ID. Treat loaded rules as must-keep product constraints.
 3. Remove or merge anything that fails these checks:
    - The user does not need it to complete the task.
    - The text says something already obvious from nearby UI.
@@ -23,7 +23,7 @@ Completion criterion: the file keeps all required product facts and legal/rate c
 
 ## Profile-contributed passes
 
-Passes beyond Simplify are contributed by the active product profile, not by this file. Read the Passes table in `profile/PROFILE.md` and run each pass it lists, in order, after Simplify. The bundled profile contributes a Fix Details pass (`profile/passes/fix-details.md`), which verifies loan arithmetic; a profile that declares no passes runs Simplify only.
+Passes beyond Simplify are contributed by the active product profile, not by this file. Read the Passes table in `profile/PROFILE.md` and run each pass it lists, in order, after Simplify. The bundled profile contributes a Fix Details pass (`profile/quality/passes/fix-details.md`), which verifies loan arithmetic; a profile that declares no passes runs Simplify only.
 
 ## Push to Figma Branch
 
@@ -35,7 +35,7 @@ If no writable Figma MCP tool is available, stop and explain that this branch re
 
 Workflow:
 
-1. Read the approved brainstorm HTML files, sibling flow screens, `profile/tokens.css`, `profile/components.css`, and the closest production templates.
+1. Read the approved brainstorm HTML files, sibling flow screens, `profile/design-system/tokens.css`, `profile/design-system/components.css`, and the closest production templates.
 2. Parse the target Figma URL and verify the target page/node is writable.
 3. Search the product's component library and the target file for existing components before drawing. The profile's Figma section lists which components to prioritize; when it names none, search by the class names used in the approved HTML.
 4. Keep a mapping table: brainstorm element -> searched/preferred Figma component -> component instance used or primitive fallback -> fallback reason.

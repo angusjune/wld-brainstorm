@@ -52,7 +52,7 @@ Production-accurate HTML in `profile/screens/`, exported from Figma. **This tabl
 | Onboarding / welcome | `欢迎页.html` |
 | Bank card management | `更换还款卡.html` |
 | Account / profile (我的) tab | `我的Tab.html` |
-| Any card/cell layout | Also read `profile/components.css` |
+| Any card/cell layout | Also read `profile/design-system/components.css` |
 
 **Canonical reference:** where templates disagree (inline styles vs. classes), prefer the majority pattern. `个人中心.html` is the canonical home screen reference.
 
@@ -88,7 +88,7 @@ Minimal shadows: cards may use `var(--wld-shadow-card)`; avoid heavy drop shadow
 
 ### Component notes
 
-The values live in `tokens.css` and the CSS lives in `components.css`; these are the behavioral rules the CSS alone does not say:
+The values live in `profile/design-system/tokens.css` and the CSS lives in `profile/design-system/components.css`; these are the behavioral rules the CSS alone does not say:
 
 - **Quick amount chips** (输入金额): `border-radius: 4px`, padding 5px 10px, 14px text, `rgba(0,0,0,0.06)` background. They are NOT buttons — never make them pills.
 - **Settings/options row** (输入金额 loan config): label (14px semibold, left) + value (14px regular, right-aligned) + chevron, inside a white 12px-radius card, 0.5px dividers indented 20px. A distinct pattern from Select/Cell.
@@ -145,19 +145,19 @@ Never hand-write status bar, navbar, capsule, or back-arrow markup. The server e
 
 ### Screen-specific styles
 
-多个生产模板共用的样式放在 `components.css`；仅属于单个页面的样式保留在模板底部的 `<style>` 中（例如 `.wld-loan-amount`）。改造模板时必须同时保留其局部样式；同一方案页只保留一份局部 CSS，禁止为每个方案重复复制。
+多个生产模板共用的样式放在 `profile/design-system/components.css`；仅属于单个页面的样式保留在模板底部的 `<style>` 中（例如 `.wld-loan-amount`）。改造模板时必须同时保留其局部样式；同一方案页只保留一份局部 CSS，禁止为每个方案重复复制。
 
 ---
 
 ## Product rules and pitfalls
 
-After reading the template, read `profile/PRODUCT.md` to find the screen's COMP_ID. If one exists, load matching entries from `profile/pm-memory-cache/product-patterns.yaml` and `profile/pm-memory-cache/common-pitfalls.yaml` per that file's filter rule, and inject them under its labelled headers before generating solutions.
+After reading the template, read `profile/knowledge/README.md` to find the screen's COMP_ID. If one exists, load matching entries from `profile/knowledge/memory-cache/product-patterns.yaml` and `profile/knowledge/memory-cache/common-pitfalls.yaml` per that file's filter rule, and inject them under its labelled headers before generating solutions.
 
 Patterns describe state splits, hidden product variants, and default-selection rules the visual template alone does not capture (e.g. 首借/非首借 keyboard CTA differs; the 期数 sheet has two independent variants). Pitfalls are must-avoid constraints, not cleanup suggestions.
 
 If a rule conflicts with the template, **the rule wins** — flag the conflict to the user. If no COMP_ID is mapped or the cache file is missing, skip silently.
 
-**Do not edit `pm-memory-cache/` during normal use** — it is a bundled product knowledge snapshot.
+**Do not edit `profile/knowledge/memory-cache/` during normal use** — it is a bundled product knowledge snapshot.
 
 ---
 
@@ -167,7 +167,7 @@ Run these in Steps 4 and 5, after the shared Simplify pass, before showing anyth
 
 | Pass | Doc | Notes |
 |------|-----|-------|
-| Fix Details | `profile/passes/fix-details.md` | Verifies loan arithmetic with `profile/tools/calc.mjs`. If a calculation needs missing loan parameters, leave the value unchanged and note the exact input needed. |
+| Fix Details | `profile/quality/passes/fix-details.md` | Verifies loan arithmetic with `profile/quality/tools/calc.mjs`. If a calculation needs missing loan parameters, leave the value unchanged and note the exact input needed. |
 
 ---
 
@@ -198,7 +198,34 @@ The UX Strategy directions for this product's screens. `references/solution-arch
 
 ---
 
+## Canonical terminology
+
+Use these terms consistently in generated screens and captions. The production templates remain the source of truth for full copy and context.
+
+| Chinese | English | Context |
+|---------|---------|---------|
+| 微粒贷 | Weilidai | App name (WeBank micro-loan) |
+| 借钱 | Borrow | Main tab, circle CTA |
+| 我的 | My Account | Second tab |
+| 预估可借 | Estimated available | Label above amount on home |
+| 总额度 | Total credit limit | Shown when partially used |
+| 日利率 | Daily interest rate | Shown on active loan home |
+| 年利率(单利) | Annual rate (simple) | Interest rate bar |
+| 借款期数 | Loan term | In months |
+| 还款计划 | Repayment plan | First payment date + amount |
+| 收款账户 | Receiving account | Bank card selector |
+| 借款用途 | Loan purpose | Dropdown selector |
+| 提前还清 | Early repayment | Repay before due date |
+| 本期应还 | Current period due | Amount due this period |
+| 借据 | Receipt/IOU | Individual loan record |
+| 下一步 | Next step | Continue button |
+| 还款 | Repay | Repayment action |
+
+---
+
 ## Figma component library
+
+**Production reference:** `figma.com/design/uVpLmK5WAQCUdV5pY0FK82` → node `6:1502` (Reference)
 
 When running the Push to Figma branch, prioritize these existing components before drawing primitives:
 
@@ -219,6 +246,4 @@ Buttons: border-radius 999px | Preview chrome: <preview-chrome> expands to 88px 
 Page: 375x812 | Cards: white, 12px radius
 ```
 
-Values are restated here for convenience only — `profile/tokens.css` is the single source of truth.
-
-**Production screens & terminology:** `profile/production-reference.md`
+Values are restated here for convenience only — `profile/design-system/tokens.css` is the single source of truth.

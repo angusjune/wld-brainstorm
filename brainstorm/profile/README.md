@@ -8,6 +8,24 @@
 
 ---
 
+## 目录地图
+
+```text
+profile/
+├── PROFILE.md          # 产品档案入口：配置、模板路由、设计语言、产品铁律
+├── screens/            # 生产页面模板语料，生成质量的主要来源
+├── design-system/      # tokens、组件样式和图标
+├── knowledge/          # 可选的产品知识桥接说明与只读快照
+├── quality/            # 可选的规则、passes、确定性工具和质量基准数据
+├── miniprogram/        # 可选的小程序产品模板
+├── research/           # 可选的当前产品研究记录
+└── README.md           # 换产品与维护说明
+```
+
+目录按职责分组，不按文件格式分组。`screens/` 保持在根层，因为它是最常被读取、也最影响输出质量的语料；其余可选能力各自收进一个目录。
+
+---
+
 ## 换产品要做什么
 
 按重要性排序。前两项决定输出质量，后面的可以边用边补。
@@ -15,15 +33,13 @@
 | 顺序 | 文件 | 要做什么 |
 |------|------|----------|
 | 1 | `screens/` | **最重要**。换成你自己产品的生产界面模板。模型是「照着模板改」，不是「凭空生成」，所以这批模板直接决定输出质量。 |
-| 2 | `tokens.css` | 换成你的色板、字体、间距、圆角。这是**唯一的 token 来源**，别处不要再抄一份。 |
+| 2 | `design-system/tokens.css` | 换成你的色板、字体、间距、圆角。这是**唯一的 token 来源**，别处不要再抄一份。 |
 | 3 | `PROFILE.md` | 重写模板表、路由表、产品铁律、设计语言、速查表，frontmatter 改成你的字段（见下）。agent 读正文，脚本读 frontmatter，都是这一份。 |
-| 4 | `components.css` | 换成你的组件样式。可以先留个空壳——先让 `screens/` 自带样式跑起来，等重复够多了再抽出来。 |
-| 5 | `rules.mjs` | **可选**。你自己的 QA 规则，文件存在就会被 `qa-gate` 加载。删掉也行——删了只跑通用检查，不会拦你。 |
-| 6 | `PRODUCT.md`、`pm-*-cache/` | **可选**。产品状态机、业务规律、历史坑点。没有就把 `PRODUCT.md` 里的映射表清空，Step 3 会静默跳过。 |
-| 7 | `production-reference.md` | 换成你的线上产品说明和术语表。 |
-| 8 | `miniprogram/` | 只有要用小程序 Demo 分支才需要。不用就删掉整个目录。 |
-| 9 | `research/` | **可选**。只保留你自己产品的实验记录；换产品时删除或重写，避免把旧产品结论带进新档案。 |
-| 10 | `quality-benchmark/` | **可选**。当前产品的 prompts、QA fixtures 和历史 runs；换产品时删除旧数据，再按需建立新基准。 |
+| 4 | `design-system/components.css`、`design-system/icons/` | 换成你的组件样式和图标。组件样式可以先留空壳，等重复够多了再抽出来。 |
+| 5 | `quality/` | **可选**。维护当前产品的 QA 规则、passes、确定性工具和基准数据；不用的部分直接删除。 |
+| 6 | `knowledge/` | **可选**。产品状态机、业务规律、历史坑点；不用知识快照时清空映射并删除 cache。 |
+| 7 | `miniprogram/` | 只有要用小程序 Demo 分支才需要。不用就删掉整个目录。 |
+| 8 | `research/` | **可选**。只保留你自己产品的实验记录；换产品时删除或重写，避免把旧产品结论带进新档案。 |
 
 改完跑一遍：
 
@@ -40,13 +56,13 @@ npm test           # 运行 QA、会话遥测、WXSS token 和质量基准等全
 
 | 字段 | 说明 |
 |------|------|
-| `product` | 产品短代号，用于产品知识快照的过滤（`pm-*-cache` 里按这个字段筛条目） |
+| `product` | 产品短代号，用于产品知识快照的过滤（`knowledge/*-cache/` 里按这个字段筛条目） |
 | `productName` | 产品全名，用于展示 |
 | `platform` | 平台包的名字，决定预览外壳。目前是 `wechat` |
 | `pageClass` | 包住每一屏的那个 class。`qa-gate` 靠它判断「这一屏是照模板做的，不是凭空编的」 |
-| `tokenPrefix` | `tokens.css` 的自定义属性前缀，不带前导 `--`；小程序 token 生成器用它定位语义 token |
+| `tokenPrefix` | `design-system/tokens.css` 的自定义属性前缀，不带前导 `--`；小程序 token 生成器用它定位语义 token |
 
-文件名都是约定死的：`tokens.css`、`components.css`、`screens/`、`rules.mjs`（可选，存在即加载），不用配置。
+路径都是约定死的：`design-system/tokens.css`、`design-system/components.css`、`screens/`、`quality/rules.mjs`（可选，存在即加载），不用配置。
 
 ---
 
@@ -54,4 +70,4 @@ npm test           # 运行 QA、会话遥测、WXSS token 和质量基准等全
 
 **class 前缀是这个 profile 自己的。** `wld-` 只是微粒贷的前缀，不是全局约定。通用机制里没有任何地方写死它，所以你换成 `acme-` 不会有别的东西跟着坏。
 
-**token 只有一个来源，就是 `tokens.css`。** 小程序的 `app.wxss` 里那段 token 是**生成**出来的，不要手改。历史上这里手抄过一份，结果金色抄成了两个值（`#FFD143` 和 `#ffcd00`），这就是为什么现在要生成。
+**token 只有一个来源，就是 `design-system/tokens.css`。** 小程序的 `app.wxss` 里那段 token 是**生成**出来的，不要手改。历史上这里手抄过一份，结果金色抄成了两个值（`#FFD143` 和 `#ffcd00`），这就是为什么现在要生成。

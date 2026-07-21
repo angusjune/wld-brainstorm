@@ -93,7 +93,7 @@ catalog 的粒度存在一个核心取舍：
 
 - 当前 publishable skill directory 是静态 HTML/CSS 加本地 Node server；json-render Quick Start 的主路径需要 core、React、Zod、AI SDK、API route 和 renderer registry，会引入构建、依赖与运行时层。[Quick Start](https://json-render.dev/docs/quick-start)
 - 可用 custom schema/renderer 避开 React，但这并不会省掉 catalog、stream compiler、renderer 和验证链的实现工作。[Schemas](https://json-render.dev/docs/schemas)
-- catalog 会成为第二套设计系统描述。若 `profile/components.css`、生产 screen corpus 与 catalog/registry 不由同一来源生成，三者容易漂移。
+- catalog 会成为第二套设计系统描述。若 `profile/design-system/components.css`、生产 screen corpus 与 catalog/registry 不由同一来源生成，三者容易漂移。
 - json-render 的跨平台能力对本仓库当前目标不是直接收益：本仓库需要的是高保真 brainstorm HTML，再由单独分支实现 Figma 和 Mini Program，而不是一个通用运行时 UI app。
 - 官方仓库仍在快速演进；本次调研时 README 显示大量 packages 和频繁版本发布。若采用，应锁版本并为 spec schema 与 renderer 建兼容测试。[官方仓库](https://github.com/vercel-labs/json-render)
 

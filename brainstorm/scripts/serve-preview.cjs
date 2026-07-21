@@ -299,8 +299,8 @@ const server = http.createServer((req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(injectHelper(`
         <!DOCTYPE html><html><head><meta charset="UTF-8">
-        <link rel="stylesheet" href="/profile/tokens.css">
-        <link rel="stylesheet" href="/profile/components.css">
+        <link rel="stylesheet" href="/profile/design-system/tokens.css">
+        <link rel="stylesheet" href="/profile/design-system/components.css">
         <style>body{display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f0f0f0;font-family:system-ui}</style>
         </head><body>
         <div style="text-align:center;color:#888">

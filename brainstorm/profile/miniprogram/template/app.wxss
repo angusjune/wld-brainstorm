@@ -1,4 +1,4 @@
-/* GENERATED FROM profile/tokens.css — do not edit by hand. */
+/* GENERATED FROM profile/design-system/tokens.css — do not edit by hand. */
 page {
   --theme-500: #FFD143;
   --theme-100: #FFF9D9;

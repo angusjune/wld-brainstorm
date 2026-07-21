@@ -9,8 +9,8 @@
  * then writes report.json + report.md into the run directory.
  *
  * Usage from the brainstorm skill directory:
- *   node quality-benchmark/report.mjs profile/quality-benchmark/runs/<version> \
- *     [--compare profile/quality-benchmark/runs/<other-version>] [--port 3999]
+ *   node quality-benchmark/report.mjs profile/quality/benchmark/runs/<version> \
+ *     [--compare profile/quality/benchmark/runs/<other-version>] [--port 3999]
  *
  * Run layout: <runDir>/<case-id>/*.html
  * (see quality-benchmark/README.md).

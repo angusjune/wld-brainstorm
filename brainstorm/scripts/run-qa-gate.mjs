@@ -29,7 +29,7 @@ const { EVENTS, appendSessionEvent, findSessionStateDir } = telemetry;
 
 // Universal checks only — these hold for any product on any platform. Product
 // laws (urgency copy, button shape, background rules …) live in the profile's
-// optional rules.mjs, so a fresh profile is not rejected on day one for failing
+// optional quality/rules.mjs, so a fresh profile is not rejected on day one for failing
 // to look like the profile that happens to ship here. See ADR 0005.
 const CORE_SEVERITY = {
   'missing-stylesheet': 'error', // required design-system stylesheets not linked
@@ -104,21 +104,21 @@ function readProfileConfig(profileDir) {
   return config;
 }
 
-// A profile without rules.mjs is valid and passes the core checks — that is the
+// A profile without quality/rules.mjs is valid and passes the core checks — that is the
 // point: a forking team's first run must not be blocked by another product's
 // laws. See ADR 0005. Rules load by convention: the file exists, or there are none.
 async function loadProfileRules(profileDir) {
-  const file = path.join(profileDir, 'rules.mjs');
+  const file = path.join(profileDir, 'quality', 'rules.mjs');
   if (!fs.existsSync(file)) return { severity: {}, rules: [] };
   const mod = await import(pathToFileURL(file).href);
   const pack = mod.default || mod;
   return { severity: pack.severity || {}, rules: pack.rules || [] };
 }
 
-// ---- Token map from tokens.css ----
+// ---- Token map from design-system/tokens.css ----
 
 function buildTokenValueMap(profileDir) {
-  const css = fs.readFileSync(path.join(profileDir, 'tokens.css'), 'utf8');
+  const css = fs.readFileSync(path.join(profileDir, 'design-system', 'tokens.css'), 'utf8');
   const map = new Map();
   // Prefix-agnostic on purpose: each profile owns its own token prefix, so this
   // matches any custom property rather than a hardcoded product prefix. See ADR 0004.
@@ -231,7 +231,7 @@ function checkFile(file, env) {
 
   // -- Shell checks (generated page-template documents only) --
   if (isFullDoc) {
-    const required = ['tokens.css', 'components.css'];
+    const required = ['design-system/tokens.css', 'design-system/components.css'];
     for (const sheet of required) {
       if (!new RegExp(`<link[^>]*href\\s*=\\s*"[^"]*${sheet}`, 'i').test(cleaned)) {
         add('missing-stylesheet', `required stylesheet ${sheet} is not linked`);

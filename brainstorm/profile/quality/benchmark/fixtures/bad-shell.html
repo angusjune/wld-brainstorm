@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/profile/design-system/tokens.css">
+  <style>
+    /* Manually copied frame styles — the server injects these automatically */
+    .frame-header { background: var(--wld-surface); padding: var(--wld-page-padding); }
+    .frame-indicator { text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="frame-header">
+    <h1>WLD Design</h1>
+    <div class="frame-status">Live</div>
+  </div>
+
+  <div class="frame-main">
+    <div id="frame-content">
+      <!-- Bare screen: not wrapped in .phone-mockup / .phone-screen -->
+      <div class="wld-page">
+        <preview-chrome variant="inner" title="本期应还"></preview-chrome>
+        <div class="wld-page-body">
+          <div class="wld-select-label">9月16日应还</div>
+          <button class="wld-btn wld-btn-l wld-btn-primary">还款</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="frame-indicator">
+    <span>Live preview — give feedback in terminal</span>
+  </div>
+
+  <script>
+    window.addEventListener('load', function () {
+      document.querySelector('.wld-btn').disabled = false;
+    });
+  </script>
+</body>
+</html>

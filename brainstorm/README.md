@@ -11,11 +11,10 @@
 **产品档案 `profile/`** —— 换产品时你唯一要重写的目录
 
 - `PROFILE.md`：模板表、路由表、产品铁律、设计语言、passes、速查表。Step 3 会读它；文件头部的 frontmatter 是脚本读的配置（产品、平台、page class）。
-- `tokens.css`：**唯一的 token 来源**。`components.css`：组件样式。
 - `screens/`：生产页面模板（Ground Truth，直接决定输出质量）。
-- `rules.mjs`：产品 QA 规则（可选，删掉只跑通用检查）。
-- `PRODUCT.md`、`pm-*-cache/`：产品知识快照（状态机、业务规律、历史坑点）。
-- `profile/passes/`、`profile/tools/`：当前产品需要的细节校验与确定性工具。
+- `design-system/`：唯一 token 来源、组件样式和图标。
+- `knowledge/`：产品知识桥接说明与只读快照（可选）。
+- `quality/`：产品 QA 规则、passes、确定性工具和基准数据（可选）。
 - `miniprogram/`：小程序 Demo 模板（`app.wxss` 的 token 段是**生成**的，别手改）。
 
 **平台包 `platforms/`** —— 同平台的产品共用
@@ -30,7 +29,7 @@
 - `assets/`：预览框架样式（含手机 mockup 和 reset），由预览服务自动注入。
 - `references/`：方案发散方法、嵌入 pass/分支、Figma MCP 说明。
 - `scripts/serve-preview.cjs`、`assets/live-reload.js`：本地热更新预览服务及浏览器端 SSE 客户端。
-- `scripts/run-qa-gate.mjs`：通用质量检查（产品规则由 `profile/rules.mjs` 提供）。
+- `scripts/run-qa-gate.mjs`：通用质量检查（产品规则由 `profile/quality/rules.mjs` 提供）。
 - `quality-benchmark/`、`scripts/`、`package.json`：质量基准、维护命令与自测。
 
 ## 使用 Skill
@@ -55,7 +54,7 @@
 
 1. **澄清需求**：与你进行多轮对话，澄清需求。
 2. **启动本地预览服务**：启动 SSE 热更新的本地 Node 服务（`scripts/serve-preview.cjs`），让你可以在浏览器中实时预览界面修改。
-3. **基准模板与产品规则对齐**：先读 `profile/PROFILE.md`（模板表、路由、产品铁律、设计语言），再读 `profile/screens/` 的 HTML 模板。针对核心页面，还会通过 `PRODUCT.md` 提取关联的业务逻辑和常见设计坑点，确保设计在视觉和逻辑上都不偏离产品规范。
+3. **基准模板与产品规则对齐**：先读 `profile/PROFILE.md`（模板表、路由、产品铁律、设计语言），再读 `profile/screens/` 的 HTML 模板。针对核心页面，还会通过 `profile/knowledge/README.md` 提取关联的业务逻辑和常见设计坑点，确保设计在视觉和逻辑上都不偏离产品规范。
 4. **生产模板优先的多方案生成**：以最接近的生产模板 DOM 和 class 为起点，只生成各方向真正不同的部分；模板局部 CSS 在同一方案页只保留一份。页面会自动注入当前平台包的预览外壳和手机 mockup 样式，供用户直观对比。
 5. **质检**：在交付设计前，内部调用 **Simplify（精简设计）** 以及产品档案声明的 pass，自我修正冗余元素、数值计算错漏及样式缺陷；若当前环境支持（如安装了 Playwright MCP、Chrome DevTools MCP 或其他浏览器自动化工具），还会自动访问页面并截图，完成真正的视觉 QA 自检与纠错。
 6. **生成交互式 Demo 或推送至 Figma**：方案定稿后，可直接通过内部指令将页面**推送到 Figma 画布**，或**生成微信小程序 Demo**。
@@ -69,13 +68,13 @@
 使用方式见 `quality-benchmark/README.md`。最小报告命令：
 
 ```bash
-npm run benchmark:report -- profile/quality-benchmark/runs/<version>
+npm run benchmark:report -- profile/quality/benchmark/runs/<version>
 ```
 
 与 baseline 对比：
 
 ```bash
-npm run benchmark:report -- profile/quality-benchmark/runs/<new> --compare profile/quality-benchmark/runs/baseline
+npm run benchmark:report -- profile/quality/benchmark/runs/<new> --compare profile/quality/benchmark/runs/baseline
 ```
 
 本目录内的自测命令：
@@ -84,7 +83,7 @@ npm run benchmark:report -- profile/quality-benchmark/runs/<new> --compare profi
 npm test              # 全部
 npm run test:qa-gate
 npm run test:session-telemetry # 会话性能记录自测
-npm run test:wxss-tokens      # 小程序 token 段是否与 tokens.css 同步
+npm run test:wxss-tokens      # 小程序 token 段是否与 profile/design-system/tokens.css 同步
 npm run test:quality-benchmark
 ```
 
@@ -116,17 +115,17 @@ npm run validate
 按重要性排序，前两项决定输出质量：
 
 1. `profile/screens/` —— 换成你产品的生产界面模板。模型是「照着模板改」而不是「凭空生成」，这批模板直接决定输出质量。
-2. `profile/tokens.css` —— 换成你的色板、字体、间距。这是唯一的 token 来源。
+2. `profile/design-system/tokens.css` —— 换成你的色板、字体、间距。这是唯一的 token 来源。
 3. `profile/PROFILE.md` —— 重写模板表、路由表、产品铁律、设计语言；frontmatter 改成你的 `product`、`platform`、`pageClass`、`tokenPrefix`。
-4. 其余（`components.css`、`rules.mjs`、产品知识快照、小程序模板）都可以边用边补，删掉也能跑。
+4. 其余（`design-system/components.css`、`quality/`、`knowledge/`、小程序模板）都可以边用边补，不需要的可选部分可以删除。
 
 改完跑 `npm run validate && npm test`。
 
 ### 几个要点
 
 - **`SKILL.md` 不用改。** 它只写方法，不认识任何产品。只有 frontmatter 里的 `description` 两行需要改成你的产品，好让 agent 认得出来。
-- **不用动 `scripts/run-qa-gate.mjs`。** 它只跑通用检查；产品规则在 `profile/rules.mjs` 里，是可选的。删掉 `rules.mjs`，新产品的界面照样过检 —— 不会被上一个产品的规则拦下来。
+- **不用动 `scripts/run-qa-gate.mjs`。** 它只跑通用检查；产品规则在 `profile/quality/rules.mjs` 里，是可选的。删掉这个文件，新产品的界面照样过检 —— 不会被上一个产品的规则拦下来。
 - **class 前缀是 profile 自己的。** 选一个产品内一致的前缀即可；通用机制不依赖具体前缀。
 - **不是微信？** 把 `PROFILE.md` frontmatter 里的 `platform` 改成 `ios`，预览外壳就跟着换，12 个页面模板一行都不用改。
 - **提供纯净的参考模板**：不要喂给大模型随意拼凑的页面。尽量从真实环境或 Figma Dev Mode 中提取结构完整、且使用全局 CSS class 的 HTML。
-- **避免硬编码样式**：模型会模仿模板的写法。模板里如果全是内联 `<style>` 和硬编码颜色，生成的代码也会一样混乱 —— 尽量抽到 `tokens.css`。
+- **避免硬编码样式**：模型会模仿模板的写法。模板里如果全是内联 `<style>` 和硬编码颜色，生成的代码也会一样混乱 —— 尽量抽到 `profile/design-system/tokens.css`。

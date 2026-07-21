@@ -36,9 +36,9 @@ test('composeScreenDocument wraps fragment in full doc with relative CSS links',
 })
 
 test('composeScreenDocument rewrites root-absolute icon paths to relative', () => {
-  const doc = composeScreenDocument('<img src="/assets/icons/logo-boc.svg">', 'x', chromeMarkup)
+  const doc = composeScreenDocument('<img src="/profile/design-system/icons/logo-boc.svg">', 'x', chromeMarkup)
   assert.match(doc, /src="assets\/icons\/logo-boc\.svg"/)
-  assert.doesNotMatch(doc, /src="\/assets\//)
+  assert.doesNotMatch(doc, /src="\/profile\//)
 })
 
 test('rewriteArenaHtml makes all three root-absolute refs relative', () => {

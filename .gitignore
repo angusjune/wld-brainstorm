@@ -6,4 +6,4 @@ ref-only-*
 .brainstorm/
 
 # Benchmark screenshots are regenerable (quality-benchmark/README.md)
-brainstorm/profile/quality-benchmark/runs/**/*.png
+brainstorm/profile/quality/benchmark/runs/**/*.png
