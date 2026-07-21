@@ -1,5 +1,5 @@
 /**
- * Brainstorm — Browser Helper
+ * Brainstorm — Browser live reload client
  * Injected into every screen served by the brainstorm server.
  *
  * Feature: Live reload via SSE (server pushes reload when files change)

@@ -8,14 +8,14 @@
  * they are enforced instead of asserted. Exit code 1 on any error.
  *
  * Checks:
- *   1. SKILL.md exists at the package root.
+ *   1. SKILL.md and AGENTS.md exist at the package root.
  *   2. No forbidden entries (.git/, node_modules/, .env, __pycache__/, .DS_Store).
  *   3. SKILL.md, profile docs and references/*.md reference only in-package files.
  *   4. Package size < 100 MB.
  *   5. profile/PROFILE.md screen table matches profile/screens/ on disk (both directions).
  *   6. Root-absolute src/href in screen templates resolve through a server mount.
  *
- * Usage: node scripts/validate-plugin.mjs [--json]
+ * Usage: node scripts/validate-skill.mjs [--json]
  */
 
 import fs from 'node:fs';
@@ -64,7 +64,15 @@ if (totalBytes >= SIZE_LIMIT_BYTES) {
 
 // Check 3: SKILL.md + references/*.md reference only in-package files.
 // Inspect backtick code spans that look like concrete in-package file paths.
-const docsToScan = [path.join(ROOT, 'SKILL.md')];
+if (!fs.existsSync(path.join(ROOT, 'AGENTS.md'))) {
+  errors.push('缺少根目录 AGENTS.md');
+}
+
+const docsToScan = [
+  path.join(ROOT, 'SKILL.md'),
+  path.join(ROOT, 'AGENTS.md'),
+  path.join(ROOT, 'README.md'),
+].filter((file) => fs.existsSync(file));
 for (const doc of [path.join(ROOT, 'profile', 'PROFILE.md'), path.join(ROOT, 'profile', 'README.md')]) {
   if (fs.existsSync(doc)) docsToScan.push(doc);
 }
@@ -79,7 +87,7 @@ for (const dir of [path.join(ROOT, 'references'), path.join(ROOT, 'profile', 'pa
 // segment or is a known root file, and carries a file extension (so we skip
 // prose, dirs-as-concepts, and generated-output examples like `home.html`).
 const IN_PKG_PREFIXES = ['assets/', 'profile/', 'platforms/', 'references/', 'tools/', 'scripts/', 'quality-benchmark/'];
-const ROOT_FILES = new Set(['server.cjs', 'helper.js', 'qa-gate.mjs', 'package.json']);
+const ROOT_FILES = new Set(['AGENTS.md', 'README.md', 'SKILL.md', 'package.json']);
 
 function looksLikeInPackagePath(tok) {
   if (/^https?:\/\//.test(tok)) return false;

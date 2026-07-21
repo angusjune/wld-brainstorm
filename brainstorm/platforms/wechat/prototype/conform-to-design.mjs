@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * WLD prototype — design-conformance comparator (Rung 6).
+ * Mini Program design-conformance comparator (Rung 6).
  *
  * Pairs design reference PNGs against Mini Program screenshot PNGs (by
  * basename), computes a per-pixel drift, and renders a [ref | impl | diff]
@@ -171,7 +171,7 @@ function main() {
       continue;
     }
     const html = harnessHtml({ name, threshold: args.threshold, masks: args.masks, refData: dataUri(refPng), implData: dataUri(implPng) });
-    const tmp = path.join(os.tmpdir(), `wld-conform-${name}.html`);
+    const tmp = path.join(os.tmpdir(), `brainstorm-conform-${name}.html`);
     fs.writeFileSync(tmp, html);
     const composite = path.join(outDir, `${name}.composite.png`);
     let driftPct = null; let refSize = null; let implSize = null;
@@ -214,7 +214,7 @@ function main() {
   fs.writeFileSync(path.join(outDir, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
 
   console.log('='.repeat(72));
-  console.log('WLD design-conformance report');
+  console.log('Mini Program design-conformance report');
   console.log('='.repeat(72));
   for (const p of pairs) {
     if (p.status === 'ok') console.log(`  ${p.name}: drift ${p.driftPct == null ? '?' : `${p.driftPct}%`}  →  ${p.composite}`);

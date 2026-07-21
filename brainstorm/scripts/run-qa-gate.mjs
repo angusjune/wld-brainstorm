@@ -8,7 +8,7 @@
  * table so they are enforced (and measurable) instead of self-assessed.
  *
  * Usage:
- *   node qa-gate.mjs [--json] [--assets <dir>] <file-or-dir> [...]
+ *   node scripts/run-qa-gate.mjs [--json] [--profile <dir>] <file-or-dir> [...]
  *
  * Accepts full page-template documents (generated screens) and bare
  * page-class fragments (production templates). Exit code 1 when any
@@ -21,9 +21,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import telemetry from './session-telemetry.cjs';
+import telemetry from './lib/session-telemetry.cjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const SKILL_DIR = path.resolve(__dirname, '..');
 const { EVENTS, appendSessionEvent, findSessionStateDir } = telemetry;
 
 // Universal checks only — these hold for any product on any platform. Product
@@ -49,7 +50,7 @@ const COLOR_LITERAL_RE = /#[0-9a-fA-F]{3,8}\b|rgba?\([^)]*\)/g;
 const EMOJI_ALLOWLIST = new Set(['✓', '✔', '✕', '✗', '→', '←', '·', '↑', '↓']);
 const CHROME_TAG_RE = /<preview-chrome\b[^>]*>/i;
 
-// ---- Small text utilities (conventions shared with scripts/validate-plugin.mjs) ----
+// ---- Small text utilities (conventions shared with scripts/validate-skill.mjs) ----
 
 function blankOut(text) {
   return text.replace(/\S/g, ' ');
@@ -120,7 +121,7 @@ function buildTokenValueMap(profileDir) {
   const css = fs.readFileSync(path.join(profileDir, 'tokens.css'), 'utf8');
   const map = new Map();
   // Prefix-agnostic on purpose: each profile owns its own token prefix, so this
-  // matches any custom property rather than a hardcoded --wld-. See ADR 0004.
+  // matches any custom property rather than a hardcoded product prefix. See ADR 0004.
   const declarationRe = /(--[a-z0-9-]+)\s*:\s*([^;]+);/gi;
   let match;
   while ((match = declarationRe.exec(css)) !== null) {
@@ -170,7 +171,7 @@ function extractCssContexts(cleaned) {
   return contexts;
 }
 
-// CSS classes use `-` freely (wld-page vs wld-page-body), so \b is unsafe:
+// CSS classes use `-` freely (product-page vs product-page-body), so \b is unsafe:
 // match exact class-attribute tokens instead.
 function elementsWithClass(cleaned, className) {
   const elementRe = /<([a-zA-Z][\w-]*)\b([^>]*)>/g;
@@ -333,14 +334,14 @@ async function main() {
   const argv = process.argv.slice(2);
   const targets = [];
   let json = false;
-  let profileDir = path.resolve(__dirname, 'profile');
+  let profileDir = path.join(SKILL_DIR, 'profile');
   for (let i = 0; i < argv.length; i += 1) {
     if (argv[i] === '--json') json = true;
     else if (argv[i] === '--profile') profileDir = path.resolve(argv[++i]);
     else targets.push(argv[i]);
   }
   if (targets.length === 0) {
-    console.error('Usage: node qa-gate.mjs [--json] [--profile <dir>] <file-or-dir> [...]');
+    console.error('Usage: node scripts/run-qa-gate.mjs [--json] [--profile <dir>] <file-or-dir> [...]');
     process.exitCode = 2;
     return;
   }
@@ -351,7 +352,7 @@ async function main() {
   const platform = profile.platform
     ? {
         name: profile.platform,
-        hasChrome: fs.existsSync(path.join(__dirname, 'platforms', profile.platform, 'chrome.html')),
+        hasChrome: fs.existsSync(path.join(SKILL_DIR, 'platforms', profile.platform, 'chrome.html')),
       }
     : null;
   const rulePack = await loadProfileRules(profileDir);

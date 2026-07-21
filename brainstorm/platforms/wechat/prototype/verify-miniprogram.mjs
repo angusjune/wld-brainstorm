@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * WLD prototype — WeChat Mini Program demo verifier.
+ * WeChat Mini Program demo verifier.
  *
  * Usage:
  *   node verify-miniprogram.mjs <projectDir>
@@ -112,13 +112,13 @@ function scanWxmlForWebTags(wxmlPath, rel) {
   }
 }
 
-// Flag 100vh in containers wrapped INSIDE wld-page. The wld-page wrapper itself
-// uses 100vh on purpose (it owns the viewport) and is exempted by the caller.
+// Flag 100vh in containers wrapped inside the profile's page shell. Globally
+// registered shell components may own 100vh and are exempted by the caller.
 function scanWxssFor100vh(wxssPath, rel) {
   const lines = readText(wxssPath).split('\n');
   lines.forEach((line, i) => {
     if (/100vh/.test(line) && !line.trim().startsWith('/*')) {
-      warn(`${rel}:${i + 1}: a container inside wld-page uses 100vh — use height:100% (wld-page already owns the viewport height, nav offset, and safe area; 100vh overflows it)`);
+      warn(`${rel}:${i + 1}: a container inside the page shell uses 100vh — use height:100% (the shell already owns the viewport height, nav offset, and safe area; 100vh overflows it)`);
     }
   });
 }
@@ -173,7 +173,7 @@ function walkUnit(base, kind, rel, root, visited) {
 
 // Globally-registered components (from app.json) are usable in every wxml.
 const GLOBAL_COMPONENTS = new Set();
-// Resolved bases of those global components — the page shell (e.g. wld-page),
+// Resolved bases of those global components — including the profile's page shell,
 // which legitimately uses 100vh, so the 100vh check is skipped for them.
 const globalShellBases = new Set();
 
@@ -280,7 +280,7 @@ async function main() {
 
 function report(live) {
   console.log('='.repeat(72));
-  console.log('WLD Mini Program demo verification');
+  console.log('Mini Program demo verification');
   console.log('='.repeat(72));
 
   if (warnings.length) {

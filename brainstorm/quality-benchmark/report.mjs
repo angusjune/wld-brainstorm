@@ -9,8 +9,8 @@
  * then writes report.json + report.md into the run directory.
  *
  * Usage from the brainstorm skill directory:
- *   node quality-benchmark/report.mjs quality-benchmark/runs/<version> \
- *     [--compare quality-benchmark/runs/<other-version>] [--port 3999]
+ *   node quality-benchmark/report.mjs profile/quality-benchmark/runs/<version> \
+ *     [--compare profile/quality-benchmark/runs/<other-version>] [--port 3999]
  *
  * Run layout: <runDir>/<case-id>/*.html
  * (see quality-benchmark/README.md).
@@ -30,8 +30,8 @@ import { spawn, spawnSync, execFileSync } from 'node:child_process';
 
 const BENCHMARK_DIR = path.dirname(fileURLToPath(import.meta.url));
 const BRAINSTORM_DIR = path.resolve(BENCHMARK_DIR, '..');
-const GATE = path.join(BRAINSTORM_DIR, 'qa-gate.mjs');
-const SERVER = path.join(BRAINSTORM_DIR, 'server.cjs');
+const GATE = path.join(BRAINSTORM_DIR, 'scripts/run-qa-gate.mjs');
+const SERVER = path.join(BRAINSTORM_DIR, 'scripts/serve-preview.cjs');
 
 function findChrome() {
   return [
@@ -91,7 +91,7 @@ function gateCase(runDir, caseId) {
 
 async function startServer(basePort) {
   for (let port = basePort; port < basePort + 10; port += 1) {
-    const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wld-uiq-render-'));
+    const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'brainstorm-uiq-render-'));
     const child = spawn(process.execPath, [SERVER, '--project-dir', projectDir, '--port', String(port)], {
       stdio: ['ignore', 'pipe', 'inherit'],
     });
@@ -137,7 +137,7 @@ function renderRun(chrome, server, runDir, cases) {
       fs.copyFileSync(source, path.join(server.screenDir, served));
       const outPng = path.join(runDir, caseId, `${file}.png`);
       try {
-        // No --virtual-time-budget here: the injected helper.js keeps an SSE
+        // No --virtual-time-budget here: the injected live-reload client keeps an SSE
         // connection open, which pauses virtual time forever. The load event
         // (which EventSource does not block) is the right capture point.
         execFileSync(chrome, [
@@ -178,7 +178,7 @@ function composite(chrome, leftPng, leftLabel, rightPng, rightLabel, outPng) {
     <figure><figcaption>${leftLabel}</figcaption><img src="file://${leftPng}" width="${left.width}"></figure>
     <figure><figcaption>${rightLabel}</figcaption><img src="file://${rightPng}" width="${right.width}"></figure>
   </body></html>`;
-  const tmp = path.join(os.tmpdir(), `wld-uiq-composite-${path.basename(outPng)}.html`);
+  const tmp = path.join(os.tmpdir(), `brainstorm-uiq-composite-${path.basename(outPng)}.html`);
   fs.writeFileSync(tmp, page);
   try {
     execFileSync(chrome, [

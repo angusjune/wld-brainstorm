@@ -58,8 +58,8 @@ function main() {
     process.exitCode = 2;
     return;
   }
-  const assetsDir = path.resolve(args.assets || path.join(__dirname, '..', '..', 'assets'));
-  const profileDir = path.resolve(args.profile || path.join(__dirname, '..', '..', 'profile'));
+  const assetsDir = path.resolve(args.assets || path.join(__dirname, '..', '..', '..', 'assets'));
+  const profileDir = path.resolve(args.profile || path.join(__dirname, '..', '..', '..', 'profile'));
   let fragment = fs.readFileSync(path.resolve(htmlFile), 'utf8');
   // Resolve server-style mount paths to absolute file:// for standalone render.
   fragment = fragment.replaceAll('/assets/', `file://${assetsDir}/`);
@@ -73,11 +73,11 @@ function main() {
   const isFull = /<html[\s>]/i.test(fragment);
   const html = isFull ? fragment : `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
     *{box-sizing:border-box;margin:0;padding:0;-webkit-font-smoothing:antialiased;}
-    html,body{margin:0;padding:0;width:${args.width}px;background:var(--wld-bg,#F5F5F5);}
+    html,body{margin:0;padding:0;width:${args.width}px;background:#F5F5F5;}
     ${css}
   </style></head><body>${fragment}</body></html>`;
 
-  const tmp = path.join(os.tmpdir(), `wld-ref-${path.basename(outPng)}.html`);
+  const tmp = path.join(os.tmpdir(), `brainstorm-ref-${path.basename(outPng)}.html`);
   fs.writeFileSync(tmp, html);
   fs.mkdirSync(path.dirname(path.resolve(outPng)), { recursive: true });
   try {

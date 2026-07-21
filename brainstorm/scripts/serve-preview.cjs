@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /**
- * Brainstorm Server
+ * Brainstorm preview server
  *
  * A local dev server for previewing phone-mockup screens with live reload.
  * - Serves screen HTML files with hot-reload via SSE
  * - Watches the screen directory and pushes reload events on changes
  *
  * Usage:
- *   node server.cjs --project-dir /path/to/project [--port 3210] [--host 127.0.0.1]
+ *   node scripts/serve-preview.cjs --project-dir /path/to/project [--port 3210] [--host 127.0.0.1]
  *
  * Returns JSON on startup:
  *   { "url": "http://localhost:3210", "screenDir": "...", "stateDir": "..." }
@@ -17,7 +17,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
-const { EVENT_FILE, EVENTS, appendSessionEvent } = require('./session-telemetry.cjs');
+const { EVENT_FILE, EVENTS, appendSessionEvent } = require('./lib/session-telemetry.cjs');
 
 // --- Args ---
 const args = process.argv.slice(2);
@@ -34,10 +34,10 @@ const SESSION_ID = `${process.pid}-${STARTED_AT_MS}`;
 const SESSION_DIR = path.join(PROJECT_DIR, '.brainstorm', SESSION_ID);
 const SCREEN_DIR = path.join(SESSION_DIR, 'screens');
 const STATE_DIR = path.join(SESSION_DIR, 'state');
-const ASSETS_DIR = path.resolve(__dirname, 'assets');
-const PROFILE_DIR = path.resolve(__dirname, 'profile');
-const PLATFORMS_DIR = path.resolve(__dirname, 'platforms');
-const HELPER_PATH = path.join(__dirname, 'helper.js');
+const SKILL_DIR = path.resolve(__dirname, '..');
+const ASSETS_DIR = path.join(SKILL_DIR, 'assets');
+const PROFILE_DIR = path.join(SKILL_DIR, 'profile');
+const PLATFORMS_DIR = path.join(SKILL_DIR, 'platforms');
 
 fs.mkdirSync(SCREEN_DIR, { recursive: true });
 fs.mkdirSync(STATE_DIR, { recursive: true });
@@ -221,7 +221,7 @@ const HELPER_SCRIPT = `
 <script>
 window.__BRAINSTORM_SSE_URL = '/api/events';
 </script>
-<script src="/helper.js"></script>
+<script src="/assets/live-reload.js"></script>
 `;
 
 function injectHelper(html) {
@@ -270,13 +270,6 @@ const server = http.createServer((req, res) => {
     res.write(`data: connected\n\n`);
     sseClients.add(res);
     req.on('close', () => sseClients.delete(res));
-    return;
-  }
-
-  // --- Serve helper.js ---
-  if (pathname === '/helper.js') {
-    res.writeHead(200, { 'Content-Type': 'application/javascript' });
-    res.end(fs.readFileSync(HELPER_PATH, 'utf8'));
     return;
   }
 

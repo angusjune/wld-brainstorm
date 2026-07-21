@@ -48,33 +48,59 @@ function parseTokens(tokensCss) {
   return decls;
 }
 
-// Which profile tokens the Mini Program template actually consumes, and the
-// unprefixed WXSS name each maps to. Add a row here when the template needs a
-// new token — never paste a literal into app.wxss.
+function readProfileConfig(profileDir) {
+  const text = fs.readFileSync(path.join(profileDir, 'PROFILE.md'), 'utf8');
+  const block = text.match(/^---\n([\s\S]*?)\n---/);
+  const config = {};
+  for (const line of (block ? block[1] : '').split('\n')) {
+    const match = line.match(/^([\w-]+):\s*(.*)$/);
+    if (match) config[match[1]] = match[2].trim();
+  }
+  return config;
+}
+
+// Which semantic profile tokens the Mini Program template consumes, and the
+// unprefixed WXSS name each maps to. Product profiles may choose any prefix;
+// lookup is by semantic suffix so the platform pack stays product-neutral.
 const EXPORTS = [
-  ['--theme-500', '--wld-theme-500'],
-  ['--theme-100', '--wld-theme-100'],
-  ['--theme-600', '--wld-theme-600'],
-  ['--danger-500', '--wld-danger-500'],
-  ['--text-primary', '--wld-text-primary'],
-  ['--text-secondary', '--wld-text-secondary'],
-  ['--text-tertiary', '--wld-text-tertiary'],
-  ['--text-on-theme', '--wld-text-on-theme'],
-  ['--surface', '--wld-surface'],
-  ['--bg', '--wld-bg'],
-  ['--divider', '--wld-divider'],
-  ['--radius-pill', '--wld-radius-pill'],
-  ['--radius-card', '--wld-radius-card'],
+  ['--theme-500', 'theme-500'],
+  ['--theme-100', 'theme-100'],
+  ['--theme-600', 'theme-600'],
+  ['--danger-500', 'danger-500'],
+  ['--text-primary', 'text-primary'],
+  ['--text-secondary', 'text-secondary'],
+  ['--text-tertiary', 'text-tertiary'],
+  ['--text-on-theme', 'text-on-theme'],
+  ['--surface', 'surface'],
+  ['--bg', 'bg'],
+  ['--divider', 'divider'],
+  ['--radius-pill', 'radius-pill'],
+  ['--radius-card', 'radius-card'],
 ];
 
-function buildBlock(decls) {
+function findSemanticToken(decls, semanticName, tokenPrefix) {
+  const preferred = tokenPrefix && `--${tokenPrefix}-${semanticName}`;
+  if (preferred && preferred in decls) return preferred;
+  const unprefixed = `--${semanticName}`;
+  if (unprefixed in decls) return unprefixed;
+  const suffix = `-${semanticName}`;
+  const matches = Object.keys(decls).filter((name) => name.endsWith(suffix));
+  if (matches.length > 1) {
+    throw new Error(`ambiguous semantic token "${semanticName}": ${matches.join(', ')}`);
+  }
+  return matches[0] || null;
+}
+
+function buildBlock(decls, tokenPrefix) {
   const lines = [BEGIN, 'page {'];
-  for (const [wxssName, tokenName] of EXPORTS) {
-    if (!(tokenName in decls)) continue;
+  for (const [wxssName, semanticName] of EXPORTS) {
+    const tokenName = findSemanticToken(decls, semanticName, tokenPrefix);
+    if (!tokenName) continue;
     lines.push(`  ${wxssName}: ${resolveValue(decls[tokenName], decls)};`);
   }
-  const fontFamily = decls['--wld-font-family']
-    ? resolveValue(decls['--wld-font-family'], decls).replace(/\s+/g, ' ')
+  const fontFamilyToken = findSemanticToken(decls, 'font-family', tokenPrefix);
+  const fontFamily = fontFamilyToken
+    ? resolveValue(decls[fontFamilyToken], decls).replace(/\s+/g, ' ')
     : null;
   if (fontFamily) lines.push(`  font-family: ${fontFamily};`);
   lines.push('  color: var(--text-primary);');
@@ -94,8 +120,16 @@ function main() {
   const profileDir = path.resolve(arg('profile', path.join(SKILL_DIR, 'profile')));
   const out = path.resolve(arg('out', path.join(profileDir, 'miniprogram', 'template', 'app.wxss')));
 
+  if (check && !fs.existsSync(out)) {
+    console.log('wxss tokens: profile has no Mini Program template — skipped');
+    return;
+  }
+
+  const profile = readProfileConfig(profileDir);
+  const inferredPrefix = profile.pageClass?.replace(/-page$/, '');
+  const tokenPrefix = profile.tokenPrefix || inferredPrefix || '';
   const decls = parseTokens(fs.readFileSync(path.join(profileDir, 'tokens.css'), 'utf8'));
-  const block = buildBlock(decls);
+  const block = buildBlock(decls, tokenPrefix);
 
   const existing = fs.existsSync(out) ? fs.readFileSync(out, 'utf8') : '';
   const markerRe = new RegExp(`${BEGIN.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}[\\s\\S]*?${END.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`);

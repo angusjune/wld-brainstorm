@@ -2,7 +2,7 @@
 
 这个目录装着**只属于某一个产品的东西**：设计 token、组件样式、生产模板、产品规则、业务知识快照。
 
-其他目录（`assets/`、`server.cjs`、`qa-gate.mjs`）是通用机制，不认识任何产品。平台相关的东西（微信预览外壳、小程序工具链）属于平台包，也跟产品无关。
+其他目录（`assets/`、`scripts/`）是通用机制，不认识任何产品。平台相关的东西（微信预览外壳、小程序工具链）属于平台包，也跟产品无关。
 
 **换一个产品 = 重写这个目录，别的地方基本不用动。**
 
@@ -23,6 +23,7 @@
 | 7 | `production-reference.md` | 换成你的线上产品说明和术语表。 |
 | 8 | `miniprogram/` | 只有要用小程序 Demo 分支才需要。不用就删掉整个目录。 |
 | 9 | `research/` | **可选**。只保留你自己产品的实验记录；换产品时删除或重写，避免把旧产品结论带进新档案。 |
+| 10 | `quality-benchmark/` | **可选**。当前产品的 prompts、QA fixtures 和历史 runs；换产品时删除旧数据，再按需建立新基准。 |
 
 改完跑一遍：
 
@@ -35,7 +36,7 @@ npm test           # 运行 QA、会话遥测、WXSS token 和质量基准等全
 
 ## `PROFILE.md` frontmatter 字段
 
-脚本（`server.cjs`、`qa-gate.mjs`、`npm run validate`、站点构建）读的机器配置，就是 `PROFILE.md` 头部 `---` 之间的几行：
+脚本（`scripts/serve-preview.cjs`、`scripts/run-qa-gate.mjs`、`npm run validate`、站点构建）读的机器配置，就是 `PROFILE.md` 头部 `---` 之间的几行：
 
 | 字段 | 说明 |
 |------|------|
@@ -43,6 +44,7 @@ npm test           # 运行 QA、会话遥测、WXSS token 和质量基准等全
 | `productName` | 产品全名，用于展示 |
 | `platform` | 平台包的名字，决定预览外壳。目前是 `wechat` |
 | `pageClass` | 包住每一屏的那个 class。`qa-gate` 靠它判断「这一屏是照模板做的，不是凭空编的」 |
+| `tokenPrefix` | `tokens.css` 的自定义属性前缀，不带前导 `--`；小程序 token 生成器用它定位语义 token |
 
 文件名都是约定死的：`tokens.css`、`components.css`、`screens/`、`rules.mjs`（可选，存在即加载），不用配置。
 

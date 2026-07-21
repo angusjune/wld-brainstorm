@@ -3,11 +3,12 @@ product: WLD
 productName: 微粒贷
 platform: wechat
 pageClass: wld-page
+tokenPrefix: wld
 ---
 
 # WLD (微粒贷) Product Profile
 
-Everything in this file is specific to 微粒贷. `SKILL.md` holds the method and points here for product facts. The frontmatter above is the machine-readable half of the profile — `server.cjs`, `qa-gate.mjs`, `npm run validate` and the site build read `platform` and `pageClass` from it.
+Everything in this file is specific to 微粒贷. `SKILL.md` holds the method and points here for product facts. The frontmatter above is the machine-readable half of the profile — `scripts/serve-preview.cjs`, `scripts/run-qa-gate.mjs`, `npm run validate`, the Mini Program token generator and the site build read `platform`, `pageClass` and `tokenPrefix` from it.
 
 Read this file at Step 3, before writing any screen HTML.
 

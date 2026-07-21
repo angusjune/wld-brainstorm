@@ -4,7 +4,7 @@
  * Self-test for the local brainstorm QA gate.
  *
  * Guarantees:
- * 1. Every fixture in quality-benchmark/fixtures/ produces exactly the finding
+ * 1. Every fixture in profile/quality-benchmark/fixtures/ produces exactly the finding
  *    codes listed in expected.json.
  * 2. Every bundled production template in profile/screens/ has 0 errors.
  */
@@ -14,9 +14,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
-const BRAINSTORM_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const GATE = path.join(BRAINSTORM_DIR, 'qa-gate.mjs');
-const FIXTURES_DIR = path.join(BRAINSTORM_DIR, 'quality-benchmark/fixtures');
+const BRAINSTORM_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const GATE = path.join(BRAINSTORM_DIR, 'scripts/run-qa-gate.mjs');
+const FIXTURES_DIR = path.join(BRAINSTORM_DIR, 'profile/quality-benchmark/fixtures');
 const SCREENS_DIR = path.join(BRAINSTORM_DIR, 'profile/screens');
 
 let failures = 0;
@@ -50,35 +50,40 @@ function codesOf(report) {
 }
 
 console.log('Fixture contract:');
-const expected = JSON.parse(fs.readFileSync(path.join(FIXTURES_DIR, 'expected.json'), 'utf8'));
-for (const [fixture, expectedCodes] of Object.entries(expected)) {
-  const file = path.join(FIXTURES_DIR, fixture);
-  if (!fs.existsSync(file)) {
-    fail(`${fixture}: fixture file missing`);
-    continue;
+const expectedPath = path.join(FIXTURES_DIR, 'expected.json');
+if (!fs.existsSync(expectedPath)) {
+  console.log('  SKIP profile has no quality-benchmark fixtures');
+} else {
+  const expected = JSON.parse(fs.readFileSync(expectedPath, 'utf8'));
+  for (const [fixture, expectedCodes] of Object.entries(expected)) {
+    const file = path.join(FIXTURES_DIR, fixture);
+    if (!fs.existsSync(file)) {
+      fail(`${fixture}: fixture file missing`);
+      continue;
+    }
+    const { fatal, status, report } = runGate(file);
+    if (fatal) {
+      fail(`${fixture}: ${fatal}`);
+      continue;
+    }
+    const actual = codesOf(report);
+    const want = [...expectedCodes].sort();
+    if (JSON.stringify(actual) !== JSON.stringify(want)) {
+      fail(`${fixture}: codes [${actual.join(', ')}] != expected [${want.join(', ')}]`);
+      continue;
+    }
+    const errorCount = report.files.reduce((n, fileReport) => n + fileReport.findings.filter((finding) => finding.severity === 'error').length, 0);
+    const expectedExit = errorCount > 0 ? 1 : 0;
+    if (status !== expectedExit) {
+      fail(`${fixture}: exit code ${status} != ${expectedExit} (errors reported: ${errorCount})`);
+      continue;
+    }
+    if (want.length === 0 && report.files.some((fileReport) => fileReport.findings.length > 0)) {
+      fail(`${fixture}: clean fixture has findings`);
+      continue;
+    }
+    pass(`${fixture} -> [${actual.join(', ') || 'clean'}]`);
   }
-  const { fatal, status, report } = runGate(file);
-  if (fatal) {
-    fail(`${fixture}: ${fatal}`);
-    continue;
-  }
-  const actual = codesOf(report);
-  const want = [...expectedCodes].sort();
-  if (JSON.stringify(actual) !== JSON.stringify(want)) {
-    fail(`${fixture}: codes [${actual.join(', ')}] != expected [${want.join(', ')}]`);
-    continue;
-  }
-  const errorCount = report.files.reduce((n, fileReport) => n + fileReport.findings.filter((finding) => finding.severity === 'error').length, 0);
-  const expectedExit = errorCount > 0 ? 1 : 0;
-  if (status !== expectedExit) {
-    fail(`${fixture}: exit code ${status} != ${expectedExit} (errors reported: ${errorCount})`);
-    continue;
-  }
-  if (want.length === 0 && report.files.some((fileReport) => fileReport.findings.length > 0)) {
-    fail(`${fixture}: clean fixture has findings`);
-    continue;
-  }
-  pass(`${fixture} -> [${actual.join(', ') || 'clean'}]`);
 }
 
 console.log('Production calibration (0 errors required, warnings allowed):');

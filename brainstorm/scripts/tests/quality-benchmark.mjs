@@ -13,9 +13,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
-const BRAINSTORM_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const BRAINSTORM_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const REPORT = path.join(BRAINSTORM_DIR, 'quality-benchmark/report.mjs');
-const FIXTURES = path.join(BRAINSTORM_DIR, 'quality-benchmark/fixtures');
+const FIXTURES = path.join(BRAINSTORM_DIR, 'profile/quality-benchmark/fixtures');
+
+if (!fs.existsSync(path.join(FIXTURES, 'clean-inner.html')) || !fs.existsSync(path.join(FIXTURES, 'bad-screen.html'))) {
+  console.log('test-quality-benchmark: profile has no benchmark fixtures — skipped');
+  process.exit(0);
+}
 
 const chromeAvailable = [
   process.env.CHROME_PATH,

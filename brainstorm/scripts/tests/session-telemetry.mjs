@@ -14,13 +14,17 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn, spawnSync } from 'node:child_process';
-import telemetry from '../session-telemetry.cjs';
+import telemetry from '../lib/session-telemetry.cjs';
 
-const BRAINSTORM_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const SERVER = path.join(BRAINSTORM_DIR, 'server.cjs');
-const GATE = path.join(BRAINSTORM_DIR, 'qa-gate.mjs');
+const BRAINSTORM_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const SERVER = path.join(BRAINSTORM_DIR, 'scripts/serve-preview.cjs');
+const GATE = path.join(BRAINSTORM_DIR, 'scripts/run-qa-gate.mjs');
 const REPORTER = path.join(BRAINSTORM_DIR, 'scripts/report-session-telemetry.mjs');
-const CLEAN_SCREEN = path.join(BRAINSTORM_DIR, 'quality-benchmark/fixtures/clean-inner.html');
+const PROFILE_FIXTURE = path.join(BRAINSTORM_DIR, 'profile/quality-benchmark/fixtures/clean-inner.html');
+const PROFILE_SCREENS = path.join(BRAINSTORM_DIR, 'profile/screens');
+const CLEAN_SCREEN = fs.existsSync(PROFILE_FIXTURE)
+  ? PROFILE_FIXTURE
+  : path.join(PROFILE_SCREENS, fs.readdirSync(PROFILE_SCREENS).find((file) => file.endsWith('.html')));
 const { EVENT_FILE, EVENTS } = telemetry;
 
 function pass(message) {

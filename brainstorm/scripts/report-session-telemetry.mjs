@@ -9,7 +9,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import telemetry from '../session-telemetry.cjs';
+import telemetry from './lib/session-telemetry.cjs';
 
 const { EVENT_FILE, EVENTS } = telemetry;
 

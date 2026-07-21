@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * WLD prototype — WeChat Mini Program live screen capturer (Rung-6 loop, impl half).
+ * WeChat Mini Program live screen capturer (Rung-6 loop, implementation half).
  *
  * Drives WeChat DevTools via `miniprogram-automator` to launch a demo project and
  * screenshot each page (screen-only, no phone chrome) into the conformance workdir.

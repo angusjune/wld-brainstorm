@@ -1,7 +1,7 @@
 /*
  * Composes the brainstorm skill's canonical demo assets into site/public/demo/.
  * READ-ONLY toward brainstorm/ — mirrors what the brainstorm
- * server (brainstorm/server.cjs) does at request time.
+ * server (brainstorm/scripts/serve-preview.cjs) does at request time.
  * public/demo is gitignored; this runs as predev/prebuild.
  */
 import fs from 'node:fs'
@@ -12,7 +12,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url))
 const REPO = path.resolve(HERE, '../..')
 const SKILL = path.join(REPO, 'brainstorm')
 const PROFILE = path.join(SKILL, 'profile')
-// Resolve the platform pack the way server.cjs does, from the frontmatter of
+// Resolve the platform pack the way scripts/serve-preview.cjs does, from the frontmatter of
 // profile/PROFILE.md (flat `key: value` lines), rather than hardcoding wechat.
 function readFrontmatter(text) {
   const block = text.match(/^---\n([\s\S]*?)\n---/)
@@ -58,7 +58,7 @@ function escapeHtml(value) {
 }
 
 // A platform pack is a single chrome.html: one <style> block plus the nav
-// markup stamped into each <preview-chrome> tag (same split server.cjs does).
+// markup stamped into each <preview-chrome> tag (same split scripts/serve-preview.cjs does).
 export function splitChrome(chromeHtml) {
   const styleRe = /<style[^>]*>([\s\S]*?)<\/style>/i
   const styleMatch = chromeHtml.match(styleRe)

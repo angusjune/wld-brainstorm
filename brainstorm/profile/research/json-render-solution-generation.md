@@ -18,9 +18,9 @@
 
 这是对仓库的直接观察，不是 json-render 官方结论：
 
-- `brainstorm/SKILL.md` 要求模型先读 `PROFILE.md` 和最接近的生产模板，再直接写完整静态 `solutions.html`；随后执行 Simplify、产品 pass、`qa-gate.mjs` 和截图人工检查。[当前工作流](../../SKILL.md)
+- `brainstorm/SKILL.md` 要求模型先读 `PROFILE.md` 和最接近的生产模板，再直接写完整静态 `solutions.html`；随后执行 Simplify、产品 pass、`scripts/run-qa-gate.mjs` 和截图人工检查。[当前工作流](../../SKILL.md)
 - 下游分支把批准后的 HTML 当成正式中间制品：Push to Figma 会读取 HTML、CSS 和生产模板，Beyblade 会从本地 HTML 截图和提取视觉特征。[嵌入工作流](../../references/embedded-workflows.md)
-- 当前 6 个 `merged-profile` benchmark 的 `solutions.html` 共 141,746 bytes，平均约 23.6 KB；单文件约 16.3–39.5 KB。现有报告只记录 gate 质量（12 个页面为 0 error / 0 warning），没有记录生成耗时或 token，因此目前不能量化瓶颈究竟来自输出解码、读模板、passes、工具往返还是截图循环。[质量基准说明](../../quality-benchmark/README.md) · [当前报告](../../quality-benchmark/runs/merged-profile/report.md)
+- 当前 6 个 `merged-profile` benchmark 的 `solutions.html` 共 141,746 bytes，平均约 23.6 KB；单文件约 16.3–39.5 KB。现有报告只记录 gate 质量（12 个页面为 0 error / 0 warning），没有记录生成耗时或 token，因此目前不能量化瓶颈究竟来自输出解码、读模板、passes、工具往返还是截图循环。[质量基准说明](../../quality-benchmark/README.md) · [当前报告](../quality-benchmark/runs/merged-profile/report.md)
 
 ## 官方文档确认的能力
 
@@ -104,7 +104,7 @@ catalog 的粒度存在一个核心取舍：
 1. 选 `quality-benchmark` 中一个结构复杂 case，例如 `me-tab-service`。
 2. catalog 只定义 8–15 个从生产模板提取的高阶产品组件；不要从通用 shadcn catalog 起步。
 3. renderer 仍输出与现有页面 shell、class names 和 `<preview-chrome>` 契约兼容的 HTML/DOM，确保 Figma/Prototype/Beyblade 不需先重写。
-4. 保留 Simplify、profile passes、`qa-gate.mjs` 和 screenshot QA；新增 spec schema 与业务 invariant gate，但不要用它们替代现有 gate。
+4. 保留 Simplify、profile passes、`scripts/run-qa-gate.mjs` 和 screenshot QA；新增 spec schema 与业务 invariant gate，但不要用它们替代现有 gate。
 5. 固定同一模型、同一 prompt、同一 case，至少重复多次记录：TTFP、流结束时间、首次通过所有 gate 的时间、输入/输出 token、repair 次数、gate findings、人工多样性/模板忠实度评分。
 6. 只有在“首次通过质量门槛的时间”稳定更短、现有 benchmark 无回归、下游 HTML 契约不变时，才扩展到更多 case。
 
@@ -131,7 +131,7 @@ catalog 的粒度存在一个核心取舍：
 | 清理热点模板后的脚手架实验 2 | 75.1s | 370.5s | 444.3s | 0 / 0（第二次 QA） |
 | 清理模板后的直接生成 | 294.3s | 294.3s | 317.5s | 0 / 0 |
 
-表中的「首次 QA 通过」只表示自动 `qa-gate.mjs` 首次零错误；会话遥测无法自动观察 Simplify、产品 pass 或截图人工确认，因此不能把这一列当作完整质量流程的结束时间。
+表中的「首次 QA 通过」只表示自动 `scripts/run-qa-gate.mjs` 首次零错误；会话遥测无法自动观察 Simplify、产品 pass 或截图人工确认，因此不能把这一列当作完整质量流程的结束时间。
 
 脚手架稳定改善了「先看到生产模板」的时间，但两次都没有改善首个可评审方案的完成时间。第一版还迫使模型把三份 inline-style DOM 重构为 class；把热点模板 class 化后，三方案骨架从 19,427 B 降到 14,085 B，仍未带来端到端提速。这说明当前瓶颈主要不在重复输出页面壳，而在方案推理、模板适配和检查循环。脚手架因此没有进入默认工作流；保留的改进是生产模板 class/SVG/CSS 清理、直接生成时复用模板 class 与单份局部 CSS，以及会话遥测。
 

@@ -1,6 +1,6 @@
 ---
 name: brainstorm
-description: 用于微粒贷 UI 头脑风暴：生成3个方案、迭代完整流程，并在定稿后继续精简、校验细节、推送 Figma、小程序 Demo 或界面陀螺 battle。Use when exploring or finishing WLD mobile screens.
+description: 用于基于内置产品档案进行移动端 UI 头脑风暴：生成3个方案、迭代完整流程，并在定稿后继续精简、校验细节、推送 Figma、构建平台原型或运行界面陀螺 battle。Use when exploring or finishing mobile screens with the bundled product profile.
 ---
 
 # Design Brainstorm
@@ -9,30 +9,31 @@ Interactive design and finishing workflow for mobile screens. Users describe ide
 
 Resolve this skill directory as `skillDir`. Every path below is relative to `skillDir`; this directory is self-contained for upload.
 
-**This file is the method — it names no product.** Every product-specific fact (which screens exist, the design laws, the palette, the passes to run) lives in `profile/PROFILE.md`. The bundled profile is WLD (微粒贷); replacing `profile/` is how this skill is pointed at a different product.
+**This file is the method — it names no product.** Every product-specific fact (which screens exist, the design laws, the palette, the passes to run) lives in `profile/PROFILE.md`. Replacing `profile/` is how this skill is pointed at a different product.
 
 **The product profile** (in `profile/`) — everything specific to this product, and the only directory a forking team rewrites:
-- `PROFILE.md` — **Read this at Step 3.** Its frontmatter is the machine-readable profile config (product, platform, page class); its body carries the screen table, template routing, design language, product laws, passes, and quick reference
+- `PROFILE.md` — **Read this at Step 3.** Its frontmatter is the machine-readable profile config (product, platform, page class, token prefix); its body carries the screen table, template routing, design language, product laws, passes, and quick reference
 - `tokens.css` — All CSS custom properties (the single source of truth for the palette)
 - `components.css` — Full CSS for every component
 - `screens/` — Production screen templates (the ground truth)
 - `PRODUCT.md` — Bridge to bundled product knowledge (screen ↔ COMP_ID mapping, filter rules, injection format)
 - `production-reference.md` — Current app screens, structure, and terminology
-- `rules.mjs` — Optional product QA rules loaded by `qa-gate.mjs`
+- `rules.mjs` — Optional product QA rules loaded by `scripts/run-qa-gate.mjs`
 
 **Platform packs** (in `platforms/`) — the surface's furniture, shared by any product on it. The profile's `platform` field selects exactly one:
 - `wechat/` — WeChat Mini Program: status bar, 88px navbar, capsule; contributes the Prototype branch
 - `ios/` — iOS: status bar, 44px nav bar, home indicator
 - Each pack is a single `chrome.html` — one style block plus the nav markup the server stamps into each `<preview-chrome>` tag — plus any branches it contributes under `branches/`.
 
-**Shared machinery** (in `assets/`) — names no product and no platform:
-- `frame-template.html` — Source for frame styles, including the reset and the phone mockup + gallery layout (auto-injected by the server into every served HTML page). Do NOT copy this file directly.
+**Shared machinery**:
+- `assets/frame-template.html` — Source for frame styles, including the reset and the phone mockup + gallery layout (auto-injected by the server into every served HTML page). Do NOT copy this file directly.
+- `assets/live-reload.js` — Browser-side SSE client auto-injected by the preview server.
+- `scripts/serve-preview.cjs` — Local preview server with SSE hot reload.
+- `scripts/run-qa-gate.mjs` — Deterministic universal checks plus optional product rules.
 
 The profile's screen table lists every production template on disk, and `npm run validate` checks the two against each other in both directions.
 
-**Brainstorm-specific files** (in this directory):
-- `server.cjs` — Local Node.js server with SSE hot-reload
-- `helper.js` — Browser-side SSE live reload client
+**Brainstorm-specific references**:
 - `references/solution-archetypes.md` — UX and visual exploration archetypes for diversifying 3-solution sets
 - `references/embedded-workflows.md` — Embedded Simplify pass, plus the Push to Figma, Prototype, and Beyblade Battle branches
 - **Playwright MCP / Chrome dev tool MCP / browser tool** — Used for screenshot verification when available. If no browser automation tool is available in the current provider, skip verification for that session and tell the user.
@@ -43,7 +44,7 @@ The profile's screen table lists every production template on disk, and `npm run
 
 1. User describes idea
 2. **Step 1:** Ask clarifying questions
-3. **Step 2:** Start brainstorm server (`node server.cjs`)
+3. **Step 2:** Start brainstorm server (`node scripts/serve-preview.cjs`)
 4. **Step 3:** Read `profile/PROFILE.md`, then the production templates from `profile/screens/`
 5. **Step 4:** Generate multiple solutions (3 by default, if the user didn't specify), then run Simplify and the profile's passes before showing them
 6. User picks a direction (or request new options)
@@ -59,7 +60,7 @@ The profile's screen table lists every production template on disk, and `npm run
 
 ## Page Template
 
-**Every HTML file written to `screenDir` MUST use this structure.** Both the 3-solution page and individual screens use the same shell. The server auto-injects frame styles and helper.js — do NOT manually add frame styles or helper scripts.
+**Every HTML file written to `screenDir` MUST use this structure.** Both the 3-solution page and individual screens use the same shell. The server auto-injects frame styles and the live-reload client — do NOT manually add frame styles or helper scripts.
 
 ```html
 <!DOCTYPE html>
@@ -84,7 +85,7 @@ The profile's screen table lists every production template on disk, and `npm run
 </html>
 ```
 
-Three URL prefixes, mapped by the server: `/profile/` is the product profile, `/platform/` is the active platform pack, and `/assets/` is shared machinery. Screens name neither the product nor the platform by identity, so swapping either needs no screen edits. The server also injects the platform pack's chrome styles, the frame styles (which include the reset and phone mockup) and `helper.js` — do not link or add those yourself.
+Three URL prefixes, mapped by the server: `/profile/` is the product profile, `/platform/` is the active platform pack, and `/assets/` is shared machinery. Screens name neither the product nor the platform by identity, so swapping either needs no screen edits. The server also injects the platform pack's chrome styles, the frame styles (which include the reset and phone mockup) and `assets/live-reload.js` — do not link or add those yourself.
 
 **Preview chrome** is always written as `<preview-chrome variant="…" title="…">`. The server expands it using the active platform pack; which variants exist is the pack's business, and the profile documents which to use where.
 
@@ -117,14 +118,14 @@ Examples:
 ### Step 2: Start the Brainstorm Server
 
 ```bash
-node "<skill-dir>/server.cjs" \
+node "<skill-dir>/scripts/serve-preview.cjs" \
   --project-dir /path/to/project \
   --port 3210
 ```
 
 Save `screenDir`, `stateDir`, `telemetryPath`, and `url` from the JSON response. You will write all screen HTML files to `screenDir` and use `url` for all subsequent API calls. Tell user to open the URL.
 
-**Server features:** Serves newest `.html` from `screenDir`, auto-injects helper.js + frame styles + the platform pack's chrome styles, hot-reloads via SSE, serves shared machinery at `/assets/*` and the product profile at `/profile/*`, records session performance events at `telemetryPath`, auto-shuts down after 30 min idle. The telemetry is passive; do not add manual checkpoints during generation. It observes file writes, automatic QA gate runs, and page reads—not completion of Simplify, profile passes, or visual review. When diagnosing latency, summarize it with `node "<skill-dir>/scripts/report-session-telemetry.mjs" "<stateDir>"` after the session.
+**Server features:** Serves newest `.html` from `screenDir`, auto-injects the live-reload client + frame styles + the platform pack's chrome styles, hot-reloads via SSE, serves shared machinery at `/assets/*` and the product profile at `/profile/*`, records session performance events at `telemetryPath`, auto-shuts down after 30 min idle. The telemetry is passive; do not add manual checkpoints during generation. It observes file writes, automatic QA gate runs, and page reads—not completion of Simplify, profile passes, or visual review. When diagnosing latency, summarize it with `node "<skill-dir>/scripts/report-session-telemetry.mjs" "<stateDir>"` after the session.
 
 ### Step 3: Read Production Templates
 
@@ -180,7 +181,7 @@ Write `solutions.html` to `screenDir` using the Page Template. Start from the se
 </div>
 ```
 
-`<page-class>` is the `pageClass` from `profile/PROFILE.md`'s frontmatter (the bundled WLD profile uses `wld-page`).
+`<page-class>` is the `pageClass` from `profile/PROFILE.md`'s frontmatter. Use that value verbatim.
 
 Caption each solution with its intent:
 - UX mode: `Hypothesis` + `Tradeoff`
@@ -194,7 +195,7 @@ Check if the server (the `url` saved from Step 2 — the port may differ from 32
 **Pre-user QA gate:** Before asking the user to open the browser, first run the automated gate on the generated file(s) and fix every reported error:
 
 ```bash
-node "<skill-dir>/qa-gate.mjs" "<screenDir>/solutions.html"
+node "<skill-dir>/scripts/run-qa-gate.mjs" "<screenDir>/solutions.html"
 ```
 
 The gate is deterministic. It always runs universal checks (off-token colours, emoji, custom JS, missing stylesheets), plus this profile's own rules if it ships a `rules.mjs`. Exit code 1 means at least one error — fix the HTML and re-run until it exits 0. Warnings are advisory. Then eyeball the checks the gate cannot automate:

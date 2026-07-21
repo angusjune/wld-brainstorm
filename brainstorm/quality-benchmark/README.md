@@ -5,18 +5,23 @@
 ## 什么时候使用
 
 - 修改 `SKILL.md`、`references/`、`profile/screens/`、设计 token、组件样式或产品知识注入方式后，用它做改动前后的质量对比。
-- 修改 `qa-gate.mjs` 后，用它确认 gate 仍能抓到机械问题，同时不会误伤生产模板。
+- 修改 `scripts/run-qa-gate.mjs` 后，用它确认 gate 仍能抓到机械问题，同时不会误伤生产模板。
 - 准备发布或上传 publishable skill directory 前，用它抽样检查典型 PM prompt 的真实产出。
 - 只改安装说明、普通 README、provider manifest 文案时，通常不需要跑完整质量基准；跑 `npm run validate` 即可。
 
 ## 目录结构
 
+报告程序属于通用机制；prompt、fixture 与历史结果属于当前产品，因此跟随 `profile/` 一起替换。
+
 ```text
 quality-benchmark/
-├─ prompts.json          # 固定 PM prompt；不要改已有 id，只新增 case
-├─ fixtures/             # qa-gate 自测用的已知好/坏 HTML
-├─ report.mjs            # 生成 report.json / report.md / 截图对比
-└─ runs/<version>/       # 每次基准运行的输出目录
+├─ README.md             # 本说明
+└─ report.mjs            # 通用报告生成器
+
+profile/quality-benchmark/
+├─ prompts.json          # 当前产品的固定 PM prompt；不要改已有 id，只新增 case
+├─ fixtures/             # 当前产品 qa-gate 自测用的已知好/坏 HTML
+└─ runs/<version>/       # 当前产品每次基准运行的输出目录
    ├─ <case-id>/
    │  ├─ *.html          # agent 生成的页面，建议提交
    │  ├─ *.html.png      # 渲染截图，可重新生成
@@ -32,7 +37,7 @@ quality-benchmark/
 
 每个 case 使用一个全新的 agent，避免上下文污染。给 agent 两段输入：
 
-1. `prompts.json` 中对应 case 的 `prompt` 原文。
+1. `profile/quality-benchmark/prompts.json` 中对应 case 的 `prompt` 原文。
 2. 下面的 benchmark mode 指令块。
 
 ```text
@@ -40,7 +45,7 @@ Execute the design task by following SKILL.md exactly, with these benchmark-mode
 - Do NOT ask clarifying questions. Choose sensible defaults for anything Step 1 would have asked, and record every default in NOTES.md.
 - Skip Step 2 (server start) and all browser screenshot verification.
 - Where the skill runs embedded passes, read references/embedded-workflows.md and apply the Simplify Pass and every pass the profile declares yourself.
-- Write all output HTML files to quality-benchmark/runs/<version>/<case-id>/ instead of screenDir. Follow the skill's Page Template and file naming.
+- Write all output HTML files to profile/quality-benchmark/runs/<version>/<case-id>/ instead of screenDir. Follow the skill's Page Template and file naming.
 - Stop after Step 5 for the first screen of the chosen direction. Produce solutions.html plus at least one full screen; do not enter the feedback loop.
 ```
 
@@ -51,20 +56,20 @@ Execute the design task by following SKILL.md exactly, with these benchmark-mode
 在 `brainstorm` 目录运行：
 
 ```bash
-npm run benchmark:report -- quality-benchmark/runs/<version>
+npm run benchmark:report -- profile/quality-benchmark/runs/<version>
 ```
 
 与 baseline 对比：
 
 ```bash
-npm run benchmark:report -- quality-benchmark/runs/<new> --compare quality-benchmark/runs/baseline
+npm run benchmark:report -- profile/quality-benchmark/runs/<new> --compare profile/quality-benchmark/runs/baseline
 ```
 
 报告会输出：
 
 - `report.json`：每个 case 的 error / warning 数量和 finding code。
 - `report.md`：人读摘要。
-- `*.html.png`：通过真实 `server.cjs` 渲染的页面截图。
+- `*.html.png`：通过真实 `scripts/serve-preview.cjs` 渲染的页面截图。
 - `compare-<other>/`：与另一版本的并排截图。
 
 如果本机没有 Chrome / Chromium，报告仍会生成 gate 数字，但会跳过截图和并排图。可通过 `CHROME_PATH` 指定浏览器。

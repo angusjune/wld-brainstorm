@@ -1,3 +1,4 @@
+// Shared telemetry primitives for the preview server, QA gate, reporter, and tests.
 const fs = require('fs');
 const path = require('path');
 

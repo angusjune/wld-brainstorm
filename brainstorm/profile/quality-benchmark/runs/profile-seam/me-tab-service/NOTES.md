@@ -6,7 +6,7 @@ Task: 在"我的"页面加一个在线客服入口，顺便把整体布局优化
 
 - Step 1 interview skipped (benchmark mode) — every default recorded below.
 - Step 2 (server start) and all browser screenshot verification skipped.
-- Output written to `quality-benchmark/runs/profile-seam/me-tab-service/` instead of `screenDir`.
+- Output written to `profile/quality-benchmark/runs/profile-seam/me-tab-service/` instead of `screenDir`.
 - Stopped after Step 5 (one full screen of the chosen direction); no feedback loop.
 
 ## Step 1 defaults (would have been asked one-by-one)

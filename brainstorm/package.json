@@ -5,15 +5,16 @@
   "type": "module",
   "description": "Self-contained design brainstorm skill: shared method, platform packs, and one swappable product profile.",
   "scripts": {
-    "qa-gate": "node qa-gate.mjs",
+    "preview": "node scripts/serve-preview.cjs",
+    "qa-gate": "node scripts/run-qa-gate.mjs",
     "session:report": "node scripts/report-session-telemetry.mjs",
-    "validate": "node scripts/validate-plugin.mjs",
+    "validate": "node scripts/validate-skill.mjs",
     "gen:wxss-tokens": "node platforms/wechat/prototype/generate-wxss-tokens.mjs",
     "benchmark:report": "node quality-benchmark/report.mjs",
-    "test:qa-gate": "node scripts/test-qa-gate.mjs",
-    "test:session-telemetry": "node scripts/test-session-telemetry.mjs",
+    "test:qa-gate": "node scripts/tests/qa-gate.mjs",
+    "test:session-telemetry": "node scripts/tests/session-telemetry.mjs",
     "test:wxss-tokens": "node platforms/wechat/prototype/generate-wxss-tokens.mjs --check",
-    "test:quality-benchmark": "node scripts/test-quality-benchmark.mjs",
+    "test:quality-benchmark": "node scripts/tests/quality-benchmark.mjs",
     "test": "npm run test:qa-gate && npm run test:session-telemetry && npm run test:wxss-tokens && npm run test:quality-benchmark"
   }
 }
