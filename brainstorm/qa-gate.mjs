@@ -21,8 +21,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import telemetry from './session-telemetry.cjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const { EVENTS, appendSessionEvent, findSessionStateDir } = telemetry;
 
 // Universal checks only — these hold for any product on any platform. Product
 // laws (urgency copy, button shape, background rules …) live in the profile's
@@ -327,6 +329,7 @@ function collectHtmlFiles(target) {
 }
 
 async function main() {
+  const qaStartedAtMs = Date.now();
   const argv = process.argv.slice(2);
   const targets = [];
   let json = false;
@@ -364,6 +367,25 @@ async function main() {
   const results = files.map((file) => checkFile(file, env));
   const errors = results.reduce((n, r) => n + r.errors, 0);
   const warnings = results.reduce((n, r) => n + r.warnings, 0);
+
+  const sessionResults = new Map();
+  for (const result of results) {
+    const stateDir = findSessionStateDir(result.file);
+    if (!stateDir) continue;
+    if (!sessionResults.has(stateDir)) sessionResults.set(stateDir, []);
+    sessionResults.get(stateDir).push(result);
+  }
+  for (const [stateDir, sessionResult] of sessionResults) {
+    const sessionErrors = sessionResult.reduce((total, result) => total + result.errors, 0);
+    const sessionWarnings = sessionResult.reduce((total, result) => total + result.warnings, 0);
+    appendSessionEvent(stateDir, EVENTS.QA_COMPLETED, {
+      files: sessionResult.map((result) => path.basename(result.file)),
+      errors: sessionErrors,
+      warnings: sessionWarnings,
+      passed: sessionErrors === 0,
+      durationMs: Date.now() - qaStartedAtMs,
+    });
+  }
 
   if (json) {
     console.log(JSON.stringify({ files: results, errors, warnings }, null, 2));

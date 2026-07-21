@@ -122,9 +122,9 @@ node "<skill-dir>/server.cjs" \
   --port 3210
 ```
 
-Save `screenDir` and `url` from the JSON response. You will write all screen HTML files to `screenDir` and use `url` for all subsequent API calls. Tell user to open the URL.
+Save `screenDir`, `stateDir`, `telemetryPath`, and `url` from the JSON response. You will write all screen HTML files to `screenDir` and use `url` for all subsequent API calls. Tell user to open the URL.
 
-**Server features:** Serves newest `.html` from `screenDir`, auto-injects helper.js + frame styles + the platform pack's chrome styles, hot-reloads via SSE, serves shared machinery at `/assets/*` and the product profile at `/profile/*`, auto-shuts down after 30 min idle.
+**Server features:** Serves newest `.html` from `screenDir`, auto-injects helper.js + frame styles + the platform pack's chrome styles, hot-reloads via SSE, serves shared machinery at `/assets/*` and the product profile at `/profile/*`, records session performance events at `telemetryPath`, auto-shuts down after 30 min idle. The telemetry is passive; do not add manual checkpoints during generation. It observes file writes, automatic QA gate runs, and page reads—not completion of Simplify, profile passes, or visual review. When diagnosing latency, summarize it with `node "<skill-dir>/scripts/report-session-telemetry.mjs" "<stateDir>"` after the session.
 
 ### Step 3: Read Production Templates
 
@@ -158,7 +158,7 @@ Unless the user is explicitly exploring visual direction, the options must not d
 
 **Visual-mode invariants:** every visual variant keeps, unchanged from the source template: the screen's canonical CTA form exactly as the template ships it (the profile lists the canonical form per screen — never swap one form for another), the preview chrome and tab bar, all legal/rate/disclaimer text, and all data values. Each caption's "What changes" names exactly what varies — everything not named stays as the template has it.
 
-Write `solutions.html` to `screenDir` using the Page Template. Inside `#frame-content`, use a `phone-gallery` with 3 phones:
+Write `solutions.html` to `screenDir` using the Page Template. Start from the selected production template's existing DOM and class names. Keep its local CSS once per document, then adapt the three screen copies; do not normalize or rename working production classes before exploring the actual solution differences. Inside `#frame-content`, use a `phone-gallery` with 3 phones:
 
 ```html
 <h2 class="frame-title">3 Design Solutions</h2>

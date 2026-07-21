@@ -22,12 +22,13 @@
 | 6 | `PRODUCT.md`、`pm-*-cache/` | **可选**。产品状态机、业务规律、历史坑点。没有就把 `PRODUCT.md` 里的映射表清空，Step 3 会静默跳过。 |
 | 7 | `production-reference.md` | 换成你的线上产品说明和术语表。 |
 | 8 | `miniprogram/` | 只有要用小程序 Demo 分支才需要。不用就删掉整个目录。 |
+| 9 | `research/` | **可选**。只保留你自己产品的实验记录；换产品时删除或重写，避免把旧产品结论带进新档案。 |
 
 改完跑一遍：
 
 ```bash
 npm run validate   # 检查模板表和磁盘是否一致、有没有引用到不存在的文件
-npm test           # 跑 QA gate 和质量基准
+npm test           # 运行 QA、会话遥测、WXSS token 和质量基准等全部自测
 ```
 
 ---

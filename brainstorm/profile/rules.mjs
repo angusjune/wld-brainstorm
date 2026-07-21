@@ -50,7 +50,7 @@ export default {
     'urgency-copy': 'error', // pressure language is banned in WLD
     'white-on-gold': 'error', // text on gold is always rgba(0,0,0,0.9)
     'square-button': 'error', // WLD buttons are always pill-shaped
-    'multi-gold-cta': 'warning', // >1 gold CTA (dual-offer home is a known exception)
+    'multi-gold-cta': 'warning', // >1 gold CTA outside the production dual-offer exception
     'thick-border': 'warning', // borders >= 2px are off-system
     'amount-weight': 'warning', // 44px amounts use weight 500, not 600
     'thousands-separator': 'warning', // production writes ¥60000, never ¥60,000
@@ -87,8 +87,9 @@ export default {
       run(screen, { add, utils }) {
         const goldCtas = utils.elementsWithClass(screen.text, 'wld-btn-primary').length
           + utils.elementsWithClass(screen.text, 'wld-btn-circle').length;
-        if (goldCtas > 1) {
-          add('multi-gold-cta', `screen ${screen.index}: ${goldCtas} gold CTAs — one primary gold action per screen (dual-offer home cards are the known exception)`, screen.start);
+        const isDualOffer = /id\s*=\s*["']screen-dual-offer(?:-[^"']*)?["']/i.test(screen.openTag);
+        if (goldCtas > 1 && !isDualOffer) {
+          add('multi-gold-cta', `screen ${screen.index}: ${goldCtas} gold CTAs — one primary gold action per screen`, screen.start);
         }
       },
     },

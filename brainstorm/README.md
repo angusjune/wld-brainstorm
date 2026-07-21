@@ -57,7 +57,7 @@
 1. **澄清需求**：与你进行多轮对话，澄清需求。
 2. **启动本地预览服务**：启动 SSE 热更新的本地 Node 服务 (`server.cjs`)，让你可以在浏览器中实时预览界面修改。
 3. **基准模板与产品规则对齐**：先读 `profile/PROFILE.md`（模板表、路由、产品铁律、设计语言），再读 `profile/screens/` 的 HTML 模板。针对核心页面，还会通过 `PRODUCT.md` 提取关联的业务逻辑和常见设计坑点，确保设计在视觉和逻辑上都不偏离产品规范。
-4. **多方案生成与 UI 装配**：依据需求生成 3 种不同方向（交互或视觉）的方案。页面会自动注入当前平台包的预览外壳和手机 mockup 样式，供用户直观对比。
+4. **生产模板优先的多方案生成**：以最接近的生产模板 DOM 和 class 为起点，只生成各方向真正不同的部分；模板局部 CSS 在同一方案页只保留一份。页面会自动注入当前平台包的预览外壳和手机 mockup 样式，供用户直观对比。
 5. **质检**：在交付设计前，内部调用 **Simplify（精简设计）** 以及产品档案声明的 pass（微粒贷档案提供 **Fix Details 细节校验**），自我修正冗余元素、数值计算错漏及样式缺陷；若当前环境支持（如安装了 Playwright MCP、Chrome DevTools MCP 或其他浏览器自动化工具），还会自动访问页面并截图，完成真正的视觉 QA 自检与纠错。
 6. **生成交互式demo或推送至figma**：方案定稿后，可直接通过内部指令将页面 **推送到 Figma 画布**、**生成微信小程序 Demo** 或 **开启爆旋陀螺战斗**。
 
@@ -84,8 +84,15 @@ npm run benchmark:report -- quality-benchmark/runs/<new> --compare quality-bench
 ```bash
 npm test              # 全部
 npm run test:qa-gate
+npm run test:session-telemetry # 会话性能记录自测
 npm run test:wxss-tokens      # 小程序 token 段是否与 tokens.css 同步
 npm run test:quality-benchmark
+```
+
+每次本地 brainstorm 会话都会在返回的 `stateDir` 下写入 `session-events.jsonl`，记录服务启动、`solutions.html` 写入与改版、自动 QA gate 结果和页面读取时间。它不会自动记录 Simplify、产品 pass 或截图人工确认的完成时间。需要定位慢点时运行：
+
+```bash
+npm run session:report -- /path/to/session/state
 ```
 
 ### 发布前

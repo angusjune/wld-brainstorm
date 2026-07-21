@@ -15,92 +15,39 @@
   <div class="wld-page-body">
 
     <!-- Interest rate info bar -->
-    <div style="
-      background: var(--wld-section);
-      padding: 10px var(--wld-page-padding);
-      font-size: var(--wld-text-caption);
-      color: var(--wld-text-secondary);
-      text-align: center;
-    ">年利率 (单利) 10.8%，1千元用1天只需0.3元</div>
+    <div class="wld-dual-rate-bar">年利率 (单利) 10.8%，1千元用1天只需0.3元</div>
 
     <!-- Credit display -->
-    <div style="
-      background: var(--wld-surface);
-      padding: 32px var(--wld-page-padding) 24px;
-      text-align: center;
-    ">
-      <div style="
-        font-size: var(--wld-text-body2);
-        color: var(--wld-text-secondary);
-        margin-bottom: 8px;
-      ">预估可借</div>
-      <div style="
-        font-family: var(--wld-font-number);
-        font-size: 44px;
-        font-weight: 500;
-        color: var(--wld-text-primary);
-        letter-spacing: -0.5px;
-        line-height: 1.2;
-      "><span style="font-size: 20px; margin-right: 2px;">¥</span>60000</div>
+    <div class="wld-dual-credit">
+      <div class="wld-dual-credit-label">预估可借</div>
+      <div class="wld-dual-credit-amount"><span class="wld-dual-credit-symbol">¥</span>60000</div>
     </div>
 
     <!-- "新用户优惠 2 选 1" decorative header -->
-    <div style="
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 24px 30px 16px;
-    ">
-      <div style="flex: 1; height: 1px; background: linear-gradient(to right, transparent, var(--wld-promo-500));"></div>
-      <span style="
-        font-size: 18px;
-        font-weight: var(--wld-font-weight-semibold);
-        color: var(--wld-promo-500);
-        white-space: nowrap;
-      ">新用户优惠 2 选 1</span>
-      <div style="flex: 1; height: 1px; background: linear-gradient(to left, transparent, var(--wld-promo-500));"></div>
+    <div class="wld-dual-heading">
+      <div class="wld-dual-heading-line wld-dual-heading-line--left"></div>
+      <span class="wld-dual-heading-label">新用户优惠 2 选 1</span>
+      <div class="wld-dual-heading-line wld-dual-heading-line--right"></div>
     </div>
 
     <!-- Two side-by-side offer cards -->
-    <div style="display: flex; gap: 10px; padding: 0 30px;">
+    <div class="wld-dual-offers">
 
       <!-- Card 1: 0 interest for 30 days -->
-      <div style="
-        flex: 1;
-        background: var(--wld-surface);
-        border-radius: 16px;
-        box-shadow: 0px 12px 24px var(--wld-black-100), inset 0 0 1px rgba(0,0,0,0.25);
-        padding: 20px;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 12px;
-      ">
-        <div style="font-size: var(--wld-text-body2); color: var(--wld-text-secondary);">前 30 天</div>
-        <div style="line-height: 1.2;">
-          <span style="font-family: var(--wld-font-number); font-size: 26px; font-weight: 600; color: var(--wld-text-primary);">0</span>
-          <span style="font-size: 24px; font-weight: 600; color: var(--wld-text-primary); margin-left: 2px;">利息</span>
+      <div class="wld-dual-offer-card">
+        <div class="wld-dual-offer-kicker">前 30 天</div>
+        <div class="wld-dual-offer-value">
+          <span class="wld-dual-offer-number">0</span>
+          <span class="wld-dual-offer-suffix">利息</span>
         </div>
         <button class="wld-btn wld-btn-primary wld-btn-s">借钱</button>
       </div>
 
       <!-- Card 2: Discounted annual rate -->
-      <div style="
-        flex: 1;
-        background: var(--wld-surface);
-        border-radius: 16px;
-        box-shadow: 0px 12px 24px var(--wld-black-100), inset 0 0 1px rgba(0,0,0,0.25);
-        padding: 20px;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 12px;
-      ">
-        <div style="font-size: var(--wld-text-body2); color: var(--wld-text-secondary);">优惠年利率</div>
-        <div style="line-height: 1.2;">
-          <span style="font-family: var(--wld-font-number); font-size: 26px; font-weight: 600; color: var(--wld-text-primary);">7.2%</span>
+      <div class="wld-dual-offer-card">
+        <div class="wld-dual-offer-kicker">优惠年利率</div>
+        <div class="wld-dual-offer-value">
+          <span class="wld-dual-offer-number">7.2%</span>
         </div>
         <button class="wld-btn wld-btn-primary wld-btn-s">借钱</button>
       </div>
@@ -108,7 +55,7 @@
     </div>
 
     <!-- Footer -->
-    <div class="wld-footer" style="margin-top: 32px;">
+    <div class="wld-footer wld-dual-footer">
       <div class="wld-footer-links">
         <a href="#">借钱须知</a>
       </div>
@@ -118,7 +65,7 @@
   </div>
 
   <!-- ===== TAB BAR ===== -->
-  <div class="wld-tabbar" style="position: absolute; bottom: 0; left: 0; width: var(--wld-page-width);">
+  <div class="wld-tabbar wld-dual-tabbar">
     <button class="wld-tabbar-item">
       <div class="wld-tabbar-icon">
         <img src="/profile/icons/tab-icon-home-filled.svg" alt="借钱" width="22" height="22">
@@ -134,3 +81,102 @@
   </div>
 
 </div>
+
+<style>
+  .wld-dual-rate-bar {
+    background: var(--wld-section);
+    padding: 10px var(--wld-page-padding);
+    font-size: var(--wld-text-caption);
+    color: var(--wld-text-secondary);
+    text-align: center;
+  }
+  .wld-dual-credit {
+    background: var(--wld-surface);
+    padding: 32px var(--wld-page-padding) 24px;
+    text-align: center;
+  }
+  .wld-dual-credit-label {
+    font-size: var(--wld-text-body2);
+    color: var(--wld-text-secondary);
+    margin-bottom: 8px;
+  }
+  .wld-dual-credit-amount {
+    font-family: var(--wld-font-number);
+    font-size: 44px;
+    font-weight: 500;
+    color: var(--wld-text-primary);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+  }
+  .wld-dual-credit-symbol {
+    font-size: 20px;
+    margin-right: 2px;
+  }
+  .wld-dual-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 30px 16px;
+  }
+  .wld-dual-heading-line {
+    flex: 1;
+    height: 1px;
+  }
+  .wld-dual-heading-line--left {
+    background: linear-gradient(to right, transparent, var(--wld-promo-500));
+  }
+  .wld-dual-heading-line--right {
+    background: linear-gradient(to left, transparent, var(--wld-promo-500));
+  }
+  .wld-dual-heading-label {
+    font-size: 18px;
+    font-weight: var(--wld-font-weight-semibold);
+    color: var(--wld-promo-500);
+    white-space: nowrap;
+  }
+  .wld-dual-offers {
+    display: flex;
+    gap: 10px;
+    padding: 0 30px;
+  }
+  .wld-dual-offer-card {
+    flex: 1;
+    background: var(--wld-surface);
+    border-radius: 16px;
+    box-shadow: 0px 12px 24px var(--wld-black-100), inset 0 0 1px rgba(0,0,0,0.25);
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .wld-dual-offer-kicker {
+    font-size: var(--wld-text-body2);
+    color: var(--wld-text-secondary);
+  }
+  .wld-dual-offer-value {
+    line-height: 1.2;
+  }
+  .wld-dual-offer-number {
+    font-family: var(--wld-font-number);
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--wld-text-primary);
+  }
+  .wld-dual-offer-suffix {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--wld-text-primary);
+    margin-left: 2px;
+  }
+  .wld-dual-footer {
+    margin-top: 32px;
+  }
+  .wld-dual-tabbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: var(--wld-page-width);
+  }
+</style>

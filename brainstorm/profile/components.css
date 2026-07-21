@@ -401,6 +401,40 @@
   padding-bottom: 100px; /* space for fixed bottom bar or tab bar */
 }
 
+/* --- Home loan summary (home screen variants) --- */
+.wld-rate-bar {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--wld-text-secondary);
+  background: var(--wld-section);
+  flex-shrink: 0;
+}
+.wld-home-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px 0;
+}
+.wld-home-label {
+  font-size: 14px;
+  font-weight: var(--wld-font-weight-semibold);
+  color: var(--wld-text-primary);
+}
+.wld-home-amount {
+  font-family: var(--wld-font-number);
+  font-size: var(--wld-text-numbers);
+  font-weight: 500;
+  color: var(--wld-text-primary);
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
 /* Bottom action bar (for inner pages with CTA buttons) */
 .wld-bottom-bar {
   position: absolute;

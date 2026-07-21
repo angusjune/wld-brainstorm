@@ -17,6 +17,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
+const { EVENT_FILE, EVENTS, appendSessionEvent } = require('./session-telemetry.cjs');
 
 // --- Args ---
 const args = process.argv.slice(2);
@@ -28,7 +29,8 @@ function getArg(name, fallback) {
 const PORT = parseInt(getArg('port', '3210'), 10);
 const HOST = getArg('host', '127.0.0.1');
 const PROJECT_DIR = getArg('project-dir', process.cwd());
-const SESSION_ID = `${process.pid}-${Date.now()}`;
+const STARTED_AT_MS = Date.now();
+const SESSION_ID = `${process.pid}-${STARTED_AT_MS}`;
 const SESSION_DIR = path.join(PROJECT_DIR, '.brainstorm', SESSION_ID);
 const SCREEN_DIR = path.join(SESSION_DIR, 'screens');
 const STATE_DIR = path.join(SESSION_DIR, 'state');
@@ -40,14 +42,47 @@ const HELPER_PATH = path.join(__dirname, 'helper.js');
 fs.mkdirSync(SCREEN_DIR, { recursive: true });
 fs.mkdirSync(STATE_DIR, { recursive: true });
 
+function recordEvent(event, details = {}) {
+  return appendSessionEvent(STATE_DIR, event, details, {
+    startedAtMs: STARTED_AT_MS,
+    sessionId: SESSION_ID,
+  });
+}
+
+recordEvent(EVENTS.SESSION_STARTED, { projectDir: PROJECT_DIR });
+
 // --- SSE clients for live reload ---
 const sseClients = new Set();
+const screenVersions = new Map();
+
+function captureScreenWrite(filePath) {
+  if (path.extname(filePath) !== '.html' || !fs.existsSync(filePath)) return;
+  let stat;
+  try { stat = fs.statSync(filePath); } catch { return; }
+  const signature = `${stat.size}:${stat.mtimeMs}`;
+  const previous = screenVersions.get(filePath);
+  if (previous?.signature === signature) return;
+  const revision = (previous?.revision || 0) + 1;
+  screenVersions.set(filePath, { signature, revision });
+  recordEvent(EVENTS.SCREEN_WRITTEN, {
+    file: path.relative(SCREEN_DIR, filePath),
+    revision,
+    bytes: stat.size,
+  });
+}
+
+function captureScreenWrites() {
+  let files = [];
+  try { files = fs.readdirSync(SCREEN_DIR); } catch { return; }
+  for (const file of files) captureScreenWrite(path.join(SCREEN_DIR, file));
+}
 
 // --- Watch screen dir for changes ---
 let debounceTimer;
 fs.watch(SCREEN_DIR, { recursive: true }, () => {
   clearTimeout(debounceTimer);
   debounceTimer = setTimeout(() => {
+    captureScreenWrites();
     for (const res of sseClients) {
       try { res.write(`data: reload\n\n`); } catch {}
     }
@@ -298,6 +333,15 @@ const server = http.createServer((req, res) => {
 
   if (fs.existsSync(filePath)) {
     const ext = path.extname(filePath);
+    if (ext === '.html') {
+      captureScreenWrite(filePath);
+      const version = screenVersions.get(filePath);
+      recordEvent(EVENTS.SCREEN_SERVED, {
+        file: path.relative(SCREEN_DIR, filePath),
+        revision: version?.revision || null,
+        requestPath: pathname,
+      });
+    }
     let content = fs.readFileSync(filePath, 'utf8');
     if (ext === '.html') {
       content = injectHelper(content);
@@ -328,14 +372,22 @@ server.listen(PORT, HOST, () => {
     stateDir: STATE_DIR,
     assetsDir: ASSETS_DIR,
     sessionId: SESSION_ID,
+    startedAt: new Date(STARTED_AT_MS).toISOString(),
+    startedAtMs: STARTED_AT_MS,
+    telemetryPath: path.join(STATE_DIR, EVENT_FILE),
   };
   // Write startup info for the agent to read
   fs.writeFileSync(path.join(STATE_DIR, 'server-info.json'), JSON.stringify(info, null, 2));
+  recordEvent(EVENTS.SERVER_LISTENING, { url: info.url, port: PORT });
   console.log(JSON.stringify(info));
 });
 
 // --- Graceful shutdown ---
+let stopping = false;
 function shutdown(reason) {
+  if (stopping) return;
+  stopping = true;
+  recordEvent(EVENTS.SESSION_STOPPED, { reason: reason || '' });
   try { fs.writeFileSync(path.join(STATE_DIR, 'server-stopped'), reason || ''); } catch {}
   for (const res of sseClients) {
     try { res.end(); } catch {}

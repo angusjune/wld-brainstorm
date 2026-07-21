@@ -69,7 +69,7 @@ Production-accurate HTML in `profile/screens/`, exported from Figma. **This tabl
 
 ### Principles
 
-1. **One gold action per screen** — the gold accent is the single most powerful visual element. Reserve it for exactly one primary CTA per screen; all other actions use secondary or outline styles.
+1. **One gold action per screen** — the gold accent is the single most powerful visual element. Reserve it for exactly one primary CTA per screen; all other actions use secondary or outline styles. The production dual-offer state is the explicit exception: its two mutually exclusive offer cards each keep their gold `借钱` action.
 2. **Hierarchy through opacity, not color** — three opacity levels on black (0.9 / 0.5 / 0.35) create the reading order. Avoid colored text except links (`--wld-info-500`) and promotional highlights (`--wld-emphasis-500` / `--wld-promo-500`).
 3. **Earn every pixel** — no decorative filler. Remove background patterns, "温馨提示" boilerplate, redundant icons, and anything that doesn't help the user decide or act. If text can be shorter, make it shorter (body text ≤15 characters where possible).
 4. **WeChat-native context** — mockups keep the presentation-only preview chrome; users should never feel they've left WeChat.
@@ -117,13 +117,14 @@ Non-negotiable. These win over anything a template appears to show.
 - **No emojis anywhere.** Use the profile's icon set or inline SVGs.
 - **Home screens keep the tab bar** (借钱 / 我的).
 - **Required rate, agreement, repayment and risk text stays** whenever the template has it.
-- **One primary gold CTA per screen.**
+- **One primary gold CTA per screen.** The production dual-offer state is the explicit exception described above.
 
 ### Canonical CTA forms
 
 Each screen ships a CTA form that visual variants must not swap:
 
 - `个人中心` — the 84px gold circle 借钱 button
+- `个人中心-双offer` — two side-by-side offer cards, each with its own small gold 借钱 button
 - `输入金额` — the full-width gold pill 下一步, in the template's own position
 - `收银台`, `更换还款卡` — CTA centered directly below the content
 - `提前还清` — the only screen using a fixed bottom action bar
@@ -143,7 +144,7 @@ Never hand-write status bar, navbar, capsule, or back-arrow markup. The server e
 
 ### Screen-specific styles
 
-Each template defines its own CSS classes in a `<style>` block at the bottom (`.wld-rate-bar`, `.wld-home-content`, `.wld-loan-amount`). These are **not** in `components.css`. When adapting a template, copy these local styles along with the HTML.
+多个生产模板共用的样式放在 `components.css`；仅属于单个页面的样式保留在模板底部的 `<style>` 中（例如 `.wld-loan-amount`）。改造模板时必须同时保留其局部样式；同一方案页只保留一份局部 CSS，禁止为每个方案重复复制。
 
 ---
 
