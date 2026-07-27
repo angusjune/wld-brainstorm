@@ -45,7 +45,7 @@ Execute the design task by following SKILL.md exactly, with these benchmark-mode
 - Do NOT ask clarifying questions. Choose sensible defaults for anything Step 1 would have asked, and record every default in NOTES.md.
 - Skip Step 2 (server start) and all browser screenshot verification.
 - Where the skill runs passes, apply the Shared Simplify Pass in SKILL.md and every pass the profile declares yourself.
-- Write all output HTML files to profile/quality/benchmark/runs/<version>/<case-id>/ instead of screenDir. Follow the skill's Page Template and file naming.
+- Write all output HTML files to profile/quality/benchmark/runs/<version>/<case-id>/ instead of screenDir. Copy `assets/page-template.html` for each file and follow the skill's file naming.
 - Stop after Step 5 for the first screen of the chosen direction. Produce solutions.html plus at least one full screen; do not enter the feedback loop.
 ```
 

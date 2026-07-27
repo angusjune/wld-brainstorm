@@ -250,7 +250,7 @@ function checkFile(file, env) {
 
   for (const ctx of contexts) {
     if (ctx.selector && /\.frame-/.test(ctx.selector)) {
-      add('manual-frame-styles', `rule "${ctx.selector}" duplicates frame styles — the server injects them from frame-template.html`, ctx.start);
+      add('manual-frame-styles', `rule "${ctx.selector}" duplicates preview-frame styles — the server links assets/frame.css automatically`, ctx.start);
       break;
     }
   }

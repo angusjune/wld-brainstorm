@@ -116,16 +116,13 @@ const MIME = {
   '.svg': 'image/svg+xml',
 };
 
-// --- Frame styles (extracted from frame-template.html, auto-injected into HTML) ---
-const FRAME_TEMPLATE_PATH = path.join(ASSETS_DIR, 'frame-template.html');
-let FRAME_STYLES_TAG = '';
-try {
-  const tmpl = fs.readFileSync(FRAME_TEMPLATE_PATH, 'utf8');
-  const match = tmpl.match(/<style>([\s\S]*?)<\/style>/);
-  if (match) {
-    FRAME_STYLES_TAG = `<style>${match[1]}</style>`;
-  }
-} catch {}
+// --- Preview frame stylesheet (auto-linked into served HTML) ---
+const FRAME_STYLESHEET_PATH = path.join(ASSETS_DIR, 'frame.css');
+if (!fs.existsSync(FRAME_STYLESHEET_PATH)) {
+  console.error('Missing assets/frame.css — the preview frame cannot render.');
+  process.exit(1);
+}
+const FRAME_STYLESHEET_TAG = '<link rel="stylesheet" href="/assets/frame.css" data-bs-frame>';
 
 // --- Presentation-only chrome, resolved from the active platform pack ---
 // Nothing here knows what WeChat is: the tag is always <preview-chrome>, and
@@ -242,14 +239,14 @@ window.__BRAINSTORM_SCREEN_FILE = ${JSON.stringify(screenBasename)};
 
 function injectHelper(html, screenBasename) {
   html = expandChrome(html);
-  // Inject the pack's chrome styles + frame styles (reset, phone mockup,
-  // frame layout) before </head> (or before <body> as fallback)
-  const styleTags = [CHROME_STYLE_TAG, FRAME_STYLES_TAG].filter(Boolean).join('\n');
-  if (styleTags) {
+  // Inject the pack's chrome styles + preview-frame stylesheet before </head>
+  // (or before <body> as fallback).
+  const headTags = [CHROME_STYLE_TAG, FRAME_STYLESHEET_TAG].filter(Boolean).join('\n');
+  if (headTags) {
     if (html.includes('</head>')) {
-      html = html.replace('</head>', styleTags + '\n</head>');
+      html = html.replace('</head>', headTags + '\n</head>');
     } else if (html.includes('<body')) {
-      html = html.replace('<body', styleTags + '\n<body');
+      html = html.replace('<body', headTags + '\n<body');
     }
   }
   // Inject helper script before </body> or at the end

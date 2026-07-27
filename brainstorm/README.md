@@ -27,7 +27,7 @@
 **通用机制** —— 不认识任何产品和平台
 
 - `SKILL.md`：主流程（澄清 → 多方案 → 精简 → 质检 → 定稿 → 分支）。
-- `assets/`：预览框架样式（含手机 mockup 和 reset），由预览服务自动注入。
+- `assets/`：规范页面壳 `page-template.html`，以及由预览服务自动链接的展示样式 `frame.css`、热更新和批注资源。
 - `references/`：方案发散方法与共享 Push to Figma 分支；通用 Simplify pass 已内联在 `SKILL.md`。
 - `scripts/serve-preview.cjs`、`assets/live-reload.js`、`assets/annotate.js`：本地热更新预览服务，以及浏览器端 SSE 与点选批注客户端。
 - `scripts/run-qa-gate.mjs`：通用质量检查（产品规则由 `profile/quality/rules.mjs` 提供）。
@@ -56,7 +56,7 @@
 1. **澄清需求**：与你进行多轮对话，澄清需求。
 2. **启动本地预览服务**：启动 SSE 热更新的本地 Node 服务（`scripts/serve-preview.cjs`），让你可以在浏览器中实时预览界面修改。预览页右下角可进入批注模式：点手机屏幕内的元素写一句话，Agent 下一轮会读取并直接修改，不用再用文字描述是哪个元素。仅手机屏幕内可批注；顶部导航等平台外壳不可批注。
 3. **基准模板与产品规则对齐**：先读 `profile/PROFILE.md`（模板表、路由、产品铁律、设计语言），再读 `profile/screens/` 的 HTML 模板。针对核心页面，还会通过 `profile/knowledge/README.md` 提取关联的业务逻辑和常见设计坑点，确保设计在视觉和逻辑上都不偏离产品规范。
-4. **生产模板优先的多方案生成**：以最接近的生产模板 DOM 和 class 为起点，只生成各方向真正不同的部分；模板局部 CSS 在同一方案页只保留一份。页面会自动注入当前平台包的预览外壳和手机 mockup 样式，供用户直观对比。
+4. **生产模板优先的多方案生成**：先复制统一的 `assets/page-template.html` 页面壳，再以最接近的生产模板 DOM 和 class 为起点，只生成各方向真正不同的部分；模板局部 CSS 在同一方案页只保留一份。预览服务会自动链接手机 mockup 样式并注入当前平台包的预览外壳，供用户直观对比。
 5. **质检**：在交付设计前，内部调用 **Simplify（精简设计）** 以及产品档案声明的 pass，自我修正冗余元素、数值计算错漏及样式缺陷；若当前环境支持（如安装了 Playwright MCP、Chrome DevTools MCP 或其他浏览器自动化工具），还会自动访问页面并截图，完成真正的视觉 QA 自检与纠错。
 6. **选择后续分支**：方案定稿后，Skill 会依次组合反馈、共享 Push to Figma、产品档案声明的分支，以及当前平台包提供的分支，再临时分配选项字母。默认档案可将页面**推送到 Figma 画布**，或通过平台分支**生成微信小程序 Demo**。
 

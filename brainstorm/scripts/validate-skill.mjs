@@ -14,6 +14,7 @@
  *   4. Package size < 100 MB.
  *   5. profile/PROFILE.md screen table matches profile/screens/ on disk (both directions).
  *   6. Root-absolute src/href in screen templates resolve through a server mount.
+ *   7. The canonical page scaffold and preview-frame stylesheet keep their contract.
  *
  * Usage: node scripts/validate-skill.mjs [--json]
  */
@@ -42,6 +43,44 @@ function walk(dir, onEntry) {
 // Check 1: SKILL.md exists at root
 if (!fs.existsSync(path.join(ROOT, 'SKILL.md'))) {
   errors.push('缺少根目录 SKILL.md');
+}
+
+// Check 7: shared page-authoring contract. Generated files copy one canonical
+// scaffold, while preview-only frame styles stay in a separate server-linked
+// stylesheet. Keep these responsibilities distinct so SKILL.md cannot drift
+// from an ignored HTML shell inside the style asset.
+const pageTemplatePath = path.join(ROOT, 'assets', 'page-template.html');
+const frameStylesheetPath = path.join(ROOT, 'assets', 'frame.css');
+if (!fs.existsSync(pageTemplatePath)) {
+  errors.push('缺少规范页面模板: assets/page-template.html');
+} else {
+  const pageTemplate = fs.readFileSync(pageTemplatePath, 'utf8');
+  const requiredFragments = [
+    '<!DOCTYPE html>',
+    '<link rel="stylesheet" href="/profile/design-system/tokens.css">',
+    '<link rel="stylesheet" href="/profile/design-system/components.css">',
+    'class="frame-header"',
+    'class="frame-main"',
+    'id="frame-content"',
+    '<!-- SCREEN CONTENT -->',
+    '<!-- SCREEN STYLES -->',
+  ];
+  for (const fragment of requiredFragments) {
+    if (!pageTemplate.includes(fragment)) {
+      errors.push(`assets/page-template.html 缺少必要结构: ${fragment}`);
+    }
+  }
+  if (/\/assets\/frame\.css|\/assets\/(?:live-reload|annotate)\.js/.test(pageTemplate)) {
+    errors.push('assets/page-template.html 不应手动链接预览框架或辅助脚本；这些由服务注入');
+  }
+}
+if (!fs.existsSync(frameStylesheetPath)) {
+  errors.push('缺少预览框架样式: assets/frame.css');
+} else {
+  const frameStylesheet = fs.readFileSync(frameStylesheetPath, 'utf8');
+  if (/<(?:!DOCTYPE|html|head|body|style)\b/i.test(frameStylesheet)) {
+    errors.push('assets/frame.css 必须只包含 CSS，不能包含 HTML 页面壳');
+  }
 }
 
 // Check 2: no forbidden entries + Check 4: size

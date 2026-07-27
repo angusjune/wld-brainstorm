@@ -414,7 +414,7 @@
 }
 
 /* Inside a presentation phone mockup the bar anchors to the mockup, not the
-   viewport. This rule lives here rather than in assets/frame-template.html
+   viewport. This rule lives here rather than in assets/frame.css
    because a profile may depend on shared machinery, never the other way round. */
 .phone-screen .wld-bottom-bar {
   position: absolute;

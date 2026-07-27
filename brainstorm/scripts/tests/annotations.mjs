@@ -201,7 +201,8 @@ try {
   if (!namedResponse.ok) fail(`named preview returned HTTP ${namedResponse.status}`);
   if (!namedHtml.includes('<script src="/assets/annotate.js"></script>')) fail('named preview did not inject annotate.js');
   if (!namedHtml.includes('window.__BRAINSTORM_SCREEN_FILE = "home.html";')) fail('named preview injected wrong screen basename');
-  pass('root and named previews inject the annotation client with the resolved basename');
+  if (!namedHtml.includes('<link rel="stylesheet" href="/assets/frame.css" data-bs-frame>')) fail('named preview did not link frame.css');
+  pass('root and named previews inject runtime helpers with the resolved basename');
 
   const platform = activePlatform();
   const chromeFile = platform ? path.join(BRAINSTORM_DIR, 'platforms', platform, 'chrome.html') : null;
@@ -216,6 +217,13 @@ try {
   if (!assetResponse.ok) fail(`annotate asset returned HTTP ${assetResponse.status}`);
   if (!assetResponse.headers.get('content-type')?.includes('javascript')) fail('annotate asset lacks JavaScript content type');
   pass('annotation client is served as JavaScript');
+
+  const frameResponse = await fetch(`${info.url}/assets/frame.css`);
+  const frameCss = await frameResponse.text();
+  if (!frameResponse.ok) fail(`frame asset returned HTTP ${frameResponse.status}`);
+  if (!frameResponse.headers.get('content-type')?.includes('text/css')) fail('frame asset lacks CSS content type');
+  if (!frameCss.includes('.phone-mockup')) fail('frame asset is missing phone mockup styles');
+  pass('preview frame is served as a standalone stylesheet');
 
   const annotationPath = path.join(info.stateDir, ANNOTATION_FILE);
   const first = await postAnnotation(info.url, {

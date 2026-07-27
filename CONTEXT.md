@@ -28,6 +28,18 @@ _Avoid_: Adapter, driver, target, renderer
 The parts that vary by nothing: the method in `SKILL.md`, the preview server, the QA engine, and the presentation frame. It never names a product or a platform.
 _Avoid_: Core, framework, engine, runtime
 
+**Page Scaffold**:
+The canonical complete HTML document copied for every generated screen. It owns
+the stable document shell, product design-system links, and insertion markers,
+but no preview-only styles or runtime helpers.
+_Avoid_: Frame template, example page
+
+**Preview Frame**:
+The presentation-only reset, page frame, phone mockup, and gallery styles linked
+by the preview server. Generated screens use its class vocabulary but do not
+copy or link its stylesheet themselves.
+_Avoid_: Page template, product design system
+
 ### Workflow extension
 
 **Pass**:

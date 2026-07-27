@@ -33,7 +33,8 @@ brainstorm/
 
 关键子目录：
 
-- `assets/frame-template.html`：展示框架、手机 mockup、gallery 和 reset；由预览服务注入，不要复制进生成页面。
+- `assets/page-template.html`：所有生成页面共用的规范 HTML 壳；Agent 先复制，再填充内容与页面局部样式。
+- `assets/frame.css`：展示框架、手机 mockup、gallery 和 reset；由预览服务自动链接，不要复制进生成页面。
 - `assets/live-reload.js`：浏览器端 SSE 热更新客户端；由预览服务注入。
 - `assets/annotate.js`：浏览器端点选批注客户端；由预览服务注入。
 - `references/solution-archetypes.md`：三方案发散策略。

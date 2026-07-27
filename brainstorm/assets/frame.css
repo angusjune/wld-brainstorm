@@ -1,24 +1,15 @@
-<!--
-  For the 3-solution comparison step, use the .options / .option classes
-  to present choices A, B, C before building screens.
--->
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Design Brainstorm</title>
-  <style>
-    /*
-     * FRAME TEMPLATE
-     *
-     * Provides a consistent presentation shell:
-     * - Fixed header and bottom indicator bar
-     * - Scrollable main content area
-     * - OS-aware light/dark theming
-     * - CSS helpers for option cards (A/B/C solution comparison)
-     * - Includes reset and phone mockup styles
-     */
+/*
+ * PREVIEW FRAME
+ *
+ * Provides a consistent presentation shell:
+ * - Header and scrollable main content area
+ * - OS-aware light/dark theming
+ * - Phone mockup and gallery layout
+ * - Optional comparison helpers
+ *
+ * The preview server links this stylesheet automatically. Generated screens
+ * must not copy or link it themselves.
+ */
 
     * {
       box-sizing: border-box;
@@ -337,18 +328,3 @@
       text-align: center;
       color: var(--frame-text-tertiary);
     }
-  </style>
-</head>
-<body>
-  <div class="frame-header">
-    <h1>Design</h1>
-  </div>
-
-  <div class="frame-main">
-    <div id="frame-content">
-      <!-- CONTENT -->
-    </div>
-  </div>
-
-</body>
-</html>

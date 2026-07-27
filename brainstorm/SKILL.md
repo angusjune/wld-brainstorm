@@ -26,7 +26,8 @@ Resolve this skill directory as `skillDir`. Every path below is relative to `ski
 - Each pack is a single `chrome.html` — one style block plus the nav markup the server stamps into each `<preview-chrome>` tag — plus any branches it contributes under `branches/`.
 
 **Shared machinery**:
-- `assets/frame-template.html` — Source for frame styles, including the reset and the phone mockup + gallery layout (auto-injected by the server into every served HTML page). Do NOT copy this file directly.
+- `assets/page-template.html` — Canonical scaffold for every generated HTML file. Copy it before adding screen content.
+- `assets/frame.css` — Preview-only reset, frame, phone mockup, and gallery styles. The server links it automatically; generated files never copy or link it.
 - `assets/live-reload.js` — Browser-side SSE client auto-injected by the preview server.
 - `assets/annotate.js` — Browser-side click-to-annotate client auto-injected by the preview server.
 - `scripts/serve-preview.cjs` — Local preview server with SSE hot reload.
@@ -57,32 +58,15 @@ The profile's screen table lists every production template on disk, and `npm run
 
 ## Page Template
 
-**Every HTML file written to `screenDir` MUST use this structure.** Both the 3-solution page and individual screens use the same shell. The server auto-injects frame styles plus the live-reload and annotation clients — do NOT manually add frame styles or helper scripts.
+**Every HTML file written to `screenDir` MUST start as a copy of `assets/page-template.html`.** Both the multi-solution page and individual screens use this one canonical scaffold:
 
-```html
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="/profile/design-system/tokens.css">
-  <link rel="stylesheet" href="/profile/design-system/components.css">
-</head>
-<body>
-  <div class="frame-header">
-    <h1>Design</h1>
-  </div>
-
-  <div class="frame-main">
-    <div id="frame-content">
-      <!-- CONTENT GOES HERE -->
-    </div>
-  </div>
-
-</body>
-</html>
+```bash
+cp "<skill-dir>/assets/page-template.html" "<screenDir>/<filename>.html"
 ```
 
-Three URL prefixes, mapped by the server: `/profile/` is the product profile, `/platform/` is the active platform pack, and `/assets/` is shared machinery. Screens name neither the product nor the platform by identity, so swapping either needs no screen edits. The server also injects the platform pack's chrome styles, the frame styles (which include the reset and phone mockup), `assets/live-reload.js`, and `assets/annotate.js` — do not link or add those yourself.
+Replace `<!-- SCREEN CONTENT -->` with the phone presentation markup. Replace `<!-- SCREEN STYLES -->` with any local `<style>` block copied and adapted from the production template, or remove that marker when no local styles are needed. Do not recreate or otherwise rewrite the surrounding scaffold.
+
+Three URL prefixes are mapped by the server: `/profile/` is the product profile, `/platform/` is the active platform pack, and `/assets/` is shared machinery. Screens name neither the product nor the platform by identity, so swapping either needs no screen edits. The server also injects the platform pack's chrome styles, links `assets/frame.css`, and injects `assets/live-reload.js` plus `assets/annotate.js` — do not link or add those yourself.
 
 **Preview chrome** is always written as `<preview-chrome variant="…" title="…">`. The server expands it using the active platform pack; which variants exist is the pack's business, and the profile documents which to use where.
 
@@ -122,7 +106,7 @@ node "<skill-dir>/scripts/serve-preview.cjs" \
 
 Save `screenDir`, `stateDir`, `telemetryPath`, `annotationsPath`, and `url` from the JSON response. You will write all screen HTML files to `screenDir` and use `url` for all subsequent API calls. Tell user to open the URL; they can click the button at the bottom-right of the page to annotate an element directly instead of describing it in words.
 
-**Server features:** Serves newest `.html` from `screenDir`, auto-injects the live-reload and annotation clients + frame styles + the platform pack's chrome styles, hot-reloads via SSE, appends annotations to `annotationsPath`, serves shared machinery at `/assets/*` and the product profile at `/profile/*`, records session performance events at `telemetryPath`, auto-shuts down after 30 min idle. The telemetry is passive; do not add manual checkpoints during generation. It observes file writes, automatic QA gate runs, and page reads—not completion of Simplify, profile passes, or visual review. When diagnosing latency, summarize it with `node "<skill-dir>/scripts/report-session-telemetry.mjs" "<stateDir>"` after the session.
+**Server features:** Serves newest `.html` from `screenDir`, injects the live-reload and annotation clients, links the preview frame stylesheet, injects the platform pack's chrome styles, hot-reloads via SSE, appends annotations to `annotationsPath`, serves shared machinery at `/assets/*` and the product profile at `/profile/*`, records session performance events at `telemetryPath`, auto-shuts down after 30 min idle. The telemetry is passive; do not add manual checkpoints during generation. It observes file writes, automatic QA gate runs, and page reads—not completion of Simplify, profile passes, or visual review. When diagnosing latency, summarize it with `node "<skill-dir>/scripts/report-session-telemetry.mjs" "<stateDir>"` after the session.
 
 ### Step 3: Read Production Templates
 
@@ -280,7 +264,7 @@ node "<skill-dir>/scripts/acknowledge-annotations.cjs" "<stateDir>" "<screen-fil
 
 Run it once per edited file that had pending annotations. Never acknowledge an ID that arrived after your read; file writes do not consume annotations automatically.
 
-For per-screen feedback about preview chrome, change only the `variant` or `title` attributes on `<preview-chrome …>` in that screen file. Never edit `platforms/*/chrome.html` or `assets/frame-template.html` in response to per-screen feedback.
+For per-screen feedback about preview chrome, change only the `variant` or `title` attributes on `<preview-chrome …>` in that screen file. Never edit `platforms/*/chrome.html`, `assets/page-template.html`, or `assets/frame.css` in response to per-screen feedback.
 
 **Critical for non-Feedback branches:** After the user chooses, load only that branch's document. Do not load unselected shared, profile, or platform branch workflows into context. If the required input for the selected branch is missing, ask for it in one short message and do not substitute a screenshot-only or text-only deliverable unless that branch explicitly allows it.
 
@@ -320,7 +304,7 @@ Method mistakes. **The profile's product laws are the other half of this table**
 | Calling old standalone skills from Step 4/5 | Use the Shared Simplify Pass and the profile-declared passes from this `brainstorm` skill |
 | Hard-coding Step 6 letters or Prototype availability | Assemble the branch list from shared, profile, and active-platform contributions, then assign letters for that presentation |
 | Hardcoding a colour, radius, or font | Use a token from `profile/design-system/tokens.css` — it is the single source of truth |
-| Adding frame styles manually | Server auto-injects frame styles from frame-template.html — no manual linking or copying needed |
+| Adding frame styles manually | Server links `assets/frame.css` automatically — no manual linking or copying needed |
 | CTA pinned to screen bottom behind a void | Place the CTA where the source template places it (often centered right after content) |
 | Asking which element the user means while annotations are waiting | Read `annotationsPath` first |
 | Editing a product fact in this file | Product facts belong in `profile/`; this file names no product |

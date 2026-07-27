@@ -89,3 +89,38 @@ describe('branch document path validation', () => {
     );
   });
 });
+
+describe('shared page template validation', () => {
+  test('requires both content insertion markers in the canonical scaffold', () => {
+    const fixtureRoot = makeFixture();
+    const templatePath = path.join(fixtureRoot, 'assets', 'page-template.html');
+    const template = fs.readFileSync(templatePath, 'utf8');
+    fs.writeFileSync(templatePath, template.replace('<!-- SCREEN STYLES -->', ''));
+
+    const result = runValidator(fixtureRoot);
+
+    assert.equal(result.stderr, '');
+    assert.equal(result.exitCode, 1);
+    assert.ok(
+      result.report.errors.includes(
+        'assets/page-template.html 缺少必要结构: <!-- SCREEN STYLES -->',
+      ),
+    );
+  });
+
+  test('requires preview styles to remain a CSS-only asset', () => {
+    const fixtureRoot = makeFixture();
+    const framePath = path.join(fixtureRoot, 'assets', 'frame.css');
+    fs.writeFileSync(framePath, `<style>\n${fs.readFileSync(framePath, 'utf8')}\n</style>\n`);
+
+    const result = runValidator(fixtureRoot);
+
+    assert.equal(result.stderr, '');
+    assert.equal(result.exitCode, 1);
+    assert.ok(
+      result.report.errors.includes(
+        'assets/frame.css 必须只包含 CSS，不能包含 HTML 页面壳',
+      ),
+    );
+  });
+});
