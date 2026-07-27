@@ -28,7 +28,7 @@
 
 - `SKILL.md`：主流程（澄清 → 多方案 → 精简 → 质检 → 定稿 → 分支）。
 - `assets/`：预览框架样式（含手机 mockup 和 reset），由预览服务自动注入。
-- `references/`：方案发散方法、通用 Simplify pass 与共享 Push to Figma 分支。
+- `references/`：方案发散方法与共享 Push to Figma 分支；通用 Simplify pass 已内联在 `SKILL.md`。
 - `scripts/serve-preview.cjs`、`assets/live-reload.js`、`assets/annotate.js`：本地热更新预览服务，以及浏览器端 SSE 与点选批注客户端。
 - `scripts/run-qa-gate.mjs`：通用质量检查（产品规则由 `profile/quality/rules.mjs` 提供）。
 - `quality-benchmark/`、`scripts/`、`package.json`：质量基准、维护命令与自测。

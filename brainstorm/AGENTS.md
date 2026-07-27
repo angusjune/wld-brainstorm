@@ -19,7 +19,7 @@
 
 ```text
 brainstorm/
-├── SKILL.md                 # Agent 执行的主方法；保持产品、平台中立
+├── SKILL.md                 # Agent 执行的主方法与通用 Simplify pass；保持产品、平台中立
 ├── AGENTS.md                # 本维护指南
 ├── README.md                # 中文使用与维护说明
 ├── package.json             # 维护命令入口
@@ -37,7 +37,6 @@ brainstorm/
 - `assets/live-reload.js`：浏览器端 SSE 热更新客户端；由预览服务注入。
 - `assets/annotate.js`：浏览器端点选批注客户端；由预览服务注入。
 - `references/solution-archetypes.md`：三方案发散策略。
-- `references/passes/simplify.md`：所有产品和平台共用的 Simplify pass。
 - `references/branches/push-to-figma.md`：所有产品和平台共用的 Push to Figma 分支。
 - `profile/PROFILE.md`：产品档案入口；frontmatter 给脚本读，正文给 Agent 读。
 - `profile/branches/`：可选的产品专属 Step 6 分支；必须在 `PROFILE.md` 的 Branches 表中声明。

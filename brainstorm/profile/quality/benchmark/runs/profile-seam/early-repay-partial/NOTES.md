@@ -37,7 +37,7 @@ browser screenshot verification skipped per benchmark instructions.
 
 ## Passes run
 
-- **Simplify Pass**（references/passes/simplify.md）：可编辑借据行以「改金额」链接替代 info 图标（避免右侧
+- **Simplify Pass**（`SKILL.md`）：可编辑借据行以「改金额」链接替代 info 图标（避免右侧
   双图标堆叠）；disclaimer 精简为「按日计息，免违约金」（“次日起可提前还”与本屏无关）；
   分配卡不加多余说明文案，仅保留一行分配规则副标题；保留全部必需的还款/风险文案与禁用态解释。
 - **Fix Details Pass**（profile/quality/passes/fix-details.md）：全部金额经 `profile/quality/tools/calc.mjs` 验证：

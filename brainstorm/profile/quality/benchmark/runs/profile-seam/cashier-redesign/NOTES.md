@@ -58,7 +58,7 @@ is a defect」。按「规则赢过模板」的裁决，所有方案把「下一
 
 ## Passes run
 
-1. Simplify Pass（references/passes/simplify.md）— solutions.html 与 cashier.html
+1. Simplify Pass（`SKILL.md`）— solutions.html 与 cashier.html
    各跑一遍：去掉方案 A 方式卡头部的装饰性图标（radio+文字已足够），
    未删任何产品事实/选中态/CTA。
 2. Fix Details（profile/quality/passes/fix-details.md）— 见上文 blocked inputs；

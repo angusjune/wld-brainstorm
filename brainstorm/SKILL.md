@@ -36,7 +36,6 @@ The profile's screen table lists every production template on disk, and `npm run
 
 **Brainstorm-specific references**:
 - `references/solution-archetypes.md` — UX and visual exploration archetypes for diversifying 3-solution sets
-- `references/passes/simplify.md` — Universal Simplify pass
 - `references/branches/push-to-figma.md` — Shared Push to Figma branch
 - **Playwright MCP / Chrome dev tool MCP / browser tool** — Used for screenshot verification when available. If no browser automation tool is available in the current provider, skip verification for that session and tell the user.
 
@@ -143,6 +142,23 @@ Then read the closest matching template from `profile/screens/`, using the routi
 
 **Product rules and pitfalls:** Follow the profile's product-knowledge section — it names the bridge file, the filter rule, and the injection format. If a product rule conflicts with a template, the rule wins; flag the conflict to the user. If the profile maps no knowledge for this screen, skip silently.
 
+### Shared Simplify Pass
+
+Run after every generated `solutions.html` and after every flow screen.
+
+**Completion criterion:** The file keeps all required product facts and legal/rate copy, has one clear primary action per screen, and contains no removable copy, decoration, or duplicate element that does not help the user complete the task.
+
+1. Read the generated HTML.
+2. Read `profile/knowledge/README.md` and load matching pitfalls from `profile/knowledge/memory-cache/common-pitfalls.yaml` when the screen has a COMP_ID. Treat loaded rules as must-keep product constraints.
+3. Remove or merge anything that fails these checks:
+   - The user does not need it to complete the task.
+   - The text says something already obvious from nearby UI.
+   - It competes with the one focal action or one focal number.
+   - It is decorative rather than functional.
+   - It can merge cleanly with an adjacent label, value, or row.
+4. Never remove product rules, legal/compliance text, error states, navigation, selected user data, status indicators, tap targets, or the primary CTA.
+5. Re-read the result and make sure the HTML still follows the production template's CTA form, background color, chrome, and tab bar rules.
+
 ### Step 4: Generate 3 Design Solutions
 
 Read `references/solution-archetypes.md`, then choose a diversity mode from the user's wording:
@@ -186,7 +202,7 @@ Caption each solution with its intent:
 - Visual mode: `Visual hypothesis` + `What changes`
 - Mixed mode: label which options are UX variants and which one is visual
 
-**Required passes:** Read `references/passes/simplify.md` and run it on `solutions.html`. Then run each pass listed in the profile's Passes table, in order, on the simplified file. Fix every clear issue in the HTML before user review. If a pass cannot complete for want of an input, leave the value unchanged and note the exact input needed.
+**Required passes:** Run the Shared Simplify Pass on `solutions.html`. Then run each pass listed in the profile's Passes table, in order, on the simplified file. Fix every clear issue in the HTML before user review. If a pass cannot complete for want of an input, leave the value unchanged and note the exact input needed.
 
 Check if the server (the `url` saved from Step 2 — the port may differ from 3210 if it was busy) is still running. If not, start it again.
 
@@ -231,7 +247,7 @@ For the chosen direction, build each screen as a separate HTML file in `screenDi
 **For each screen:**
 1. Copy closest matching production template and adapt
 2. Write to `screenDir` (e.g., `home.html`, `detail.html`)
-3. Run the shared Simplify pass from `references/passes/simplify.md`
+3. Run the Shared Simplify Pass
 4. Run each pass in the profile's Passes table, in order
 5. Run the Pre-user QA gate and copy quality pass
 6. **Verify screenshot:** Same as Step 4 — navigate, screenshot, check navbar/layout/text/colors. Fix and inform user of any corrections.
@@ -295,13 +311,13 @@ Method mistakes. **The profile's product laws are the other half of this table**
 |---------|-----|
 | Inventing layouts from scratch | Always copy from `profile/screens/` templates |
 | Not reading `profile/PROFILE.md` before generating | Step 3 is mandatory; every product law lives there |
-| Calling a generic simplify routine | Use the shared Simplify pass in `references/passes/simplify.md` |
+| Calling a generic simplify routine | Use the Shared Simplify Pass in this method |
 | Skipping the profile's passes | Steps 4/5 run Simplify **and** every pass the profile declares |
 | Custom/generic navbar | Use the preview-chrome placeholder from a production template |
 | Writing navbar SVGs from scratch | Never hand-write chrome; the server expands it from the platform pack |
 | Adding JS interactivity | Screens are static — show states as separate screens |
 | Showing bare HTML pages | Always wrap in `.phone-mockup` |
-| Calling old standalone skills from Step 4/5 | Use the shared pass in `references/passes/simplify.md` and the profile-declared passes from this `brainstorm` skill |
+| Calling old standalone skills from Step 4/5 | Use the Shared Simplify Pass and the profile-declared passes from this `brainstorm` skill |
 | Hard-coding Step 6 letters or Prototype availability | Assemble the branch list from shared, profile, and active-platform contributions, then assign letters for that presentation |
 | Hardcoding a colour, radius, or font | Use a token from `profile/design-system/tokens.css` — it is the single source of truth |
 | Adding frame styles manually | Server auto-injects frame styles from frame-template.html — no manual linking or copying needed |

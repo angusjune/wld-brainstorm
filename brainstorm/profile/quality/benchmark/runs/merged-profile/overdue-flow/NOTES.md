@@ -79,7 +79,7 @@ Computed with
 
 ## Passes run
 
-1. **Simplify Pass**（references/passes/simplify.md）— 罚息口径并入摘要副行
+1. **Simplify Pass**（`SKILL.md`）— 罚息口径并入摘要副行
    一句话（"含罚息 ¥1.81，逐日计收，还清后停止"），借据行承载金额拆分，
    不与摘要重复"已逾期 8 天"；无装饰性元素；保留费率 / 免责 / 主 CTA /
    状态指示与导航。

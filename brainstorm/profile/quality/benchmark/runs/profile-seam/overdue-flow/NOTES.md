@@ -58,7 +58,7 @@ Computed with `node profile/quality/tools/calc.mjs '{"annualRate":0.144,"princip
 
 ## Passes run
 
-1. **Simplify Pass**（references/passes/simplify.md）— 合并罚息口径入摘要副行，
+1. **Simplify Pass**（`SKILL.md`）— 合并罚息口径入摘要副行，
    去掉重复的“请尽快还款”正文、装饰性图标；保留法定/费率/风险文案与主 CTA。
 2. **Fix Details**（profile/quality/passes/fix-details.md）— 全部金额经 calc.mjs 验证；
    罚息标记为 blocked-on-input 假设（见上）；跨屏一致性（¥542.57 / 8 天 /

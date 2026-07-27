@@ -22,7 +22,7 @@ Task: 在"我的"页面加一个在线客服入口，顺便把整体布局优化
 
 ## Passes run
 
-- **Simplify Pass**（references/passes/simplify.md）：solutions.html 与 me.html 各跑一遍。删除了方案 A 账户管理行的冗余副文案（“更换微众银行还款卡”等与标签重复）；保留全部产品事实（已实名、补充信息提示、专属福利券文案）、导航与点击目标；确认 CTA 形态、背景色（#F5F5F5 inner/tab 规则）、chrome 与 Tab 栏遵循模板。
+- **Simplify Pass**（`SKILL.md`）：solutions.html 与 me.html 各跑一遍。删除了方案 A 账户管理行的冗余副文案（“更换微众银行还款卡”等与标签重复）；保留全部产品事实（已实名、补充信息提示、专属福利券文案）、导航与点击目标；确认 CTA 形态、背景色（#F5F5F5 inner/tab 规则）、chrome 与 Tab 栏遵循模板。
 - **Fix Details Pass**（profile/quality/passes/fix-details.md）：本屏无借款金额/利率数字，计算校验按规则跳过；文案口径与模板一致（「借还记录」「更换还款卡」「开具证明」等生产术语）；方案 B 的「人工服务 9:00-21:00」标记为 blocked on 真实客服时段。
 - **QA gate:** `node qa-gate.mjs` on both files — final result 0 error(s), 0 warning(s)（见任务总结）。
 
