@@ -1,6 +1,6 @@
 ---
 name: brainstorm
-description: 用于基于内置产品档案进行移动端 UI 头脑风暴：生成3个方案、迭代完整流程，并在定稿后继续精简、校验细节、推送 Figma 或构建平台原型。Use when exploring or finishing mobile screens with the bundled product profile.
+description: 用于基于内置产品档案进行移动端 UI 头脑风暴：生成3个方案、迭代完整流程，并在定稿后继续精简、校验细节、推送 Figma 或构建平台原型；也用于在复制后的 skill 中逐步新建或替换产品档案。Use when exploring or finishing mobile screens with the bundled product profile, or when setting up a new product profile.
 ---
 
 # Design Brainstorm
@@ -37,8 +37,11 @@ The profile's screen table lists every production template on disk, and `npm run
 
 **Brainstorm-specific references**:
 - `references/solution-archetypes.md` — UX and visual exploration archetypes for diversifying 3-solution sets
+- `references/setup-profile.md` — Interactive, step-by-step Agent workflow for replacing the bundled product profile
 - `references/branches/push-to-figma.md` — Shared Push to Figma branch
 - **Playwright MCP / Chrome dev tool MCP / browser tool** — Used for screenshot verification when available. If no browser automation tool is available in the current provider, skip verification for that session and tell the user.
+
+**Profile setup routing:** If the user asks to create, set up, replace, or adapt the product profile, do not enter the design brainstorm workflow below. Read `references/setup-profile.md` and execute it one step at a time. Before asking anything, infer and prefill the current step from all available sources. Treat the user as the previewer: ask only for confirmation, corrections, or one truly missing source, then implement and verify the step yourself.
 
 ---
 
@@ -133,7 +136,7 @@ Run after every generated `solutions.html` and after every flow screen.
 **Completion criterion:** The file keeps all required product facts and legal/rate copy, has one clear primary action per screen, and contains no removable copy, decoration, or duplicate element that does not help the user complete the task.
 
 1. Read the generated HTML.
-2. Read `profile/knowledge/README.md` and load matching pitfalls from `profile/knowledge/memory-cache/common-pitfalls.yaml` when the screen has a COMP_ID. Treat loaded rules as must-keep product constraints.
+2. If `profile/knowledge/` exists, read its bridge README and load matching pitfalls when the screen has a mapped component ID. Treat loaded rules as must-keep product constraints. If the directory or mapping is absent, skip silently.
 3. Remove or merge anything that fails these checks:
    - The user does not need it to complete the task.
    - The text says something already obvious from nearby UI.

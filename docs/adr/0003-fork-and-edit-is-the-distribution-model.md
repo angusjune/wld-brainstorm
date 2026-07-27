@@ -6,7 +6,7 @@ The design goal that follows is legibility on fork day, not abstraction: it must
 
 ## Considered options
 
-We rejected **generating `SKILL.md` from a method template plus the profile**. It conflicts head-on with "copy the directory and edit whatever you want": a forker who hand-edits a generated file loses the edit, and one who must learn a template pipeline has not had an easier setup. ADR 0002 also requires the skill to run standalone after being copied, so the template would have to ship inside the skill anyway — paying the cost of codegen to solve a problem a forker solves with an editor. `SKILL.md` stays hand-written; its frontmatter is two lines the forker edits.
+We rejected **generating `SKILL.md` from a method template plus the profile**. It conflicts head-on with "copy the directory and edit whatever you want": a forker who hand-edits a generated file loses the edit, and one who must learn a template pipeline has not had an easier setup. ADR 0002 also requires the skill to run standalone after being copied, so the template would have to ship inside the skill anyway — paying the cost of codegen to solve a problem a forker solves with an editor. `SKILL.md` stays hand-written and product-neutral; the forking team rewrites only `profile/`.
 
 We rejected **declarative rules in YAML** for the same reason: a forking team writing product QA rules would rather write JavaScript than learn a DSL we invented. See ADR 0005.
 

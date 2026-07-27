@@ -38,6 +38,7 @@ brainstorm/
 - `assets/live-reload.js`：浏览器端 SSE 热更新客户端；由预览服务注入。
 - `assets/annotate.js`：浏览器端点选批注客户端；由预览服务注入。
 - `references/solution-archetypes.md`：三方案发散策略。
+- `references/setup-profile.md`：AI Agent 新建或替换产品档案时使用的逐步交互向导。
 - `references/branches/push-to-figma.md`：所有产品和平台共用的 Push to Figma 分支。
 - `profile/PROFILE.md`：产品档案入口；frontmatter 给脚本读，正文给 Agent 读。
 - `profile/branches/`：可选的产品专属 Step 6 分支；必须在 `PROFILE.md` 的 Branches 表中声明。

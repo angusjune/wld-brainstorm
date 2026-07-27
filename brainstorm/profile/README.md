@@ -6,6 +6,14 @@
 
 **换一个产品 = 重写这个目录，别的地方基本不用动。**
 
+如果希望由 AI Agent 分步带领设置，请让它读取 `references/setup-profile.md`：
+
+```text
+请读取 /绝对路径/brainstorm/references/setup-profile.md，然后开始建立新的产品档案。
+```
+
+Agent 会从 Figma、产品文档和已确认产物中自动生成生产模板、token、组件、产品规则及可选能力，并在每一步给出已填 YAML 与预览。你只需确认或纠错，不需要负责实现。
+
 ---
 
 ## 目录地图
