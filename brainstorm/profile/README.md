@@ -13,11 +13,12 @@
 ```text
 profile/
 ├── PROFILE.md          # 产品档案入口：配置、模板路由、设计语言、产品铁律
+├── branches/           # 可选的产品专属 Step 6 分支文档
 ├── screens/            # 生产页面模板语料，生成质量的主要来源
 ├── design-system/      # tokens、组件样式和图标
 ├── knowledge/          # 可选的产品知识桥接说明与只读快照
 ├── quality/            # 可选的规则、passes、确定性工具和质量基准数据
-├── miniprogram/        # 可选的小程序产品模板
+├── prototype/          # 可选的 Prototype 产品实现模板
 ├── research/           # 可选的当前产品研究记录
 └── README.md           # 换产品与维护说明
 ```
@@ -36,10 +37,11 @@ profile/
 | 2 | `design-system/tokens.css` | 换成你的色板、字体、间距、圆角。这是**唯一的 token 来源**，别处不要再抄一份。 |
 | 3 | `PROFILE.md` | 重写模板表、路由表、产品铁律、设计语言、速查表，frontmatter 改成你的字段（见下）。agent 读正文，脚本读 frontmatter，都是这一份。 |
 | 4 | `design-system/components.css`、`design-system/icons/` | 换成你的组件样式和图标。组件样式可以先留空壳，等重复够多了再抽出来。 |
-| 5 | `quality/` | **可选**。维护当前产品的 QA 规则、passes、确定性工具和基准数据；不用的部分直接删除。 |
-| 6 | `knowledge/` | **可选**。产品状态机、业务规律、历史坑点；不用知识快照时清空映射并删除 cache。 |
-| 7 | `miniprogram/` | 只有要用小程序 Demo 分支才需要。不用就删掉整个目录。 |
-| 8 | `research/` | **可选**。只保留你自己产品的实验记录；换产品时删除或重写，避免把旧产品结论带进新档案。 |
+| 5 | `branches/` | **可选**。产品专属的定稿后流程；每个 Markdown 文档都要在 `PROFILE.md` 的 Branches 表中声明。 |
+| 6 | `quality/` | **可选**。维护当前产品的 QA 规则、passes、确定性工具和基准数据；不用的部分直接删除。 |
+| 7 | `knowledge/` | **可选**。产品状态机、业务规律、历史坑点；不用知识快照时清空映射并删除 cache。 |
+| 8 | `prototype/` | 只有要用 Prototype 分支的产品实现模板时才需要。不用就删掉整个目录。 |
+| 9 | `research/` | **可选**。只保留你自己产品的实验记录；换产品时删除或重写，避免把旧产品结论带进新档案。 |
 
 改完跑一遍：
 
@@ -63,6 +65,25 @@ npm test           # 运行 QA、会话遥测、WXSS token 和质量基准等全
 | `tokenPrefix` | `design-system/tokens.css` 的自定义属性前缀，不带前导 `--`；小程序 token 生成器用它定位语义 token |
 
 路径都是约定死的：`design-system/tokens.css`、`design-system/components.css`、`screens/`、`quality/rules.mjs`（可选，存在即加载），不用配置。
+
+---
+
+## `PROFILE.md` 的 Branches 表
+
+产品专属的 Step 6 流程放在 `branches/`，再在 `PROFILE.md` 中用可选表格声明：
+
+```markdown
+| Branch | Doc | Notes |
+|--------|-----|-------|
+| Export handoff | `profile/branches/export-handoff.md` | 生成当前产品的交付包。 |
+```
+
+- `Branch` 是展示名称，`Doc` 是相对 `brainstorm/` 根目录的文档路径，`Notes` 是选择时给用户看的简述。
+- 每份分支文档至少写清适用条件、必需输入、执行步骤和完成标准；文档里的路径都相对 `brainstorm/` 根目录。
+- 表格顺序就是 Step 6 的展示顺序；选项字母由 `SKILL.md` 在展示时临时分配，不要写进分支文档。
+- 没有产品分支时，让表保持空白或删除整张表，并删除 `branches/`。不要为了占位编造流程。
+- 增删产品分支只改 `profile/`；共享 Push to Figma 和平台分支由各自目录负责。
+- `npm run validate` 会检查 Branches 表中用反引号标出的 `Doc` 路径，也会检查现有分支文档里的包内路径。
 
 ---
 

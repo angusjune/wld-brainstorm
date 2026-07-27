@@ -2,7 +2,7 @@
 
 Task: 设计一个逾期还款的提醒和处理流程，大概两三个屏幕。
 Benchmark mode: Step 1 questions skipped (defaults below), Step 2 server + all
-browser screenshot verification skipped, embedded passes applied by hand.
+browser screenshot verification skipped, shared and profile passes applied by hand.
 Stopped after Step 5 first screen, per benchmark instructions.
 
 ## Step 1 defaults (recorded in place of clarifying questions)
@@ -77,9 +77,9 @@ Computed with
   方案 B 沿用 收银台 模板的居中吸底 CTA（该屏的 canonical CTA form）。
   每屏仅一个金色主操作。
 
-## Embedded passes run
+## Passes run
 
-1. **Simplify Pass**（references/embedded-workflows.md）— 罚息口径并入摘要副行
+1. **Simplify Pass**（references/passes/simplify.md）— 罚息口径并入摘要副行
    一句话（"含罚息 ¥1.81，逐日计收，还清后停止"），借据行承载金额拆分，
    不与摘要重复"已逾期 8 天"；无装饰性元素；保留费率 / 免责 / 主 CTA /
    状态指示与导航。

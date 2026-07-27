@@ -2,7 +2,7 @@
 
 Task: 设计一个逾期还款的提醒和处理流程，大概两三个屏幕。
 Benchmark mode: Step 1 questions skipped (defaults below), Step 2 server + all
-browser screenshot verification skipped, embedded passes applied by hand.
+browser screenshot verification skipped, shared and profile passes applied by hand.
 
 ## Step 1 defaults (recorded in place of clarifying questions)
 
@@ -56,9 +56,9 @@ Computed with `node profile/quality/tools/calc.mjs '{"annualRate":0.144,"princip
 - 首页保留模板的利率条（产品法：模板已有的利率文案必须保留），逾期提醒条紧随其后，
   使用 `--wld-danger-100/700` token。
 
-## Embedded passes run
+## Passes run
 
-1. **Simplify Pass**（references/embedded-workflows.md）— 合并罚息口径入摘要副行，
+1. **Simplify Pass**（references/passes/simplify.md）— 合并罚息口径入摘要副行，
    去掉重复的“请尽快还款”正文、装饰性图标；保留法定/费率/风险文案与主 CTA。
 2. **Fix Details**（profile/quality/passes/fix-details.md）— 全部金额经 calc.mjs 验证；
    罚息标记为 blocked-on-input 假设（见上）；跨屏一致性（¥542.57 / 8 天 /

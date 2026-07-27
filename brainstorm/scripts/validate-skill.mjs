@@ -10,7 +10,7 @@
  * Checks:
  *   1. SKILL.md and AGENTS.md exist at the package root.
  *   2. No forbidden entries (.git/, node_modules/, .env, __pycache__/, .DS_Store).
- *   3. SKILL.md, profile docs and references/*.md reference only in-package files.
+ *   3. SKILL.md, profile docs, shared references, and branch docs reference only in-package files.
  *   4. Package size < 100 MB.
  *   5. profile/PROFILE.md screen table matches profile/screens/ on disk (both directions).
  *   6. Root-absolute src/href in screen templates resolve through a server mount.
@@ -68,22 +68,36 @@ if (!fs.existsSync(path.join(ROOT, 'AGENTS.md'))) {
   errors.push('缺少根目录 AGENTS.md');
 }
 
-const docsToScan = [
+const docsToScan = new Set([
   path.join(ROOT, 'SKILL.md'),
   path.join(ROOT, 'AGENTS.md'),
   path.join(ROOT, 'README.md'),
-].filter((file) => fs.existsSync(file));
+].filter((file) => fs.existsSync(file)));
 for (const doc of [
   path.join(ROOT, 'profile', 'PROFILE.md'),
   path.join(ROOT, 'profile', 'README.md'),
   path.join(ROOT, 'profile', 'knowledge', 'README.md'),
 ]) {
-  if (fs.existsSync(doc)) docsToScan.push(doc);
+  if (fs.existsSync(doc)) docsToScan.add(doc);
 }
-for (const dir of [path.join(ROOT, 'references'), path.join(ROOT, 'profile', 'quality', 'passes')]) {
-  if (!fs.existsSync(dir)) continue;
-  for (const f of fs.readdirSync(dir)) {
-    if (f.endsWith('.md')) docsToScan.push(path.join(dir, f));
+
+function addMarkdownDocs(dir) {
+  if (!fs.existsSync(dir)) return;
+  walk(dir, (entry, abs) => {
+    if (entry.isFile() && entry.name.endsWith('.md')) docsToScan.add(abs);
+  });
+}
+
+addMarkdownDocs(path.join(ROOT, 'references'));
+addMarkdownDocs(path.join(ROOT, 'profile', 'quality', 'passes'));
+addMarkdownDocs(path.join(ROOT, 'profile', 'branches'));
+
+const platformsDir = path.join(ROOT, 'platforms');
+if (fs.existsSync(platformsDir)) {
+  for (const entry of fs.readdirSync(platformsDir, { withFileTypes: true })) {
+    if (entry.isDirectory()) {
+      addMarkdownDocs(path.join(platformsDir, entry.name, 'branches'));
+    }
   }
 }
 
@@ -96,6 +110,7 @@ const ROOT_FILES = new Set(['AGENTS.md', 'README.md', 'SKILL.md', 'package.json'
 function looksLikeInPackagePath(tok) {
   if (/^https?:\/\//.test(tok)) return false;
   if (tok.includes('<') || tok.includes('>')) return false; // placeholders
+  if (/[*?[\]{}]/.test(tok) || tok.endsWith('/')) return false; // globs and directory concepts
   if (IN_PKG_PREFIXES.some((p) => tok.startsWith(p))) return true;
   if (ROOT_FILES.has(tok)) return true;
   return false;
@@ -103,9 +118,12 @@ function looksLikeInPackagePath(tok) {
 
 for (const docPath of docsToScan) {
   const text = fs.readFileSync(docPath, 'utf8');
-  const spans = text.match(/`([^`]+)`/g) || [];
+  const prose = text.replace(/```[\s\S]*?```/g, '');
+  // Match single-backtick inline code only. Treating the backticks in fenced
+  // code blocks as delimiters can shift pairing and hide later inline paths.
+  const spans = [...prose.matchAll(/(?<!`)`([^`\n]+)`(?!`)/g)];
   for (const span of spans) {
-    const tok = span.slice(1, -1).trim().replace(/^\.\//, '');
+    const tok = span[1].trim().replace(/^\.\//, '');
     if (path.isAbsolute(tok) || tok.startsWith('..')) {
       // absolute or escaping paths are not self-contained
       if (looksLikeInPackagePath(tok) || tok.startsWith('..')) {

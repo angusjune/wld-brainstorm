@@ -95,7 +95,7 @@ note the exact input needed"）和 visual-mode invariant（数据值随模板不
 
 ## Passes run
 
-1. Simplify Pass（references/embedded-workflows.md）— solutions.html 与
+1. Simplify Pass（references/passes/simplify.md）— solutions.html 与
    amount-input.html 各跑一遍：无可删项——屏上每个元素（清除按钮、提示、
    chips、促销行、五个选项行、免责文案）都是生产模板自带的产品事实或
    任务必需件；PIT 规则均为 must-keep 约束，无删改。方案 A 的模块合并

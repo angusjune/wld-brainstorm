@@ -16,6 +16,7 @@
     "test:annotations": "node scripts/tests/annotations.mjs",
     "test:wxss-tokens": "node platforms/wechat/prototype/generate-wxss-tokens.mjs --check",
     "test:quality-benchmark": "node scripts/tests/quality-benchmark.mjs",
-    "test": "npm run test:qa-gate && npm run test:session-telemetry && npm run test:annotations && npm run test:wxss-tokens && npm run test:quality-benchmark"
+    "test:validate": "node --test scripts/tests/validate-skill.test.mjs",
+    "test": "npm run test:validate && npm run test:qa-gate && npm run test:session-telemetry && npm run test:annotations && npm run test:wxss-tokens && npm run test:quality-benchmark"
   }
 }

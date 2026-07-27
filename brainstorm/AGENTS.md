@@ -37,13 +37,15 @@ brainstorm/
 - `assets/live-reload.js`：浏览器端 SSE 热更新客户端；由预览服务注入。
 - `assets/annotate.js`：浏览器端点选批注客户端；由预览服务注入。
 - `references/solution-archetypes.md`：三方案发散策略。
-- `references/embedded-workflows.md`：Simplify pass 与定稿后的分支说明。
+- `references/passes/simplify.md`：所有产品和平台共用的 Simplify pass。
+- `references/branches/push-to-figma.md`：所有产品和平台共用的 Push to Figma 分支。
 - `profile/PROFILE.md`：产品档案入口；frontmatter 给脚本读，正文给 Agent 读。
+- `profile/branches/`：可选的产品专属 Step 6 分支；必须在 `PROFILE.md` 的 Branches 表中声明。
 - `profile/screens/`：生产页面模板语料，是生成质量的主要来源。
 - `profile/design-system/`：token、组件样式和图标。
 - `profile/knowledge/`：可选的知识桥接说明与只读快照。
 - `profile/quality/`：可选的产品规则、passes、确定性工具和基准数据。
-- `profile/miniprogram/`：可选的小程序产品模板。
+- `profile/prototype/`：可选的 Prototype 产品实现模板。
 - `platforms/<platform>/chrome.html`：该平台的预览外壳。
 - `platforms/<platform>/branches/`：仅该平台可用的后续分支。
 
@@ -107,13 +109,17 @@ brainstorm/
    - `profile/quality/passes/` 定义生成前的产品校验步骤。
    - `profile/quality/rules.mjs` 是可选 QA rule pack；不需要时直接删除，不要修改通用 QA gate 来绕过旧规则。
    - `profile/quality/tools/` 与 pass 一起替换，删除不再使用的计算器或数据文件。
-6. 处理 `profile/miniprogram/`。
+6. 处理产品分支。
+   - 产品专属 Step 6 分支文档放进 `profile/branches/`，并按展示顺序写入 `PROFILE.md` 的 Branches 表。
+   - 没有产品分支时删除整个目录并让 Branches 表保持空白；共享与平台分支不受影响。
+   - 新增或删除产品分支不应修改 `SKILL.md`。
+7. 处理 `profile/prototype/`。
    - 需要小程序 Prototype 分支时，替换模板、组件和页面壳；修改 token 后运行 `npm run gen:wxss-tokens`。
    - 不需要时可删除整个目录；`npm run test:wxss-tokens` 会自动跳过。
-7. 处理 `profile/quality/benchmark/`。
+8. 处理 `profile/quality/benchmark/`。
    - 删除旧产品 prompts、fixtures 和 runs；按需为新产品建立基准。
    - 没有 fixtures 时，相关冒烟测试会跳过，但生产模板仍会被 QA 校准。
-8. 不要为换产品修改 `SKILL.md`、`scripts/`、`assets/` 或 `references/`。如果新产品暴露的是通用缺陷，单独修通用机制，并确认没有加入产品事实。
+9. 不要为换产品修改 `SKILL.md`、`scripts/`、`assets/` 或 `references/`。如果新产品暴露的是通用缺陷，单独修通用机制，并确认没有加入产品事实。
 
 ## 修改后的验证
 

@@ -119,7 +119,7 @@ function main() {
   };
   const check = argv.includes('--check');
   const profileDir = path.resolve(arg('profile', path.join(SKILL_DIR, 'profile')));
-  const out = path.resolve(arg('out', path.join(profileDir, 'miniprogram', 'template', 'app.wxss')));
+  const out = path.resolve(arg('out', path.join(profileDir, 'prototype', 'template', 'app.wxss')));
 
   if (check && !fs.existsSync(out)) {
     console.log('wxss tokens: profile has no Mini Program template — skipped');

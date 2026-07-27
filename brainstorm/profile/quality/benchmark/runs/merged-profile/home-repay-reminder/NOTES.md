@@ -27,7 +27,7 @@ Task: 首页要能提醒用户最近7天内要还的钱，给我三个方案看�
 
 - Step 2 (server start) skipped; no browser screenshot verification
 - Output written to `profile/quality/benchmark/runs/merged-profile/home-repay-reminder/` instead of screenDir
-- Embedded Simplify Pass and the profile's Fix Details pass run by hand (logs below)
+- Shared Simplify Pass and the profile's Fix Details pass run by hand (logs below)
 - Stopped after Step 5 first screen; feedback loop not entered
 
 ## The three solutions (Mixed mode)

@@ -2,7 +2,7 @@
 
 Benchmark mode: Step 1 clarifying questions skipped, defaults recorded below. Step 2
 (server) and all browser screenshot verification skipped per benchmark deviations.
-Passes applied inline per `references/embedded-workflows.md` and the profile's Passes table.
+Passes applied inline per `references/passes/simplify.md` and the profile's Passes table.
 
 ## Step 1 snapshot (defaults chosen, no user interview)
 
@@ -50,7 +50,7 @@ content」，且产品法则明说「CTA pinned to the screen bottom behind an e
 defect」。按「规则赢过模板」的裁决，三个方案与 `cashier.html` 均把「下一步」居中置于
 内容正下方（`.cx-cta`，非 absolute）。
 
-## Simplify Pass（references/embedded-workflows.md）
+## Simplify Pass（references/passes/simplify.md）
 
 对 `solutions.html` 与 `cashier.html` 各运行一遍：
 

@@ -17,7 +17,8 @@ Resolve this skill directory as `skillDir`. Every path below is relative to `ski
 - `design-system/` — `tokens.css` (the single source of truth), `components.css`, and profile icons
 - `knowledge/` — Optional bundled product-knowledge bridge and read-only caches
 - `quality/` — Optional product rules, passes, deterministic tools, and benchmark data
-- `miniprogram/` — Optional product-owned Mini Program template used by the platform Prototype branch
+- `prototype/` — Optional product-owned implementation template used by the platform Prototype branch
+- `branches/` — Optional product-owned Step 6 branch documents declared by the profile's Branches table
 
 **Platform packs** (in `platforms/`) — the surface's furniture, shared by any product on it. The profile's `platform` field selects exactly one:
 - `wechat/` — WeChat Mini Program: status bar, 88px navbar, capsule; contributes the Prototype branch
@@ -35,7 +36,8 @@ The profile's screen table lists every production template on disk, and `npm run
 
 **Brainstorm-specific references**:
 - `references/solution-archetypes.md` — UX and visual exploration archetypes for diversifying 3-solution sets
-- `references/embedded-workflows.md` — Embedded Simplify pass, plus the Push to Figma and Prototype branches
+- `references/passes/simplify.md` — Universal Simplify pass
+- `references/branches/push-to-figma.md` — Shared Push to Figma branch
 - **Playwright MCP / Chrome dev tool MCP / browser tool** — Used for screenshot verification when available. If no browser automation tool is available in the current provider, skip verification for that session and tell the user.
 
 ---
@@ -49,10 +51,7 @@ The profile's screen table lists every production template on disk, and `npm run
 5. **Step 4:** Generate multiple solutions (3 by default, if the user didn't specify), then run Simplify and the profile's passes before showing them
 6. User picks a direction (or request new options)
 7. **Step 5:** Build full flow screens, then run Simplify and the profile's passes before showing them
-8. **Step 6:** User chooses the next branch:
-   - **A. Give feedback** — edit the same HTML file and hot-reload
-   - **B. Push to Figma** — draw editable frames in the user's Figma page
-   - **C. Prototype** — a branch the platform pack contributes, if it has one
+8. **Step 6:** Assemble the available branches from Feedback, the shared Push to Figma branch, the profile's Branches table, and the active platform pack; assign display letters when presenting them
 9. Continue the chosen branch until its completion criterion is met.
 
 ---
@@ -187,7 +186,7 @@ Caption each solution with its intent:
 - Visual mode: `Visual hypothesis` + `What changes`
 - Mixed mode: label which options are UX variants and which one is visual
 
-**Required passes:** Read only the Simplify Pass section from `references/embedded-workflows.md` and run it on `solutions.html`. Then run each pass listed in the profile's Passes table, in order, on the simplified file. Fix every clear issue in the HTML before user review. If a pass cannot complete for want of an input, leave the value unchanged and note the exact input needed.
+**Required passes:** Read `references/passes/simplify.md` and run it on `solutions.html`. Then run each pass listed in the profile's Passes table, in order, on the simplified file. Fix every clear issue in the HTML before user review. If a pass cannot complete for want of an input, leave the value unchanged and note the exact input needed.
 
 Check if the server (the `url` saved from Step 2 — the port may differ from 3210 if it was busy) is still running. If not, start it again.
 
@@ -232,7 +231,7 @@ For the chosen direction, build each screen as a separate HTML file in `screenDi
 **For each screen:**
 1. Copy closest matching production template and adapt
 2. Write to `screenDir` (e.g., `home.html`, `detail.html`)
-3. Run the embedded Simplify Pass from `references/embedded-workflows.md`
+3. Run the shared Simplify pass from `references/passes/simplify.md`
 4. Run each pass in the profile's Passes table, in order
 5. Run the Pre-user QA gate and copy quality pass
 6. **Verify screenshot:** Same as Step 4 — navigate, screenshot, check navbar/layout/text/colors. Fix and inform user of any corrections.
@@ -246,13 +245,14 @@ For the chosen direction, build each screen as a separate HTML file in `screenDi
 
 ### Step 6: Choose the Next Branch
 
-Ask the user to choose one of these paths after they have seen the approved screen or flow:
+After the user has seen the approved screen or flow, assemble the available paths in this exact order:
 
-| Choice | Branch | What to do |
-|--------|--------|------------|
-| A | Feedback | Edit the current HTML in `screenDir`; the browser hot-reloads through SSE. Repeat until the user is satisfied. |
-| B | Push to Figma | Use the Push to Figma branch in `references/embedded-workflows.md`. Requires the approved brainstorm source and a target Figma page link. |
-| C | Prototype | Only offered when the active platform pack ships a `branches/` directory. Follow the branch doc inside it — on `wechat` that is `platforms/wechat/branches/prototype.md`, which builds a Mini Program demo. Do not offer this choice when the pack contributes no branches. |
+1. **Feedback** — always available. Edit the current HTML in `screenDir`; the browser hot-reloads through SSE. Repeat until the user is satisfied.
+2. **Push to Figma** — always available. Its branch document is `references/branches/push-to-figma.md`.
+3. **Profile branches** — read the optional Branches table in `profile/PROFILE.md` and append every declared row in table order. Use the row's Branch value as the display name and its Doc value as the branch document. If the section or table has no rows, append nothing.
+4. **Platform branches** — read the active `platform` from the profile frontmatter. If `platforms/<platform>/branches/` exists, append every `.md` file in filename order; derive its display name from the filename stem (for example, `prototype.md` becomes `Prototype`). Do not open the documents while assembling the list. If the directory is absent or contains no branch documents, append nothing.
+
+Assign display letters (`A`, `B`, `C`, …) to the assembled list only when presenting it. Letters are presentation-local and never part of a branch document's identity. Show the description already available from this method or the profile row's Notes text; do not open any branch workflow document yet.
 
 **Critical for A:** Before acting on feedback, read `annotationsPath`. For each file, find the greatest numeric ID in the `through` field of its `consumed` entries; annotations for that file with greater IDs are pending. Capture the last pending ID you actually read for each file. Annotations and typed feedback are the same input and may arrive together in one turn. Apply both directly without restating annotations; hot reload is the confirmation. Always edit the SAME file for iterative changes. Only create new files for new screens.
 
@@ -266,7 +266,7 @@ Run it once per edited file that had pending annotations. Never acknowledge an I
 
 For per-screen feedback about preview chrome, change only the `variant` or `title` attributes on `<preview-chrome …>` in that screen file. Never edit `platforms/*/chrome.html` or `assets/frame-template.html` in response to per-screen feedback.
 
-**Critical for B/C:** Load only the selected branch from `references/embedded-workflows.md`; do not carry unrelated branch instructions into context. If the required input for that branch is missing, ask for it in one short message and do not substitute a screenshot-only or text-only deliverable unless that branch explicitly allows it.
+**Critical for non-Feedback branches:** After the user chooses, load only that branch's document. Do not load unselected shared, profile, or platform branch workflows into context. If the required input for the selected branch is missing, ask for it in one short message and do not substitute a screenshot-only or text-only deliverable unless that branch explicitly allows it.
 
 ---
 
@@ -295,13 +295,14 @@ Method mistakes. **The profile's product laws are the other half of this table**
 |---------|-----|
 | Inventing layouts from scratch | Always copy from `profile/screens/` templates |
 | Not reading `profile/PROFILE.md` before generating | Step 3 is mandatory; every product law lives there |
-| Calling a generic simplify routine | Use the embedded Simplify Pass in `references/embedded-workflows.md` |
+| Calling a generic simplify routine | Use the shared Simplify pass in `references/passes/simplify.md` |
 | Skipping the profile's passes | Steps 4/5 run Simplify **and** every pass the profile declares |
 | Custom/generic navbar | Use the preview-chrome placeholder from a production template |
 | Writing navbar SVGs from scratch | Never hand-write chrome; the server expands it from the platform pack |
 | Adding JS interactivity | Screens are static — show states as separate screens |
 | Showing bare HTML pages | Always wrap in `.phone-mockup` |
-| Calling old standalone skills from Step 4/5 | Use the embedded passes in `references/embedded-workflows.md` from this `brainstorm` skill |
+| Calling old standalone skills from Step 4/5 | Use the shared pass in `references/passes/simplify.md` and the profile-declared passes from this `brainstorm` skill |
+| Hard-coding Step 6 letters or Prototype availability | Assemble the branch list from shared, profile, and active-platform contributions, then assign letters for that presentation |
 | Hardcoding a colour, radius, or font | Use a token from `profile/design-system/tokens.css` — it is the single source of truth |
 | Adding frame styles manually | Server auto-injects frame styles from frame-template.html — no manual linking or copying needed |
 | CTA pinned to screen bottom behind a void | Place the CTA where the source template places it (often centered right after content) |

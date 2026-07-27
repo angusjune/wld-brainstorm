@@ -10,8 +10,8 @@ The skill reads from two cache directories that ship inside this self-contained 
 
 | Cache file | Contains | Consumed by |
 |---|---|---|
-| `profile/knowledge/memory-cache/product-patterns.yaml` | validated product rules that must hold | brainstorm Step 3 + embedded Simplify Pass |
-| `profile/knowledge/memory-cache/common-pitfalls.yaml` | design gotchas that must be avoided | brainstorm Step 3 + embedded Simplify Pass |
+| `profile/knowledge/memory-cache/product-patterns.yaml` | validated product rules that must hold | brainstorm Step 3 + shared Simplify Pass |
+| `profile/knowledge/memory-cache/common-pitfalls.yaml` | design gotchas that must be avoided | brainstorm Step 3 + shared Simplify Pass |
 
 **Spec cache** — `profile/knowledge/spec-cache/` (bundled reference data, consulted on demand — not part of the core Step 3 flow):
 

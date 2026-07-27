@@ -35,7 +35,7 @@ A step run inline during solution and flow generation, before anything is shown 
 _Avoid_: Embedded workflow, filter, post-process, hook
 
 **Branch**:
-A path the user may choose after approving a screen or flow. Contributed by shared machinery or by a platform pack.
+A path the user may choose after approving a screen or flow. Contributed by shared machinery, the product profile, or a platform pack. Shared branches live in `references/branches/`; product branches are declared by the profile and live in `profile/branches/`; platform branches live in the active pack's `branches/` directory.
 _Avoid_: Embedded workflow, mode, plugin, exporter
 
 ### Product knowledge

@@ -1,10 +1,10 @@
-# Prototype Branch (WeChat Mini Program)
+# Prototype
 
 A branch contributed by the `wechat` platform pack: it builds a WeChat Mini Program, so it only exists when the profile targets this platform. `SKILL.md` offers it at Step 6 because this pack ships it in `branches/`.
 
 All paths are relative to the `brainstorm/` skill directory.
 
-Use when Step 6 choice is **C**.
+Use when the user selects this branch at Step 6.
 
 Required input: an approved brainstorm screen/flow. If the user only has a text idea or external design source, return to Step 1 and generate/approve a brainstorm design first.
 
@@ -12,12 +12,12 @@ Required input: an approved brainstorm screen/flow. If the user only has a text 
 
 **Mini Program pitfalls:**
 - No `100vh` inside the profile's page-shell component — use `height:100%`. The shell already owns viewport height, nav offset, safe-area padding, and scrolling; `100vh` overflows it and can clip bottom CTAs. (`verify-miniprogram.mjs` warns on this.)
-- Don't draw the status bar or 胶囊 capsule (`··· ⊙`) — it is system chrome WeChat renders itself, and a hand-drawn copy sits under the real one. Set the title through the page-shell component and its props from `profile/miniprogram/template`. A brainstorm source draws a fake status bar + capsule (`<preview-chrome>`, expanded from the platform pack) — that is presentation chrome: reproduce only the title and drop the rest.
+- Don't draw the status bar or 胶囊 capsule (`··· ⊙`) — it is system chrome WeChat renders itself, and a hand-drawn copy sits under the real one. Set the title through the page-shell component and its props from `profile/prototype/template`. A brainstorm source draws a fake status bar + capsule (`<preview-chrome>`, expanded from the platform pack) — that is presentation chrome: reproduce only the title and drop the rest.
 
 Workflow:
 
 1. Confirm source, flow order, states, interactions, and copy. Ask only for missing decisions that affect implementation.
-2. Read the design language in `profile/PROFILE.md`, the closest production templates in `profile/screens/`, and these template anchors from `profile/miniprogram/template`: `app.json`, `app.js`, `app.wxss`, `project.config.json`, `pages/prototype-home/`, `pages/prototype-loan-input/`, and relevant components.
+2. Read the design language in `profile/PROFILE.md`, the closest production templates in `profile/screens/`, and these template anchors from `profile/prototype/template`: `app.json`, `app.js`, `app.wxss`, `project.config.json`, `pages/prototype-home/`, `pages/prototype-loan-input/`, and relevant components.
 3. Create a separate demo project named `brainstorm-miniprogram-demo-{slug}` under the current working directory unless the user gives another output path.
 4. Copy the bundled Mini Program template into that demo project. Do not edit the bundled template, generated provider folders, product knowledge caches, or `node_modules`.
 5. Implement real Mini Program files: `.wxml`, `.wxss`, `.js`, `.json`, `app.json`, `app.wxss`, and `project.config.json`. Use Mini Program components and APIs, not browser HTML/DOM code.

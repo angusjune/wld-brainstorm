@@ -47,7 +47,7 @@ browser screenshot verification skipped per benchmark instructions.
 
 ## Passes run
 
-- **Simplify Pass**（references/embedded-workflows.md）：
+- **Simplify Pass**（references/passes/simplify.md）：
   - 可编辑借据行用「改金额」文字链接替代 info 图标，避免右侧图标堆叠（禁用/未勾选行保留 info 图标）
   - 方案 A disclaimer 精简为「按日计息，免违约金」（"次日起可提前还" 与还款屏无关）
   - 分配卡只保留一行分配规则副标题「优先冲抵较早借据」，不加解释性文案

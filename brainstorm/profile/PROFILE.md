@@ -171,6 +171,17 @@ Run these in Steps 4 and 5, after the shared Simplify pass, before showing anyth
 
 ---
 
+## Branches
+
+This profile declares no additional product branches. A profile that needs product-specific Step 6 paths may create workflow documents under `profile/branches/` and declare them in this optional table:
+
+| Branch | Doc | Notes |
+|--------|-----|-------|
+
+The branch rows are offered in table order. Keep the table absent or empty when the product contributes no branches; shared and platform branches remain available independently.
+
+---
+
 ## Solution archetypes
 
 The UX Strategy directions for this product's screens. `references/solution-archetypes.md` holds the method (UX vs Visual modes, caption format) and the visual archetypes; these are the product-specific ones it points here for.
