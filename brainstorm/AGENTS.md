@@ -35,6 +35,7 @@ brainstorm/
 
 - `assets/frame-template.html`：展示框架、手机 mockup、gallery 和 reset；由预览服务注入，不要复制进生成页面。
 - `assets/live-reload.js`：浏览器端 SSE 热更新客户端；由预览服务注入。
+- `assets/annotate.js`：浏览器端点选批注客户端；由预览服务注入。
 - `references/solution-archetypes.md`：三方案发散策略。
 - `references/embedded-workflows.md`：Simplify pass 与定稿后的分支说明。
 - `profile/PROFILE.md`：产品档案入口；frontmatter 给脚本读，正文给 Agent 读。
@@ -52,13 +53,16 @@ brainstorm/
 
 | 路径 | 职责 | 何时修改 |
 |---|---|---|
-| `scripts/serve-preview.cjs` | 启动本地预览服务；创建会话目录、挂载 `/assets/`、`/profile/`、`/platform/`，展开 `<preview-chrome>`，注入展示样式和热更新客户端，并记录会话事件。 | 修改预览协议、挂载点、平台外壳展开或会话生命周期时。 |
+| `scripts/serve-preview.cjs` | 启动本地预览服务；创建会话目录、挂载 `/assets/`、`/profile/`、`/platform/`，展开 `<preview-chrome>`，注入展示样式、热更新和点选批注客户端，并记录会话事件。 | 修改预览协议、挂载点、平台外壳展开或会话生命周期时。 |
+| `scripts/acknowledge-annotations.cjs` | 在 Agent 应用批注后显式确认本轮实际读取到的最后一个 ID；文件写入本身不会消费批注。 | 修改批注 pending/consumed 协议时。 |
 | `scripts/run-qa-gate.mjs` | 对生成 HTML 跑确定性通用检查，并按约定加载可选的 `profile/quality/rules.mjs`。 | 新增所有产品都成立的机械规则时；产品规则不要写进这里。 |
 | `scripts/report-session-telemetry.mjs` | 汇总某次会话的 `session-events.jsonl`，输出生成、QA、预览等阶段耗时。 | 遥测 schema 或分析指标变化时。 |
 | `scripts/validate-skill.mjs` | 检查 skill 自包含性、禁带文件、文档路径、目录体积、模板清单和静态资源引用。 | 增加新的结构约定或发布门禁时。 |
 | `scripts/lib/session-telemetry.cjs` | 共享事件名、JSONL 写入和会话目录发现逻辑；不是独立 CLI。 | 预览、QA、报告器共同需要新的事件字段时。 |
+| `scripts/lib/annotations.cjs` | 共享批注校验、JSONL 读写、显式确认和 pending 推导逻辑；不是独立 CLI。 | 修改批注 schema、长度限制或确认协议时。 |
 | `scripts/tests/qa-gate.mjs` | 校准 QA fixtures，并要求所有生产模板零 error。 | 修改 QA gate、产品规则或模板时。 |
 | `scripts/tests/session-telemetry.mjs` | 用真实预览服务、文件监听、HTTP 和 QA CLI 做遥测集成测试。 | 修改预览或遥测链路时。 |
+| `scripts/tests/annotations.mjs` | 用真实预览服务、HTTP、文件监听和确认 CLI 校验点选批注链路。 | 修改批注客户端、接口或 pending/consumed 协议时。 |
 | `scripts/tests/quality-benchmark.mjs` | 冒烟测试基准报告、渲染和并排比较。 | 修改报告器或截图链路时。 |
 | `quality-benchmark/report.mjs` | 对指定 run 跑 QA、用真实预览服务渲染，并生成 JSON、Markdown 与对比图。 | 修改质量评估报告格式或渲染方式时。 |
 

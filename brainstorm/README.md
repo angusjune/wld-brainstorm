@@ -28,7 +28,7 @@
 - `SKILL.md`：主流程（澄清 → 多方案 → 精简 → 质检 → 定稿 → 分支）。
 - `assets/`：预览框架样式（含手机 mockup 和 reset），由预览服务自动注入。
 - `references/`：方案发散方法、嵌入 pass/分支、Figma MCP 说明。
-- `scripts/serve-preview.cjs`、`assets/live-reload.js`：本地热更新预览服务及浏览器端 SSE 客户端。
+- `scripts/serve-preview.cjs`、`assets/live-reload.js`、`assets/annotate.js`：本地热更新预览服务，以及浏览器端 SSE 与点选批注客户端。
 - `scripts/run-qa-gate.mjs`：通用质量检查（产品规则由 `profile/quality/rules.mjs` 提供）。
 - `quality-benchmark/`、`scripts/`、`package.json`：质量基准、维护命令与自测。
 
@@ -53,7 +53,7 @@
 当你向 Brainstorm 提出需求时，Skill 会执行以下工作流：
 
 1. **澄清需求**：与你进行多轮对话，澄清需求。
-2. **启动本地预览服务**：启动 SSE 热更新的本地 Node 服务（`scripts/serve-preview.cjs`），让你可以在浏览器中实时预览界面修改。
+2. **启动本地预览服务**：启动 SSE 热更新的本地 Node 服务（`scripts/serve-preview.cjs`），让你可以在浏览器中实时预览界面修改。预览页右下角可进入批注模式：点手机屏幕内的元素写一句话，Agent 下一轮会读取并直接修改，不用再用文字描述是哪个元素。仅手机屏幕内可批注；顶部导航等平台外壳不可批注。
 3. **基准模板与产品规则对齐**：先读 `profile/PROFILE.md`（模板表、路由、产品铁律、设计语言），再读 `profile/screens/` 的 HTML 模板。针对核心页面，还会通过 `profile/knowledge/README.md` 提取关联的业务逻辑和常见设计坑点，确保设计在视觉和逻辑上都不偏离产品规范。
 4. **生产模板优先的多方案生成**：以最接近的生产模板 DOM 和 class 为起点，只生成各方向真正不同的部分；模板局部 CSS 在同一方案页只保留一份。页面会自动注入当前平台包的预览外壳和手机 mockup 样式，供用户直观对比。
 5. **质检**：在交付设计前，内部调用 **Simplify（精简设计）** 以及产品档案声明的 pass，自我修正冗余元素、数值计算错漏及样式缺陷；若当前环境支持（如安装了 Playwright MCP、Chrome DevTools MCP 或其他浏览器自动化工具），还会自动访问页面并截图，完成真正的视觉 QA 自检与纠错。

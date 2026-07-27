@@ -10,7 +10,7 @@
  *   node scripts/serve-preview.cjs --project-dir /path/to/project [--port 3210] [--host 127.0.0.1]
  *
  * Returns JSON on startup:
- *   { "url": "http://localhost:3210", "screenDir": "...", "stateDir": "..." }
+ *   { "url": "http://localhost:3210", "screenDir": "...", "stateDir": "...", "annotationsPath": "..." }
  */
 
 const http = require('http');
@@ -18,6 +18,11 @@ const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
 const { EVENT_FILE, EVENTS, appendSessionEvent } = require('./lib/session-telemetry.cjs');
+const {
+  ANNOTATION_FILE,
+  appendAnnotation,
+  normalizeAnnotation,
+} = require('./lib/annotations.cjs');
 
 // --- Args ---
 const args = process.argv.slice(2);
@@ -54,6 +59,7 @@ recordEvent(EVENTS.SESSION_STARTED, { projectDir: PROJECT_DIR });
 // --- SSE clients for live reload ---
 const sseClients = new Set();
 const screenVersions = new Map();
+let annotationCounter = 0;
 
 function captureScreenWrite(filePath) {
   if (path.extname(filePath) !== '.html' || !fs.existsSync(filePath)) return;
@@ -165,6 +171,12 @@ if (PLATFORM_DIR) {
   if (styleMatch) CHROME_STYLE_TAG = styleMatch[0];
   CHROME_MARKUP = chromeHtml.replace(CHROME_STYLE_RE, '').trim();
 }
+// CHROME_MARKUP has already had its <style> block stripped, so stamping every
+// opening tag cannot accidentally alter CSS text or the pack's layout.
+const STAMPED_CHROME_MARKUP = CHROME_MARKUP.replace(
+  /<([a-zA-Z][\w-]*)(?=[\s>/])/g,
+  '<$1 data-bs-chrome',
+);
 
 // URL prefix -> directory. `/assets/` is shared machinery, `/profile/` is the
 // product profile, `/platform/` is the active platform pack. Screens name none
@@ -197,10 +209,10 @@ function parseTagAttrs(rawAttrs) {
 // chrome-navbar--<variant> modifier class, and the pack's own CSS decides what
 // (if anything) that modifier changes. No attribute means the default shell.
 function renderChrome(attrs) {
-  if (!CHROME_MARKUP) return '';
+  if (!STAMPED_CHROME_MARKUP) return '';
   const variant = attrs.variant || attrs.type;
   const variantClass = variant ? `chrome-navbar--${variant}` : '';
-  return CHROME_MARKUP
+  return STAMPED_CHROME_MARKUP
     .replaceAll('{{variant_class}}', escapeHtml(variantClass))
     .replaceAll('{{title}}', escapeHtml(attrs.title || ''));
 }
@@ -217,14 +229,18 @@ function expandChrome(html) {
 }
 
 // --- Helper script injection ---
-const HELPER_SCRIPT = `
+function helperScript(screenBasename) {
+  return `
 <script>
 window.__BRAINSTORM_SSE_URL = '/api/events';
+window.__BRAINSTORM_SCREEN_FILE = ${JSON.stringify(screenBasename)};
 </script>
 <script src="/assets/live-reload.js"></script>
+<script src="/assets/annotate.js"></script>
 `;
+}
 
-function injectHelper(html) {
+function injectHelper(html, screenBasename) {
   html = expandChrome(html);
   // Inject the pack's chrome styles + frame styles (reset, phone mockup,
   // frame layout) before </head> (or before <body> as fallback)
@@ -237,10 +253,19 @@ function injectHelper(html) {
     }
   }
   // Inject helper script before </body> or at the end
+  const helper = helperScript(screenBasename);
   if (html.includes('</body>')) {
-    return html.replace('</body>', HELPER_SCRIPT + '</body>');
+    return html.replace('</body>', helper + '</body>');
   }
-  return html + HELPER_SCRIPT;
+  return html + helper;
+}
+
+function jsonResponse(res, status, payload) {
+  res.writeHead(status, {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+  });
+  res.end(JSON.stringify(payload));
 }
 
 // --- HTTP Server ---
@@ -252,7 +277,7 @@ const server = http.createServer((req, res) => {
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type',
     });
     res.end();
@@ -270,6 +295,66 @@ const server = http.createServer((req, res) => {
     res.write(`data: connected\n\n`);
     sseClients.add(res);
     req.on('close', () => sseClients.delete(res));
+    return;
+  }
+
+  // --- API: append click annotations ---
+  if (pathname === '/api/annotations' && req.method === 'POST') {
+    const chunks = [];
+    let bytes = 0;
+    let finished = false;
+    req.on('data', (chunk) => {
+      if (finished) return;
+      bytes += chunk.length;
+      if (bytes > 64 * 1024) {
+        finished = true;
+        jsonResponse(res, 413, { ok: false, error: '批注内容过大' });
+        res.once('finish', () => req.destroy());
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on('end', () => {
+      if (finished) return;
+      let payload;
+      try { payload = JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch {
+        jsonResponse(res, 400, { ok: false, error: 'JSON 格式无效' });
+        return;
+      }
+
+      let normalized;
+      try { normalized = normalizeAnnotation(payload); } catch (error) {
+        jsonResponse(res, 400, { ok: false, error: error.message });
+        return;
+      }
+
+      const resolvedFile = path.resolve(SCREEN_DIR, normalized.file);
+      const screenRoot = `${path.resolve(SCREEN_DIR)}${path.sep}`;
+      const insideScreenDir = resolvedFile.startsWith(screenRoot);
+      let fileExists = false;
+      if (insideScreenDir) {
+        try { fileExists = fs.statSync(resolvedFile).isFile(); } catch {}
+      }
+      if (!insideScreenDir || !fileExists) {
+        jsonResponse(res, 404, { ok: false, error: '找不到对应页面' });
+        return;
+      }
+
+      const number = annotationCounter + 1;
+      const id = `a${number}`;
+      try {
+        appendAnnotation(STATE_DIR, normalized, {
+          id,
+          sessionId: SESSION_ID,
+          atMs: Date.now(),
+        });
+      } catch (error) {
+        jsonResponse(res, 500, { ok: false, error: error.message });
+        return;
+      }
+      annotationCounter = number;
+      jsonResponse(res, 200, { ok: true, id });
+    });
     return;
   }
 
@@ -308,7 +393,7 @@ const server = http.createServer((req, res) => {
           <p>Waiting for the agent to generate screens...</p>
           <p style="font-size:13px">This page will auto-refresh when screens are ready.</p>
         </div></body></html>
-      `));
+      `, null));
       return;
     }
     filePath = path.join(SCREEN_DIR, newest);
@@ -337,7 +422,7 @@ const server = http.createServer((req, res) => {
     }
     let content = fs.readFileSync(filePath, 'utf8');
     if (ext === '.html') {
-      content = injectHelper(content);
+      content = injectHelper(content, path.basename(filePath));
     }
     res.writeHead(200, { 'Content-Type': MIME[ext] || 'text/plain' });
     res.end(content);
@@ -368,6 +453,7 @@ server.listen(PORT, HOST, () => {
     startedAt: new Date(STARTED_AT_MS).toISOString(),
     startedAtMs: STARTED_AT_MS,
     telemetryPath: path.join(STATE_DIR, EVENT_FILE),
+    annotationsPath: path.join(STATE_DIR, ANNOTATION_FILE),
   };
   // Write startup info for the agent to read
   fs.writeFileSync(path.join(STATE_DIR, 'server-info.json'), JSON.stringify(info, null, 2));

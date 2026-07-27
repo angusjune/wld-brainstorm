@@ -27,6 +27,7 @@ Resolve this skill directory as `skillDir`. Every path below is relative to `ski
 **Shared machinery**:
 - `assets/frame-template.html` — Source for frame styles, including the reset and the phone mockup + gallery layout (auto-injected by the server into every served HTML page). Do NOT copy this file directly.
 - `assets/live-reload.js` — Browser-side SSE client auto-injected by the preview server.
+- `assets/annotate.js` — Browser-side click-to-annotate client auto-injected by the preview server.
 - `scripts/serve-preview.cjs` — Local preview server with SSE hot reload.
 - `scripts/run-qa-gate.mjs` — Deterministic universal checks plus optional product rules.
 
@@ -58,7 +59,7 @@ The profile's screen table lists every production template on disk, and `npm run
 
 ## Page Template
 
-**Every HTML file written to `screenDir` MUST use this structure.** Both the 3-solution page and individual screens use the same shell. The server auto-injects frame styles and the live-reload client — do NOT manually add frame styles or helper scripts.
+**Every HTML file written to `screenDir` MUST use this structure.** Both the 3-solution page and individual screens use the same shell. The server auto-injects frame styles plus the live-reload and annotation clients — do NOT manually add frame styles or helper scripts.
 
 ```html
 <!DOCTYPE html>
@@ -83,7 +84,7 @@ The profile's screen table lists every production template on disk, and `npm run
 </html>
 ```
 
-Three URL prefixes, mapped by the server: `/profile/` is the product profile, `/platform/` is the active platform pack, and `/assets/` is shared machinery. Screens name neither the product nor the platform by identity, so swapping either needs no screen edits. The server also injects the platform pack's chrome styles, the frame styles (which include the reset and phone mockup) and `assets/live-reload.js` — do not link or add those yourself.
+Three URL prefixes, mapped by the server: `/profile/` is the product profile, `/platform/` is the active platform pack, and `/assets/` is shared machinery. Screens name neither the product nor the platform by identity, so swapping either needs no screen edits. The server also injects the platform pack's chrome styles, the frame styles (which include the reset and phone mockup), `assets/live-reload.js`, and `assets/annotate.js` — do not link or add those yourself.
 
 **Preview chrome** is always written as `<preview-chrome variant="…" title="…">`. The server expands it using the active platform pack; which variants exist is the pack's business, and the profile documents which to use where.
 
@@ -121,9 +122,9 @@ node "<skill-dir>/scripts/serve-preview.cjs" \
   --port 3210
 ```
 
-Save `screenDir`, `stateDir`, `telemetryPath`, and `url` from the JSON response. You will write all screen HTML files to `screenDir` and use `url` for all subsequent API calls. Tell user to open the URL.
+Save `screenDir`, `stateDir`, `telemetryPath`, `annotationsPath`, and `url` from the JSON response. You will write all screen HTML files to `screenDir` and use `url` for all subsequent API calls. Tell user to open the URL; they can click the button at the bottom-right of the page to annotate an element directly instead of describing it in words.
 
-**Server features:** Serves newest `.html` from `screenDir`, auto-injects the live-reload client + frame styles + the platform pack's chrome styles, hot-reloads via SSE, serves shared machinery at `/assets/*` and the product profile at `/profile/*`, records session performance events at `telemetryPath`, auto-shuts down after 30 min idle. The telemetry is passive; do not add manual checkpoints during generation. It observes file writes, automatic QA gate runs, and page reads—not completion of Simplify, profile passes, or visual review. When diagnosing latency, summarize it with `node "<skill-dir>/scripts/report-session-telemetry.mjs" "<stateDir>"` after the session.
+**Server features:** Serves newest `.html` from `screenDir`, auto-injects the live-reload and annotation clients + frame styles + the platform pack's chrome styles, hot-reloads via SSE, appends annotations to `annotationsPath`, serves shared machinery at `/assets/*` and the product profile at `/profile/*`, records session performance events at `telemetryPath`, auto-shuts down after 30 min idle. The telemetry is passive; do not add manual checkpoints during generation. It observes file writes, automatic QA gate runs, and page reads—not completion of Simplify, profile passes, or visual review. When diagnosing latency, summarize it with `node "<skill-dir>/scripts/report-session-telemetry.mjs" "<stateDir>"` after the session.
 
 ### Step 3: Read Production Templates
 
@@ -253,7 +254,17 @@ Ask the user to choose one of these paths after they have seen the approved scre
 | B | Push to Figma | Use the Push to Figma branch in `references/embedded-workflows.md`. Requires the approved brainstorm source and a target Figma page link. |
 | C | Prototype | Only offered when the active platform pack ships a `branches/` directory. Follow the branch doc inside it — on `wechat` that is `platforms/wechat/branches/prototype.md`, which builds a Mini Program demo. Do not offer this choice when the pack contributes no branches. |
 
-**Critical for A:** Always edit the SAME file for iterative changes. Only create new files for new screens.
+**Critical for A:** Before acting on feedback, read `annotationsPath`. For each file, find the greatest numeric ID in the `through` field of its `consumed` entries; annotations for that file with greater IDs are pending. Capture the last pending ID you actually read for each file. Annotations and typed feedback are the same input and may arrive together in one turn. Apply both directly without restating annotations; hot reload is the confirmation. Always edit the SAME file for iterative changes. Only create new files for new screens.
+
+After the edit is written, acknowledge only the last ID you captured for that file:
+
+```bash
+node "<skill-dir>/scripts/acknowledge-annotations.cjs" "<stateDir>" "<screen-file>" "<through-id>"
+```
+
+Run it once per edited file that had pending annotations. Never acknowledge an ID that arrived after your read; file writes do not consume annotations automatically.
+
+For per-screen feedback about preview chrome, change only the `variant` or `title` attributes on `<preview-chrome …>` in that screen file. Never edit `platforms/*/chrome.html` or `assets/frame-template.html` in response to per-screen feedback.
 
 **Critical for B/C:** Load only the selected branch from `references/embedded-workflows.md`; do not carry unrelated branch instructions into context. If the required input for that branch is missing, ask for it in one short message and do not substitute a screenshot-only or text-only deliverable unless that branch explicitly allows it.
 
@@ -294,6 +305,7 @@ Method mistakes. **The profile's product laws are the other half of this table**
 | Hardcoding a colour, radius, or font | Use a token from `profile/design-system/tokens.css` — it is the single source of truth |
 | Adding frame styles manually | Server auto-injects frame styles from frame-template.html — no manual linking or copying needed |
 | CTA pinned to screen bottom behind a void | Place the CTA where the source template places it (often centered right after content) |
+| Asking which element the user means while annotations are waiting | Read `annotationsPath` first |
 | Editing a product fact in this file | Product facts belong in `profile/`; this file names no product |
 
 ---
