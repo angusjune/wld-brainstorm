@@ -109,15 +109,19 @@ npm run validate
 
 ## 适配其他产品
 
-**重写 `profile/` 一个目录就行**，别的地方基本不用动。人工维护说明见 `profile/README.md`；如果希望 AI Agent 带着你逐步完成，可直接使用 `references/setup-profile.md`：
+**重写 `profile/` 目录就行**，你可以选择 AI 辅助或人工重写：
+
+### AI 辅助适配
+
+Prompt：
 
 ```text
 请读取 `@references/setup-profile.md`，然后开始建立新的产品档案。
 ```
 
-Agent 会先读取 Figma、产品文档和前面步骤的产物，自动生成当前步骤的实现草稿与已填 YAML。你只需预览后回复“确认”或指出改动；只有 Agent 无法自行发现的来源才需要你补充，不需要手写页面表、token、CSS 或规则。
+### 人工适配
 
-按重要性排序，前两项决定输出质量：
+详细说明见 `profile/README.md`。按重要性排序，前两项决定输出质量：
 
 1. `profile/screens/` —— 换成你产品的生产界面模板。模型是「照着模板改」而不是「凭空生成」，这批模板直接决定输出质量。
 2. `profile/design-system/tokens.css` —— 换成你的色板、字体、间距。这是唯一的 token 来源。

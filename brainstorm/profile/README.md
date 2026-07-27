@@ -44,7 +44,7 @@ profile/
 | 1 | `screens/` | **最重要**。换成你自己产品的生产界面模板。模型是「照着模板改」，不是「凭空生成」，所以这批模板直接决定输出质量。 |
 | 2 | `design-system/tokens.css` | 换成你的色板、字体、间距、圆角。这是**唯一的 token 来源**，别处不要再抄一份。 |
 | 3 | `PROFILE.md` | 重写模板表、路由表、产品铁律、设计语言、速查表，frontmatter 改成你的字段（见下）。agent 读正文，脚本读 frontmatter，都是这一份。 |
-| 4 | `design-system/components.css`、`design-system/icons/` | 换成你的组件样式和图标。组件样式可以先留空壳，等重复够多了再抽出来。 |
+| 4 | `design-system/components.css`、`design-system/assets/` | 换成你的组件样式和图标。组件样式可以先留空壳，等重复够多了再抽出来。 |
 | 5 | `branches/` | **可选**。产品专属的定稿后流程；每个 Markdown 文档都要在 `PROFILE.md` 的 Branches 表中声明。 |
 | 6 | `quality/` | **可选**。维护当前产品的 QA 规则、passes、确定性工具和基准数据；不用的部分直接删除。 |
 | 7 | `knowledge/` | **可选**。产品状态机、业务规律、历史坑点；不用知识快照时清空映射并删除 cache。 |

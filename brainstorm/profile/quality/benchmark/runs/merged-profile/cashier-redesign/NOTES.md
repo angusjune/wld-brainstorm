@@ -78,7 +78,7 @@ defect」。按「规则赢过模板」的裁决，三个方案与 `cashier.html
 
 ## Other defaults
 
-- 银行 logo 用 `/profile/design-system/icons/logo-icbc.svg`（真实文件路径），替换收银台模板手绘
+- 银行 logo 用 `/profile/design-system/assets/logo-icbc.svg`（真实文件路径），替换收银台模板手绘
   矩形图标（其 `#C41230` 为 off-palette，替换后无 nontoken-color 警告）。
 - 收银台模板第一行选中勾选框未右贴边（无 `margin-left:auto`），与转账行及
   `更换还款卡.html` 的多数图样不一致 — 按 PROFILE「prefer the majority pattern」，

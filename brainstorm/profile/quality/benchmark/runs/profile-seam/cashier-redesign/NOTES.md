@@ -49,7 +49,7 @@ is a defect」。按「规则赢过模板」的裁决，所有方案把「下一
 
 ## Other defaults
 
-- 银行图标路径使用 `/profile/design-system/icons/logo-icbc.svg`（真实文件位置）。
+- 银行图标路径使用 `/profile/design-system/assets/logo-icbc.svg`（真实文件位置）。
   `更换还款卡.html` 模板里写的 `/assets/icons/...` 与服务器路由不符（icons 在
   profile 目录），本次按实际路由写。
 - CTA 文案保留生产用词「下一步」（两种方式的下一步动作都成立）。

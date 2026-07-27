@@ -21,7 +21,7 @@ Stopped after Step 5 first screen, per benchmark instructions.
 - **Source templates（无单一模板覆盖逾期场景，按 SKILL Step 3 组合）：**
   `本期应还.html`（金额汇总 + 借据列表 + 无底栏）、`收银台.html`（居中金额 +
   还款方式卡 + 居中 CTA）、`个人中心-有借款.html`（首页提醒入口）、
-  `更换还款卡.html`（银行 logo 圆片图案，`/profile/design-system/icons/logo-icbc.svg`）、
+  `更换还款卡.html`（银行 logo 圆片图案，`/profile/design-system/assets/logo-icbc.svg`）、
   `借款详情.html`（状态点 + 文本样式参照，逾期态换用 danger token）。
 - **Chosen direction (no user available):** 方案 A 状态先行 — 最符合品牌
   "Trustworthy, Simple, Calm"：不催逼、先给用户完整的状态与费用事实，同时清晰
@@ -63,7 +63,7 @@ Computed with
 ## Deviations / repairs noted
 
 - 收银台模板的内联 ICBC SVG 含 off-token 色 `#C41230`；改用 更换还款卡.html 的
-  银行 logo 圆片图案（`/profile/design-system/icons/logo-icbc.svg`），避免 off-palette 字面量。
+  银行 logo 圆片图案（`/profile/design-system/assets/logo-icbc.svg`），避免 off-palette 字面量。
   分隔线缩进相应从 56px 调整为 64px（20 边距 + 32 圆片 + 12 间距），
   "其他银行卡"缩进 44px 对齐。
 - 收银台模板"已选中"勾选框缺 `margin-left: auto`（模板内其他行均有），

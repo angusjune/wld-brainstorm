@@ -46,9 +46,9 @@ Computed with `node profile/quality/tools/calc.mjs '{"annualRate":0.144,"princip
 
 ## Deviations / repairs noted
 
-- 模板引用 `/assets/icons/*.svg`，但图标实际位于 `profile/design-system/icons/`（服务器挂载
+- 模板引用 `/assets/icons/*.svg`，但图标实际位于 `profile/design-system/assets/`（服务器挂载
   `/profile/` → profile 目录，`/assets/icons/` 会 404）。生成文件改用
-  `/profile/design-system/icons/...` 路径。
+  `/profile/design-system/assets/...` 路径。
 - 收银台模板中“已选中”勾选框缺 `margin-left:auto`（模板内其他行均有），生成文件按
   多数模式右对齐。
 - 收银台模板的 `.wld-cashier-row .wld-checkbox { border-color: rgba(0,0,0,0.25) }`

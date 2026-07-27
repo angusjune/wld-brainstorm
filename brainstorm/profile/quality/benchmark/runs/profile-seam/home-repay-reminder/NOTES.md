@@ -31,7 +31,7 @@ Task: 首页要能提醒用户最近7天内要还的钱，给我三个方案看�
 
 ## Deviation from template markup
 
-- Tab-bar icon paths: production templates reference `/assets/icons/*.svg`, but the icons ship at `profile/design-system/icons/` (served as `/profile/design-system/icons/`); `assets/icons/` does not exist. Generated screens use `/profile/design-system/icons/tab-icon-home-filled.svg` and `/profile/design-system/icons/tab-icon-me.svg` so the preview resolves. Everything else is copied from the templates.
+- Tab-bar icon paths: production templates reference `/assets/icons/*.svg`, but the icons ship at `profile/design-system/assets/` (served as `/profile/design-system/assets/`); `assets/icons/` does not exist. Generated screens use `/profile/design-system/assets/tab-icon-home-filled.svg` and `/profile/design-system/assets/tab-icon-me.svg` so the preview resolves. Everything else is copied from the templates.
 
 ## Simplify Pass log
 

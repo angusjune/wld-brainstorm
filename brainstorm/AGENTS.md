@@ -99,7 +99,7 @@ brainstorm/
    - 使用来自真实产品或 Figma Dev Mode 的生产模板，不要放随手拼的示例页。
    - 每个 HTML 文件都必须在 `PROFILE.md` 的模板表中出现，表里的每个文件也必须真实存在。
    - 模板使用 `/profile/`、`/platform/`、`/assets/` 挂载路径，不要写本机绝对路径。
-3. 重写 `profile/design-system/tokens.css`、`profile/design-system/components.css` 和 `profile/design-system/icons/`。
+3. 重写 `profile/design-system/tokens.css`、`profile/design-system/components.css` 和 `profile/design-system/assets/`。
    - `profile/design-system/tokens.css` 是唯一 token 来源；组件和模板优先引用 token。
    - class 与 token 前缀属于产品档案，可整体更换；通用脚本不应依赖具体前缀。
    - 若保留小程序模板，至少提供生成器使用的语义后缀：`theme-500`、`theme-100`、`theme-600`、`danger-500`、`text-primary`、`text-secondary`、`text-tertiary`、`text-on-theme`、`surface`、`bg`、`divider`、`radius-pill`、`radius-card`、`font-family`。
