@@ -79,10 +79,7 @@ npm run benchmark:report -- profile/quality/benchmark/runs/<new> --compare profi
 在 `brainstorm` 目录内运行（这些脚本定义在 `brainstorm/package.json`）：
 
 ```bash
-npm run test:qa-gate
-npm run test:quality-benchmark
+npm test
 ```
 
-或用 `npm test` 一次跑完两个。
-
-校准规则：生产模板必须是 0 个 error。若 gate 报生产模板错误，优先修 gate；只有确认模板本身有问题时才改模板。
+完整自测包含 QA gate 和质量基准报告。校准规则：生产模板必须是 0 个 error。若 gate 报生产模板错误，优先修 gate；只有确认模板本身有问题时才改模板。

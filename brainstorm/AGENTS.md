@@ -115,7 +115,7 @@ brainstorm/
    - 新增或删除产品分支不应修改 `SKILL.md`。
 7. 处理 `profile/prototype/`。
    - 需要小程序 Prototype 分支时，替换模板、组件和页面壳；修改 token 后运行 `npm run gen:wxss-tokens`。
-   - 不需要时可删除整个目录；`npm run test:wxss-tokens` 会自动跳过。
+   - 不需要时可删除整个目录；`npm test` 中的 token 同步检查会自动跳过。
 8. 处理 `profile/quality/benchmark/`。
    - 删除旧产品 prompts、fixtures 和 runs；按需为新产品建立基准。
    - 没有 fixtures 时，相关冒烟测试会跳过，但生产模板仍会被 QA 校准。
