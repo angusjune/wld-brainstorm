@@ -35,7 +35,7 @@ const CORE_SEVERITY = {
   'missing-stylesheet': 'error', // required design-system stylesheets not linked
   'no-phone-mockup': 'error', // screen not wrapped in .phone-mockup/.phone-screen
   'no-page-class': 'error', // no page class at all — invented outside the design system
-  'custom-js': 'error', // screens must be static (unless the user asked for JS)
+  'custom-js': 'warning', // authored JS is allowed for light interaction; advisory, not a hard block
   'no-chrome': 'error', // missing <preview-chrome> placeholder
   'handmade-chrome': 'error', // hand-built chrome markup
   'generic-font': 'error', // font-family must go through a token
@@ -245,7 +245,7 @@ function checkFile(file, env) {
 
   const scriptMatch = cleaned.match(/<script\b/i);
   if (scriptMatch) {
-    add('custom-js', 'authored <script> found — screens must be static (server injects its own helper); only allowed if the user explicitly asked for interactivity', cleaned.indexOf(scriptMatch[0]));
+    add('custom-js', 'authored <script> found — light interaction is allowed; prefer CSS-only patterns, fall back to minimal native JS. Server injects its own helper separately. Advisory only.', cleaned.indexOf(scriptMatch[0]));
   }
 
   for (const ctx of contexts) {

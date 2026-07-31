@@ -4,6 +4,16 @@
 
 内置一套可运行的产品档案，开箱即用。换成别的产品，只需重写 `profile/` 一个目录 —— 见下面的「适配其他产品」。
 
+## 效果预览
+
+默认的微粒贷 profile
+
+![Brainstorm 多方案预览](./screenshots/screenshot1.png)
+
+更换别的产品 profile 后的效果
+
+![Brainstorm 多方案预览](./screenshots/screenshot2.png)
+
 ## 目录结构
 
 分三层。只有第一层是跟产品绑定的。
@@ -24,7 +34,7 @@
 - `ios/`：iOS 预览外壳。
 - 每个包就是一个 `chrome.html`（一段样式 + 导航结构，预览服务自动展开），要贡献分支就再放一个 `branches/` 目录。
 
-**通用机制** —— 不认识任何产品和平台
+**通用机制**
 
 - `SKILL.md`：主流程（澄清 → 多方案 → 精简 → 质检 → 定稿 → 分支）。
 - `assets/`：规范页面壳 `page-template.html`，以及由预览服务自动链接的展示样式 `frame.css`、热更新和批注资源。

@@ -23,9 +23,9 @@
 
 :root {
   --chrome-black: #000000;
+  --chrome-fg: var(--chrome-black);   /* status bar + title color — override per-screen for colored/dark navbars */
   --chrome-tint: #007AFF;             /* iOS system blue — back button, actions */
   --chrome-separator: rgba(60, 60, 67, 0.29);
-  --chrome-home-indicator: #000000;
 }
 
 /* --- Status bar (44px on notched devices) --- */
@@ -36,7 +36,7 @@
   align-items: flex-end;
   justify-content: space-between;
   padding-bottom: 2px;
-  color: var(--chrome-black);
+  color: var(--chrome-fg);
   font-size: 15px;
   font-weight: 600;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
@@ -55,7 +55,7 @@
 
 .chrome-statusbar-icons svg {
   display: block;
-  color: var(--chrome-black);
+  color: var(--chrome-fg);
 }
 
 /* --- Navigation bar (44px, sits below the status bar) --- */
@@ -86,7 +86,7 @@
   font-size: 34px;
   font-weight: 700;
   letter-spacing: 0.4px;
-  color: var(--chrome-black);
+  color: var(--chrome-fg);
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
 }
 
@@ -123,7 +123,7 @@
   transform: translateX(-50%);
   font-size: 17px;
   font-weight: 600;
-  color: var(--chrome-black);
+  color: var(--chrome-fg);
   white-space: nowrap;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
 }
@@ -132,20 +132,27 @@
   display: none;
 }
 
-/* --- Home indicator (bottom) --- */
-.chrome-home-indicator {
+/* Optional trailing nav-bar action (e.g. share/favorite/support). A profile
+   passes it via <preview-chrome trailing="<svg>...</svg>">; empty by default
+   and collapses to nothing when no screen sets it. Icon content should use
+   currentColor so it follows --chrome-fg like the rest of the bar. */
+.chrome-navbar-trailing {
   position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 134px;
-  height: 5px;
-  border-radius: 100px;
-  background: var(--chrome-home-indicator);
-  opacity: 0.9;
-  z-index: 20;
-  pointer-events: none;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  color: var(--chrome-fg);
 }
+
+.chrome-navbar-trailing:empty {
+  display: none;
+}
+
 </style>
 
 <nav class="chrome-navbar {{variant_class}}">
@@ -176,7 +183,7 @@
       </svg>
     </button>
     <span class="chrome-navbar-title">{{title}}</span>
+    <span class="chrome-navbar-trailing">{{trailing}}</span>
   </div>
   <span class="chrome-largetitle">{{title}}</span>
-  <span class="chrome-home-indicator" aria-hidden="true"></span>
 </nav>

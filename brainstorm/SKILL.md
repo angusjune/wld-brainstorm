@@ -189,6 +189,8 @@ Caption each solution with its intent:
 - Visual mode: `Visual hypothesis` + `What changes`
 - Mixed mode: label which options are UX variants and which one is visual
 
+**Where a solution's flow has an obvious tap** (open a popup, expand options, switch a tab), wire it up with light interaction so the user can click through each option and feel the difference — see Design Principles. Pure-CSS patterns first, minimal native JS only if needed.
+
 **Required passes:** Run the Shared Simplify Pass on `solutions.html`. Then run each pass listed in the profile's Passes table, in order, on the simplified file. Fix every clear issue in the HTML before user review. If a pass cannot complete for want of an input, leave the value unchanged and note the exact input needed.
 
 Check if the server (the `url` saved from Step 2 — the port may differ from 3210 if it was busy) is still running. If not, start it again.
@@ -199,11 +201,11 @@ Check if the server (the `url` saved from Step 2 — the port may differ from 32
 node "<skill-dir>/scripts/run-qa-gate.mjs" "<screenDir>/solutions.html"
 ```
 
-The gate is deterministic. It always runs universal checks (off-token colours, emoji, custom JS, missing stylesheets), plus this profile's own rules if it ships `profile/quality/rules.mjs`. Exit code 1 means at least one error — fix the HTML and re-run until it exits 0. Warnings are advisory. Then eyeball the checks the gate cannot automate:
+The gate is deterministic. It always runs universal checks (off-token colours, emoji, missing stylesheets, plus an advisory flag for authored `<script>` since light interaction is allowed), plus this profile's own rules if it ships `profile/quality/rules.mjs`. Exit code 1 means at least one error — fix the HTML and re-run until it exits 0. Warnings (including the `<script>` advisory) never fail the gate. Then eyeball the checks the gate cannot automate:
 - Preview chrome uses the profile's placeholder, not hand-built navbar markup
 - No overflow, clipped text, or unreadable captions
 - Every product law in `profile/PROFILE.md` holds
-- No custom JavaScript unless user explicitly requested interactivity
+- No interactions or motion that break layout, overflow the frame, or drag performance — light interaction (authored `<script>`, CSS transitions/animations) is allowed
 
 **Verify screenshot:** Navigate to the saved `url` from Step 2 with Playwright MCP (`mcp__playwright__browser_navigate` + `mcp__playwright__browser_take_screenshot` with `fullPage: true`). Check for:
 - Preview chrome renders correctly (matches the active platform pack's shell)
@@ -277,6 +279,7 @@ For per-screen feedback about preview chrome, change only the `variant` or `titl
 
 - **More on writing in design.** Words appear in a design for one reason: to make it easier to understand, and therefore easier to use. They are design material, not decoration. Bring the same intentionality to copy that you would bring to spacing and color. Before writing anything, ask what the design needs to say, and how it can best be said to help the person navigate the experience. If a design is good enough, it is self-explanatory without extra words. Don't add words that aren't 100% necessary
 - **Stay in the design system.** Every component uses the profile's tokens and patterns. Never introduce a colour, radius, or font that isn't in `profile/design-system/tokens.css`.
+- **Make it feel real with light interaction.** Where a flow has a natural tap — open a popup, expand an option group, switch a tab, toggle a filter, step a carousel — wire it up so the user can click through and feel the journey rather than reading a stack of static screens. Prefer pure CSS (`:checked` checkbox/radio hack, `:target` popovers, `<details>`, `@keyframes`), reach for minimal native JS only when CSS falls short. Encouraged, not required: add it when it aids understanding, never as decoration. Keep any motion short and contained inside the phone frame.
 
 ---
 
@@ -286,7 +289,7 @@ For per-screen feedback about preview chrome, change only the `variant` or `titl
 - **Multiple choice > open-ended.** "A, B, or C?" not "What do you want?" Always give a recommendation.
 - **Show, don't describe.** Build the screen, don't write paragraphs.
 - **Always present in phone frames.** Never show bare HTML.
-- **Every screen MUST be static.** No animations, no transitions, no interactive JS. Show state changes as separate screens unless asked otherwise.
+- **Encourage light interaction.** Simple UI interactions are welcome and on by default — opening a popup, expanding a section, switching a tab, toggling a state — so the user can feel the flow instead of staring at static screens. Prefer pure-CSS patterns (`:checked` checkbox/radio hack, `:target` popovers, `<details>`, light `@keyframes` transitions); fall back to minimal native JS only when CSS can't express it. This is a recommendation, not a mandate: add interaction when it helps the user understand the flow, not to every element. Keep JS small and self-contained; never ship a dependency.
 
 ---
 
@@ -302,7 +305,7 @@ Method mistakes. **The profile's product laws are the other half of this table**
 | Skipping the profile's passes | Steps 4/5 run Simplify **and** every pass the profile declares |
 | Custom/generic navbar | Use the preview-chrome placeholder from a production template |
 | Writing navbar SVGs from scratch | Never hand-write chrome; the server expands it from the platform pack |
-| Adding JS interactivity | Screens are static — show states as separate screens |
+| Heavy motion or JS that overflows the frame or stalls rendering | Keep interaction light — CSS patterns first, minimal native JS; QA gate flags authored `<script>` only as a warning |
 | Showing bare HTML pages | Always wrap in `.phone-mockup` |
 | Calling old standalone skills from Step 4/5 | Use the Shared Simplify Pass and the profile-declared passes from this `brainstorm` skill |
 | Hard-coding Step 6 letters or Prototype availability | Assemble the branch list from shared, profile, and active-platform contributions, then assign letters for that presentation |
