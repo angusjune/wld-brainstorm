@@ -1,83 +1,30 @@
-# Bundled Product Knowledge
+# 内置产品知识快照
 
-How the bundled `brainstorm` skill consumes product knowledge snapshots.
+本目录保存随产品档案发布的只读知识。模板只通过 `profile/quality/workflow-contracts.json` 的 `contextFiles` 获取任务所需文件；未声明的知识不会进入 worker 上下文。
 
-## Where the data lives
+## 当前文件
 
-The skill reads from two cache directories that ship inside this self-contained package.
-
-**Memory cache** — `profile/knowledge/memory-cache/` (consumed by the Step 3 injection flow):
-
-| Cache file | Contains | Consumed by |
-|---|---|---|
-| `profile/knowledge/memory-cache/product-patterns.yaml` | validated product rules that must hold | brainstorm Step 3 + shared Simplify Pass |
-| `profile/knowledge/memory-cache/common-pitfalls.yaml` | design gotchas that must be avoided | brainstorm Step 3 + shared Simplify Pass |
-
-**Spec cache** — `profile/knowledge/spec-cache/` (bundled reference data, consulted on demand — not part of the core Step 3 flow):
-
-| Cache file | Contains |
+| 文件 | 内容 |
 |---|---|
-| `profile/knowledge/spec-cache/index.yaml` | global index: `component_name` -> `component_id` -> `spec_path` |
-| `profile/knowledge/spec-cache/components/` | per-component `state_machine`, `rules`, `ui_contract`, `data_dictionary` YAML files |
+| `profile/knowledge/memory-cache/product-patterns.yaml` | 已确认的产品规则 |
+| `profile/knowledge/memory-cache/common-pitfalls.yaml` | 需要规避的产品体验问题 |
 
-Only specs with `lifecycle_status: active` or `draft` are cached. `deprecated` and `archived` specs are excluded from the bundle.
+## 屏幕映射
 
-Each cache file starts with `# Bundled product knowledge snapshot @ <id> (<date>)` so the packaged version is auditable.
-
-## Why a cache
-
-Agent plugin installs should be self-contained. Bundling the product knowledge snapshot makes each plugin package deterministic and runnable without extra setup.
-
-For **consumers:** nothing to do. The cache is already included.
-For **maintainers:** treat the cache as read-only unless explicitly preparing a refreshed local bundle.
-
-## Screen ↔ COMP_ID mapping
-
-| Screen file (in `profile/screens/`) | COMP_ID |
+| 模板 | COMP_ID |
 |---|---|
 | `输入金额.html` | `COMP_WLD_LOAN_AMOUNT` |
-| `个人中心.html` | _(not yet in bundled KB)_ |
-| `个人中心-有借款.html` | _(not yet in bundled KB)_ |
-| `个人中心-双offer.html` | _(not yet in bundled KB)_ |
-| `个人中心-单offer.html` | _(not yet in bundled KB)_ |
-| `提前还清.html` | _(not yet in bundled KB)_ |
-| `本期应还.html` | _(not yet in bundled KB)_ |
 
-When a new `COMP_WLD_*` entry is included in the bundled snapshot, append a row here.
+`输入金额.html` 的 workflow contract 同时声明本说明和两份 memory cache，因此 `compose` 与 `rework` 都读取相同的知识上下文。其他模板尚未声明产品知识时，仅使用生产模板、设计系统和产品规则。
 
-## Filter rule
+## 过滤规则
 
-For a given screen, an entry is relevant when **all** of:
+只使用同时满足以下条件的条目：
 
-- `product == "WLD"` for patterns; pitfalls are not product-tagged, so treat all as WLD.
-- the entry's `source` field references the screen's COMP_ID.
-- `applicable_agents` includes at least one of `kb_generation`, `req_doc`, `test_case`; these three are treated as design-relevant.
+- patterns 的 `product` 为 `WLD`；pitfalls 视为当前 WLD 档案内容。
+- `source` 引用当前模板映射的 COMP_ID。
+- `applicable_agents` 包含 `kb_generation`、`req_doc` 或 `test_case` 中至少一个。
 
-If the screen has no COMP_ID yet (mapped to _(not yet in bundled KB)_ above), skip — but tell the user in one line that no bundled product rules cover this screen, so the design relies on the visual template alone. Do not invent patterns or pitfalls to fill the gap.
+将命中的原文作为背景约束，不扩写未声明的业务规则。若知识与生产模板冲突，以知识规则为准，并向用户指出冲突。
 
-If the cache file is missing, skip with a one-line note that bundled product rules could not be loaded.
-
-## Injection format
-
-Read the cache YAML fresh each task. Quote loaded entries verbatim under labelled headers as background context before generating or reviewing:
-
-```text
-【Product rules — bundled memory】
-- PAT-WLD-001 (confidence: high): <pattern body, verbatim>
-- PAT-WLD-002 (confidence: high): <pattern body, verbatim>
-
-【Pitfalls to avoid — bundled memory】
-- PIT-001 (stage: <stage>): <description, verbatim>
-  Detection: <detection, verbatim>
-  Correction: <correction, verbatim>
-```
-
-## Conflict resolution
-
-If a product rule contradicts an `profile/screens/` template, **the rule wins**. Templates are visual snapshots; bundled product rules are validated constraints. Flag the conflict before changing the template.
-
-## What NOT to do
-
-- Don't hand-edit `profile/knowledge/memory-cache/*.yaml` or `profile/knowledge/spec-cache/**/*.yaml` during normal use.
-- Don't paraphrase pattern/pitfall bodies; quote verbatim so the `source` field stays meaningful.
-- Don't infer additional rules from the loaded entries; only use what's explicitly stated.
+正常 brainstorm 运行只读这些文件。刷新快照属于档案维护任务，并需同步更新 workflow contract 与本页映射。

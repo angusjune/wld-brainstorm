@@ -396,9 +396,10 @@
 }
 
 .wld-page-body {
+    display: flex;
+    flex-direction: column;
   flex: 1;
   overflow-y: auto;
-  padding-bottom: 100px; /* space for fixed bottom bar or tab bar */
 }
 
 /* --- Home loan summary (home screen variants) --- */
@@ -409,7 +410,6 @@
   justify-content: center;
   font-size: 12px;
   color: var(--wld-text-secondary);
-  background: var(--wld-section);
   flex-shrink: 0;
 }
 .wld-home-content {
@@ -420,6 +420,12 @@
   justify-content: center;
   gap: 16px;
   padding: 40px 0;
+}
+.wld-home-credit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
 }
 .wld-home-label {
   font-size: 14px;

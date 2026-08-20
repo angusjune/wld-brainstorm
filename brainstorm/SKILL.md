@@ -1,47 +1,43 @@
 ---
 name: brainstorm
-description: 用于基于内置产品档案进行移动端 UI 头脑风暴：生成3个方案、迭代完整流程，并在定稿后继续精简、校验细节、推送 Figma 或构建平台原型；也用于在复制后的 skill 中逐步新建或替换产品档案。Use when exploring or finishing mobile screens with the bundled product profile, or when setting up a new product profile.
+description: 用于基于当前产品档案进行移动端 UI 头脑风暴：生成3个方案、迭代完整流程，并在定稿后继续精简、校验细节或推送 Figma。Use when exploring or finishing mobile screens with the active workspace or bundled product profile.
 ---
 
 # Design Brainstorm
 
-Interactive design and finishing workflow for mobile screens. Users describe ideas, compare solution options in phone mockups, pick a direction, iterate via terminal feedback with live hot-reload preview, then choose whether to keep editing, push to Figma, or build a platform prototype.
+Interactive design and finishing workflow for mobile screens. Users describe ideas, compare solution options in phone mockups, pick a direction, iterate via terminal feedback with live hot-reload preview, then choose whether to keep editing or push to Figma.
 
-Resolve this skill directory as `skillDir`. Every path below is relative to `skillDir`; this directory is self-contained for upload.
+Resolve this skill directory as `skillDir` and the current project root as `projectDir`. The preview server selects `projectDir/wld-design-profile` whenever that directory exists, even when incomplete; otherwise it selects `skillDir/profile`. Save the selected `profileDir` and its diagnostics from the server response. Paths named with the profileDir prefix are under the selected profile; all other relative paths are under `skillDir`.
 
-**This file is the method — it names no product.** Every product-specific fact (which screens exist, the design laws, the palette, the passes to run) lives in `profile/PROFILE.md`. Replacing `profile/` is how this skill is pointed at a different product.
+**This file is the method — it names no product.** Every product-specific fact (which screens exist, the design laws, the palette, the passes to run) lives in the selected profile. Use `$setup-profile` to create `projectDir/wld-design-profile` or add production templates without editing the installed plugin.
 
-**The product profile** (in `profile/`) — everything specific to this product, and the only directory a forking team rewrites:
+**The product profile** (in `profileDir`) — everything specific to this product:
 - `PROFILE.md` — **Read this at Step 3.** Its frontmatter is the machine-readable profile config (product, platform, page class, token prefix); its body carries the screen table, template routing, design language, product laws, passes, and quick reference
 - `screens/` — Production screen templates (the ground truth)
 - `design-system/` — `tokens.css` (the single source of truth), `components.css`, and profile icons
 - `knowledge/` — Optional bundled product-knowledge bridge and read-only caches
-- `quality/` — Optional product rules, passes, deterministic tools, and benchmark data
-- `prototype/` — Optional product-owned implementation template used by the platform Prototype branch
+- `quality/` — Product generation contracts, rules, passes, and deterministic tools
 - `branches/` — Optional product-owned Step 6 branch documents declared by the profile's Branches table
 
 **Platform packs** (in `platforms/`) — the surface's furniture, shared by any product on it. The profile's `platform` field selects exactly one:
-- `wechat/` — WeChat Mini Program: status bar, 88px navbar, capsule; contributes the Prototype branch
-- `ios/` — iOS: status bar, 44px nav bar, home indicator
-- Each pack is a single `chrome.html` — one style block plus the nav markup the server stamps into each `<preview-chrome>` tag — plus any branches it contributes under `branches/`.
+- `wechat/` — WeChat Mini Program navbar
+- `ios/` — iOS navbar
+- Each pack is a single `chrome.html` — one style block plus the nav markup the server stamps into each `<preview-chrome>` tag.
 
 **Shared machinery**:
-- `assets/page-template.html` — Canonical scaffold for every generated HTML file. Copy it before adding screen content.
+- `assets/page-template.html` — Canonical scaffold used by deterministic assembly. Agents never copy or edit it.
 - `assets/frame.css` — Preview-only reset, frame, phone mockup, and gallery styles. The server links it automatically; generated files never copy or link it.
 - `assets/live-reload.js` — Browser-side SSE client auto-injected by the preview server.
 - `assets/annotate.js` — Browser-side click-to-annotate client auto-injected by the preview server.
 - `scripts/serve-preview.cjs` — Local preview server with SSE hot reload.
+- `scripts/workflow.mjs` — Prepares exact context and editable fragments, assembles canonical pages, enforces the terminal/browser contract, and writes usage reports.
 - `scripts/run-qa-gate.mjs` — Deterministic universal checks plus optional product rules.
 
 The profile's screen table lists every production template on disk, and `npm run validate` checks the two against each other in both directions.
 
 **Brainstorm-specific references**:
 - `references/solution-archetypes.md` — UX and visual exploration archetypes for diversifying 3-solution sets
-- `references/setup-profile.md` — Interactive, step-by-step Agent workflow for replacing the bundled product profile
 - `references/branches/push-to-figma.md` — Shared Push to Figma branch
-- **Playwright MCP / Chrome dev tool MCP / browser tool** — Used for screenshot verification when available. If no browser automation tool is available in the current provider, skip verification for that session and tell the user.
-
-**Profile setup routing:** If the user asks to create, set up, replace, or adapt the product profile, do not enter the design brainstorm workflow below. Read `references/setup-profile.md` and execute it one step at a time. Before asking anything, infer and prefill the current step from all available sources. Treat the user as the previewer: ask only for confirmation, corrections, or one truly missing source, then implement and verify the step yourself.
 
 ---
 
@@ -50,30 +46,87 @@ The profile's screen table lists every production template on disk, and `npm run
 1. User describes idea
 2. **Step 1:** Ask clarifying questions
 3. **Step 2:** Start brainstorm server (`node scripts/serve-preview.cjs`)
-4. **Step 3:** Read `profile/PROFILE.md`, then the production templates from `profile/screens/`
-5. **Step 4:** Generate multiple solutions (3 by default, if the user didn't specify), then run Simplify and the profile's passes before showing them
+4. **Step 3:** Resolve one source template, prepare a named workflow stage, and read only its returned context files
+5. **Step 4:** Dispatch one isolated worker from the prepared brief to generate multiple solutions (3 by default), then satisfy the validation contract
 6. User picks a direction (or request new options)
-7. **Step 5:** Build full flow screens, then run Simplify and the profile's passes before showing them
-8. **Step 6:** Assemble the available branches from Feedback, the shared Push to Figma branch, the profile's Branches table, and the active platform pack; assign display letters when presenting them
+7. **Step 5:** Record the chosen solution. Promote it deterministically when it already is the final screen; otherwise dispatch one fresh worker per new screen
+8. **Step 6:** Assemble the available branches from Feedback, the shared Push to Figma branch, and the profile's Branches table; assign display letters when presenting them
 9. Continue the chosen branch until its completion criterion is met.
 
 ---
 
-## Page Template
+## Deterministic Generation Contract
 
-**Every HTML file written to `screenDir` MUST start as a copy of `assets/page-template.html`.** Both the multi-solution page and individual screens use this one canonical scaffold:
+Every generated screen belongs to one named workflow stage. Prepare the stage before authoring anything:
 
 ```bash
-cp "<skill-dir>/assets/page-template.html" "<screenDir>/<filename>.html"
+node "<skill-dir>/scripts/workflow.mjs" prepare \
+  --run-dir "<runDir>" \
+  --stage "<lowercase-kebab-stage>" \
+  --kind "<solutions|screen|flow>" \
+  [--approach "<rework|compose>"] \
+  [--brand-mode "<preserve|explore>"] \
+  [--template "<production-template.html>"] \
+  --output "<screen-file.html>:<expected-phone-count>" \
+  [--from-stage "<selected-stage>"]
 ```
 
-Replace `<!-- SCREEN CONTENT -->` with the phone presentation markup. Replace `<!-- SCREEN STYLES -->` with any local `<style>` block copied and adapted from the production template, or remove that marker when no local styles are needed. Do not recreate or otherwise rewrite the surrounding scaffold.
+For a solutions stage, choose the approach explicitly:
+
+- `rework` when the requested screen already exists in production and the task is to improve, simplify, or reprioritize it. `prepare` copies its DOM into three editable variant roots and keeps the production base CSS read-only. The worker may reorder, regroup, merge, or introduce components in each screen plus write additive scoped CSS and captions. The profile contract declares brand identity anchors and meaningful diversity anchors without freezing their implementation.
+- `compose` when the requested page or state does not exist in production. If a useful analogue exists, pass it with `--template`; `prepare` creates editable page-root scaffolds and supplies that declared context. If no production screen is a meaningful analogue, omit `--template`; `prepare` supplies the selected profile, design system, and solution archetypes without pretending an unrelated screen is the source. The worker composes new DOM in the product's language and mechanics.
+
+For `rework`, choose one brand mode:
+
+- `preserve` is the default. Keep every profile-declared brand identity anchor, required asset, and required text, but freely change its layout, typography, spacing, shape, modifier classes, and scoped styling. Use resolvable profile CSS variables for colors.
+- `explore` only when the user explicitly asks to explore or change brand identity, palette, or art direction. Keep identity anchors and required product content, but allow new color treatments. The parent must judge brand coherence and contrast from the validation screenshot before showing the work.
+
+`prepare` deterministically writes a generation contract, a self-contained `worker-brief.md`, an exact context manifest, screen fragments, captions, base styles, and editable styles under `state/workflow/stages/<stage>/fragments/`. The returned `workerBriefFile` is the worker's only entry point.
+
+Run each authoring stage in a fresh context. Dispatch a worker with the user's stage-local intent and `workerBriefFile`; the worker reads that brief, then only the files it names. The worker must not read this `SKILL.md`, the parent transcript, another stage, assembled reference HTML, or undeclared profile material. The parent owns user interaction, stage preparation, selection, and handoffs.
+
+The authoring worker makes one coherent edit pass, runs no commands, and emits no progress narration. The parent assembles, validates, reports, and owns user-facing updates. If validation blocks, dispatch at most one fresh repair worker with only the editable fragment paths and the blocking findings. A `rework` repair may edit screen fragments, captions, and variant CSS; its production base CSS stays immutable. Revalidate in the parent; if it still blocks, report the exact findings instead of expanding context or retrying indefinitely.
+
+Edit only the files named editable by `worker-brief.md`. Each screen fragment owns exactly one profile `pageClass` root and must never contain gallery, phone, or caption wrappers; assembly owns those boundaries. Caption JSON is plain text plus an optional boolean `recommended`; style fragments are CSS only. Never edit `screenDir/*.html`, `assets/page-template.html`, production `.base.css`, or generation/context contracts. Assemble after every fragment change:
+
+```bash
+node "<skill-dir>/scripts/workflow.mjs" assemble --run-dir "<runDir>" --stage "<stage>"
+```
+
+Assembly is the only writer of `screenDir/*.html`. It verifies all selected sources are unchanged and injects the fragments into the canonical page scaffold. Direct screen edits are drift and validation blocks them.
+
+After Simplify and profile passes, run the terminal contract:
+
+```bash
+node "<skill-dir>/scripts/workflow.mjs" validate --run-dir "<runDir>" --stage "<stage>"
+node "<skill-dir>/scripts/workflow.mjs" report --run-dir "<runDir>" --stage "<stage>"
+```
+
+`validate` must return `status: "passed"`. It checks deterministic assembly, canonical shell, screen counts, per-screen required content/assets, diversity, brand identity anchors, unresolved CSS variables, the profile QA gate, real browser expansion/layout/overflow, runtime exceptions, UTF-8 rendering, and screenshots. Browser unavailability is blocking in production; `--allow-browser-unavailable` exists only for nonvisual automated tests. Fix failures in fragments, assemble, and validate again. `report` writes context bytes, stage timings, validation status, artifact hashes, and token fields. Interactive token fields are deliberately `null`; exact token counts are recorded only when a `codex exec --json` event file is supplied with `--codex-events`.
+
+After a solutions stage passes, record the chosen direction before preparing dependent work:
+
+```bash
+node "<skill-dir>/scripts/workflow.mjs" select \
+  --run-dir "<runDir>" \
+  --stage solutions \
+  --choice <1-based-index>
+```
+
+`select` hashes the chosen screen, styles, and caption into a compact typed handoff. `prepare --from-stage solutions` seeds the next stage from that handoff. When the template is unchanged, its generation context contains only the worker brief; the selected fragment is promoted without another model pass. When the template differs, a fresh worker receives the new template context plus only the selected fragment, styles, and caption—not `solutions.html` or prior transcript.
 
 Three URL prefixes are mapped by the server: `/profile/` is the product profile, `/platform/` is the active platform pack, and `/assets/` is shared machinery. Screens name neither the product nor the platform by identity, so swapping either needs no screen edits. The server also injects the platform pack's chrome styles, links `assets/frame.css`, and injects `assets/live-reload.js` plus `assets/annotate.js` — do not link or add those yourself.
 
 **Preview chrome** is always written as `<preview-chrome variant="…" title="…">`. The server expands it using the active platform pack; which variants exist is the pack's business, and the profile documents which to use where.
 
-**File naming:** Semantic names: `solutions.html`, `home.html`, `detail.html`. Iterations: `home-v2.html`. Never reuse filenames.
+**Generated-file names:** Name files in lowercase kebab-case by user-facing purpose:
+
+- `solutions.html` — the Step 4 comparison page
+- `<screen-purpose>.html` — one assembled screen, such as `home.html` or `loan-detail.html`
+- `<screen-purpose>-<state>.html` — a distinct state of that screen, such as `loan-detail-error.html`
+- `flow.html` — the Step 5 journey overview
+
+Keep editing the same filename during feedback. Create another file only for a different screen, state, or the flow overview.
 
 ---
 
@@ -81,53 +134,79 @@ Three URL prefixes are mapped by the server: `/profile/` is the product profile,
 
 ### Step 1: Understand the Idea
 
-Interview the user relentlessly about every aspect of the plan until a shared understanding is reached. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one. For each question, provide your recommended answer. Ask the questions one at a time, waiting for feedback on each question before continuing. Asking multiple questions at once is bewildering. 
+Interview the user relentlessly until you reach a shared understanding. Map this as a **design tree**: every decision branches into the decisions that hang off it.
 
-Examples:
+Work the tree in **rounds**. The **frontier** is every decision whose prerequisites are already settled — the questions you can ask _now_ without guessing at answers you haven't heard yet. Ask the whole frontier in one round: number each question and give your recommended answer. Then wait for the user's answers before the next round.
 
-1. **What is the core user action?** — "A) Complete the primary task (default), B) Check status, C) …"
-2. **How many screens?** — "A) One screen (default), B) 2-3 step flow, C) Home + detail pages"
-3. **What data needs to be shown?** — Amounts, lists, forms, status results?
+Each question should be formatted like so:
 
-**You have enough when you can answer:** What screens? What's on each? What do buttons do?
+```
+❓ **Q1** - **<question title>**: <question body, might be multiple paragraphs, including multiple choices>
+
+➡️ <your recommended answer>
+```
+
+Each round the user answers reshapes the tree — settled decisions push the frontier outward and unblock questions that depended on them. Recompute the frontier and ask the next round. A question whose answer depends on another question still open in this round belongs to a _later_ round, not this one.
+
+Finding _facts_ is your job, never the user's. When a frontier question needs a fact from the environment (filesystem, tools, sources from Internet, etc.), dispatch a sub-agent to find it — don't ask the user for anything you could look up yourself. Don't block on it: a running exploration is an unsettled prerequisite, so only the questions downstream of it wait for the sub-agent to report — ask the rest of the frontier now. The _decisions_ are the user's — put each to them and wait.
+
+The session is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed. Do not act on it until the user confirms you have reached a shared understanding.
+
+**Step 1 is complete when you can answer:** What screens? What's on each? What do buttons do?
 
 **Before generating, write a brief snapshot for yourself:**
 - Core user action
 - Screen(s) and state(s) to show
 - Data required on each screen
-- Source production template(s)
+- Source production template(s), or `none` for a genuinely new page
 - Product rules / pitfalls loaded, if any
 - Non-goals or constraints from the user
+- Brand mode: `preserve` unless the user explicitly requested brand-identity exploration
+- `runLabel`: 2–5 lowercase English words in kebab-case that identify this task, such as `loan-detail-redesign`
+
+The `runLabel` names the whole brainstorm, not an individual screen. Continue only when it matches `^[a-z0-9]+(?:-[a-z0-9]+)*$`.
 
 ### Step 2: Start the Brainstorm Server
 
 ```bash
 node "<skill-dir>/scripts/serve-preview.cjs" \
   --project-dir /path/to/project \
+  --run-label "<runLabel>" \
   --port 3210
 ```
 
-Save `screenDir`, `stateDir`, `telemetryPath`, `annotationsPath`, and `url` from the JSON response. You will write all screen HTML files to `screenDir` and use `url` for all subsequent API calls. Tell user to open the URL; they can click the button at the bottom-right of the page to annotate an element directly instead of describing it in words.
+Each start creates `runDir` at `projectDir/wld-design-brainstorms/<YYYYMMDD-HHmmss>-<runLabel>/`; a same-second collision receives `-2`, then `-3`. The returned `screenDir` is `runDir/screens/`; deterministic assembly writes generated HTML there, while `profileDir/screens/` contains production templates. The returned `stateDir` is `runDir/state/` and holds server state plus the workflow contracts, fragments, renders, validation results, and usage reports. Treat it as machine-owned workflow state except for the prepared fragment files.
+
+Save `runDir`, `runName`, `runLabel`, `profileDir`, `profileSource`, `profileComplete`, `profileIssues`, `screenDir`, `stateDir`, `telemetryPath`, `annotationsPath`, and `url` from the JSON response. `profileSource` is `workspace` when `projectDir/wld-design-profile` is active and `bundled` otherwise. Use the returned paths rather than reconstructing them, and use `url` for all subsequent API calls. Tell user to open the URL; they can click the button at the bottom-right of the page to annotate an element directly instead of describing it in words.
+
+If `profileComplete` is false, inspect every available workspace-profile file before deciding what the issues mean for this task. Continue with the workspace profile when its existing templates, design assets, rules, and the user's supplied evidence are enough to finish; missing unrelated or optional material is not a blocker. Never borrow missing bundled files silently.
+
+Only if the current task cannot be grounded, generated, validated, or previewed with the available workspace material, stop before producing a design and offer two choices:
+
+1. **Use bundled for this run** — restart the server with `--use-bundled-profile`; do not change the workspace profile.
+2. **Fix workspace first** — invoke `$setup-profile`, preserve existing files, and resume after the blocking gaps are repaired.
+
+Explain which exact issue blocks the current task and recommend the choice that best preserves the user's intended customization. A missing file alone is not enough reason to stop.
 
 **Server features:** Serves newest `.html` from `screenDir`, injects the live-reload and annotation clients, links the preview frame stylesheet, injects the platform pack's chrome styles, hot-reloads via SSE, appends annotations to `annotationsPath`, serves shared machinery at `/assets/*` and the product profile at `/profile/*`, records session performance events at `telemetryPath`, auto-shuts down after 30 min idle. The telemetry is passive; do not add manual checkpoints during generation. It observes file writes, automatic QA gate runs, and page reads—not completion of Simplify, profile passes, or visual review. When diagnosing latency, summarize it with `node "<skill-dir>/scripts/report-session-telemetry.mjs" "<stateDir>"` after the session.
 
-### Step 3: Read Production Templates
+### Step 3: Resolve the Generation Grounding
 
-**CRITICAL — Do this before writing ANY screen HTML (including solutions).**
+**CRITICAL — Resolve and prepare before editing any fragments.**
 
-**Read `profile/PROFILE.md` now.** It carries this product's screen table, template routing, design language (colour/typography/component rules), product laws, preview-chrome placeholder, and passes. Everything in Steps 4–6 assumes you have read it.
+Read only `profileDir/PROFILE.md` first. It carries the screen table, product laws, and routing needed to decide whether this is a production-screen refinement, an analogous composition, or a genuinely new page. When it is absent or partial, apply the incomplete-profile decision from Step 2; do not broaden context speculatively.
 
-Then read the closest matching template from `profile/screens/`, using the routing table in the profile.
+Use the routing table to choose one template when it is genuinely useful, then run `workflow.mjs prepare` for the current stage. For a new page with no useful analogue, prepare `--approach compose` without `--template`. Dispatch a fresh worker from the returned `workerBriefFile`. If a prepared context file declares that a product rule overrides a template, the rule wins and the conflict must be flagged to the user.
 
-**If no row matches:** list `profile/screens/` and read each file's header comment — every template self-describes its purpose, layout, and background. Only combine sections from multiple templates after confirming no single template covers the screen.
+**If no row matches:** list only the filenames in `profileDir/screens/`, then read header comments one at a time while a plausible analogue remains. Use the closest template only when its structure or mechanics materially ground the new page. Otherwise stop searching and prepare template-free `compose`. Combining multiple source templates is not supported implicitly: when a primary template is selected, add any additional source as a declared `contextFiles` entry in its `quality/workflow-contracts.json` contract before preparing.
 
-**The rule:** Every screen must be traceable to a production template. Copy and adapt — never invent from scratch. If no single template matches, combine sections from multiple templates.
+**The rule:** Every screen must be traceable to the selected product profile; an existing production screen is optional. Use `rework` for an existing screen, template-backed `compose` for a useful analogue, and template-free `compose` for a genuinely new page. Do not force an unrelated production screen into the workflow simply to satisfy provenance.
 
-**Preview chrome:** Use the placeholder form the profile specifies, taken from the production template. Do NOT write status bar, navbar, capsule, or back-arrow markup from scratch — the server expands the placeholder from the active platform pack, which also owns the chrome styles. This chrome is for presentation only, never production code.
+**Preview chrome:** Use the `<preview-chrome>` placeholder form the profile specifies. A production template is the preferred example when present; a new page uses the variant and slots documented by `PROFILE.md`. Do NOT write status bar, navbar, capsule, or back-arrow markup from scratch — the server expands the placeholder from the active platform pack, which also owns the chrome styles. This chrome is for presentation only, never production code.
 
-**Screen-specific styles:** Each production template defines its own CSS classes in a `<style>` block at the bottom of the file. These are NOT in `profile/design-system/components.css`. When adapting a template, copy these local styles along with the HTML structure.
+**Screen-specific styles:** With a template, `prepare` extracts its last `<style>` block into the output's `.styles.css` fragment and puts one screen DOM root or placeholder into each `.screen-N.html`. Without a template, it creates empty page-root placeholders and a blank style fragment. Adapt working production classes when present; for a new page, build from profile tokens and components.
 
-**Product rules and pitfalls:** Follow the profile's product-knowledge section — it names the bridge file, the filter rule, and the injection format. If a product rule conflicts with a template, the rule wins; flag the conflict to the user. If the profile maps no knowledge for this screen, skip silently.
+**Product rules and pitfalls:** A template's workflow contract declares the exact task-specific context files. If it maps no product knowledge for this screen, skip silently. The worker reads exactly its brief and named sources; never scan the whole knowledge tree.
 
 ### Shared Simplify Pass
 
@@ -135,8 +214,8 @@ Run after every generated `solutions.html` and after every flow screen.
 
 **Completion criterion:** The file keeps all required product facts and legal/rate copy, has one clear primary action per screen, and contains no removable copy, decoration, or duplicate element that does not help the user complete the task.
 
-1. Read the generated HTML.
-2. If `profile/knowledge/` exists, read its bridge README and load matching pitfalls when the screen has a mapped component ID. Treat loaded rules as must-keep product constraints. If the directory or mapping is absent, skip silently.
+1. Read the stage's editable fragments, not generated HTML.
+2. Treat product constraints already selected into `contextFiles` as must-keep. Do not discover additional context during this pass.
 3. Remove or merge anything that fails these checks:
    - The user does not need it to complete the task.
    - The text says something already obvious from nearby UI.
@@ -144,11 +223,11 @@ Run after every generated `solutions.html` and after every flow screen.
    - It is decorative rather than functional.
    - It can merge cleanly with an adjacent label, value, or row.
 4. Never remove product rules, legal/compliance text, error states, navigation, selected user data, status indicators, tap targets, or the primary CTA.
-5. Re-read the result and make sure the HTML still follows the production template's CTA form, background color, chrome, and tab bar rules.
+5. Re-read the fragments and make sure they still follow the selected grounding: the template's CTA form, background, chrome, and tab bar when one exists; otherwise the profile's product laws and closest declared component patterns. Assemble before running any subsequent pass or validation.
 
 ### Step 4: Generate 3 Design Solutions
 
-Read `references/solution-archetypes.md`, then choose a diversity mode from the user's wording:
+The `compose` context includes `references/solution-archetypes.md`; the compact `rework` context embeds its diversity and brand-surface contracts. Choose a diversity mode from the user's wording:
 
 | Mode | Use when | Required diversity |
 |------|----------|--------------------|
@@ -160,7 +239,9 @@ Unless the user is explicitly exploring visual direction, the options must not d
 
 **Visual-mode invariants:** every visual variant keeps, unchanged from the source template: the screen's canonical CTA form exactly as the template ships it (the profile lists the canonical form per screen — never swap one form for another), the preview chrome and tab bar, all legal/rate/disclaimer text, and all data values. Each caption's "What changes" names exactly what varies — everything not named stays as the template has it.
 
-Write `solutions.html` to `screenDir` using the Page Template. Start from the selected production template's existing DOM and class names. Keep its local CSS once per document, then adapt the three screen copies; do not normalize or rename working production classes before exploring the actual solution differences. Inside `#frame-content`, use a `phone-gallery` with 3 phones:
+Prepare the stage with `--stage solutions --kind solutions --approach rework|compose --output solutions.html:3`, then dispatch one fresh solutions worker from `workerBriefFile`.
+
+In `rework`, keep the production `.base.css` immutable but edit all three seeded screen fragments. Give each option a different decision hierarchy or component composition; do not make palette changes the main source of variety. Keep every profile-declared diversity anchor exactly once and make all three DOM compositions differ. Anchor order is diagnostic evidence, not the prescribed source of variety, so a solution may distinguish itself through regrouping or a new decision component instead of forced section shuffling. Keep each brand identity anchor present while treating its layout and visual implementation as editable. In `preserve` mode, reuse profile CSS variables for colors; every `var()` reference must resolve or include a fallback. In `explore` mode, new color treatments are allowed and require screenshot review for brand coherence and contrast. Write additive rules below `.brainstorm-option-1`, `.brainstorm-option-2`, and `.brainstorm-option-3`, plus captions with exactly one `recommended: true`. In `compose`, replace the prepared page-root placeholders with three intentional alternatives grounded in the selected template when present, or in the product profile and design system for a genuinely new page. Neither approach adds phone/gallery wrappers or normalizes working production classes. Assembly creates this presentation shape:
 
 ```html
 <h2 class="frame-title">3 Design Solutions</h2>
@@ -182,7 +263,7 @@ Write `solutions.html` to `screenDir` using the Page Template. Start from the se
 </div>
 ```
 
-`<page-class>` is the `pageClass` from `profile/PROFILE.md`'s frontmatter. Use that value verbatim.
+`<page-class>` is the `pageClass` from `profileDir/PROFILE.md`'s frontmatter. Use that value verbatim.
 
 Caption each solution with its intent:
 - UX mode: `Hypothesis` + `Tradeoff`
@@ -191,35 +272,31 @@ Caption each solution with its intent:
 
 **Where a solution's flow has an obvious tap** (open a popup, expand options, switch a tab), wire it up with light interaction so the user can click through each option and feel the difference — see Design Principles. Pure-CSS patterns first, minimal native JS only if needed.
 
-**Required passes:** Run the Shared Simplify Pass on `solutions.html`. Then run each pass listed in the profile's Passes table, in order, on the simplified file. Fix every clear issue in the HTML before user review. If a pass cannot complete for want of an input, leave the value unchanged and note the exact input needed.
+**Required passes:** Run the Shared Simplify Pass on `compose` and `rework` screen fragments, then run each pass listed in prepared context in order. In `rework`, preserve required values, actions, assets, legal copy, diversity anchors, and brand identity anchors while simplifying. The parent assembles and runs `workflow.mjs validate`; a later editable-fragment change requires another assembly. Allow at most one focused repair, revalidate, then run `workflow.mjs report`.
 
 Check if the server (the `url` saved from Step 2 — the port may differ from 3210 if it was busy) is still running. If not, start it again.
 
-**Pre-user QA gate:** Before asking the user to open the browser, first run the automated gate on the generated file(s) and fix every reported error:
-
-```bash
-node "<skill-dir>/scripts/run-qa-gate.mjs" "<screenDir>/solutions.html"
-```
-
-The gate is deterministic. It always runs universal checks (off-token colours, emoji, missing stylesheets, plus an advisory flag for authored `<script>` since light interaction is allowed), plus this profile's own rules if it ships `profile/quality/rules.mjs`. Exit code 1 means at least one error — fix the HTML and re-run until it exits 0. Warnings (including the `<script>` advisory) never fail the gate. Then eyeball the checks the gate cannot automate:
+The terminal contract runs the deterministic QA gate automatically. It always applies universal checks and the active profile's optional rules. Warnings do not block; errors do. It also renders each output in Chrome and writes a screenshot under the stage's `renders/` directory. Inspect that returned screenshot for product-law judgments that cannot be automated:
 - Preview chrome uses the profile's placeholder, not hand-built navbar markup
 - No overflow, clipped text, or unreadable captions
-- Every product law in `profile/PROFILE.md` holds
+- Every product law in `profileDir/PROFILE.md` holds
 - No interactions or motion that break layout, overflow the frame, or drag performance — light interaction (authored `<script>`, CSS transitions/animations) is allowed
 
-**Verify screenshot:** Navigate to the saved `url` from Step 2 with Playwright MCP (`mcp__playwright__browser_navigate` + `mcp__playwright__browser_take_screenshot` with `fullPage: true`). Check for:
+Check the validation screenshot for:
 - Preview chrome renders correctly (matches the active platform pack's shell)
 - All 3 phones visible and properly spaced
 - Text readable, no overflow or clipping
 - Colours match the profile's palette and quick reference
 
-If issues found, fix the HTML, re-screenshot until clean. Tell user what you fixed before asking them to open.
+If issues are found, fix fragments, assemble, and validate until clean. Tell user what you fixed before asking them to open.
 
 Tell user to open the saved `url` to compare. Ask which they prefer. Only proceed after user chooses.
 
 ### Step 5: Build Flow Screens
 
-For the chosen direction, build each screen as a separate HTML file in `screenDir`. All screens use the same `phone-slide` → `phone-mockup` → `phone-screen` → page-class nesting from Step 4, where the page class is the one the profile declares.
+Record the chosen direction with `workflow.mjs select`. If the requested final artifact is the chosen solution's screen and uses the same template, prepare it with `--kind screen`, an output count of `1`, and `--from-stage solutions`, then assemble and validate the seeded fragments without another authoring worker. This deterministic promotion is the default for “finish the recommended direction.”
+
+For a genuinely new screen, prepare one named stage with `--from-stage solutions`; include its closest template only when one exists. Then dispatch a fresh worker from that stage's `workerBriefFile`. The fresh context is the isolation boundary: never continue authoring a new stage in the solutions worker. All assembled screens use the same `phone-slide` → `phone-mockup` → `phone-screen` → page-class nesting from Step 4.
 
 **Phone gallery variants:**
 
@@ -231,16 +308,15 @@ For the chosen direction, build each screen as a separate HTML file in `screenDi
 
 **Presentation modifiers:** `presentation--single` (centers one phone), `presentation--dark` (dark bg for screenshots).
 
-**File granularity (per-screen vs. flow):** Each screen is its own file (`detail.html`, `confirm.html`) — this is what the user iterates on in the Feedback branch, so one screen per file is the rule. The Flow (journey) variant is **not** a replacement for those files: build one additional presentation page (e.g. `flow.html`) that embeds each screen's `phone-slide` side by side with `phone-flow-arrow` between them, purely to show the journey. So a 2-step flow produces three files: two editable per-screen files plus one flow overview. Do not put flow arrows inside the individual per-screen files.
+**File granularity (per-screen vs. flow):** Each screen is its own output (`detail.html`, `confirm.html`) and stage. Select each completed screen stage, then prepare one additional `--kind flow` stage whose output is `flow.html:<phone-count>` and pass each source as `--from-stage`. Its prepared fragments are seeded from the compact selections. A 2-step flow therefore produces three files and three independently validated stages.
 
 **For each screen:**
-1. Copy closest matching production template and adapt
-2. Write to `screenDir` (e.g., `home.html`, `detail.html`)
-3. Run the Shared Simplify Pass
-4. Run each pass in the profile's Passes table, in order
-5. Run the Pre-user QA gate and copy quality pass
-6. **Verify screenshot:** Same as Step 4 — navigate, screenshot, check navbar/layout/text/colors. Fix and inform user of any corrections.
-7. Enter the branch loop (Step 6)
+1. Prepare a stage from the selected handoff and, when useful, the closest production template
+2. Dispatch a fresh worker from `workerBriefFile` unless deterministic promotion already completes it
+3. Run the Shared Simplify Pass and each declared profile pass on those fragments
+4. Assemble and run the terminal contract until it passes
+5. Inspect the contract screenshot for navbar, layout, text, colors, and visual quality; fix fragments and revalidate if needed
+6. Write the usage report, then enter the branch loop (Step 6)
 
 **Rules:** Always use phone frame · Chinese caption + English subtitle · Flow arrows between journey screens · Max 3-4 phones per row.
 
@@ -252,16 +328,14 @@ For the chosen direction, build each screen as a separate HTML file in `screenDi
 
 After the user has seen the approved screen or flow, assemble the available paths in this exact order:
 
-1. **Feedback** — always available. Edit the current HTML in `screenDir`; the browser hot-reloads through SSE. Repeat until the user is satisfied.
+1. **Feedback** — always available. Edit the current stage's fragments, then assemble and validate; the browser hot-reloads the assembled screen through SSE. Repeat until the user is satisfied.
 2. **Push to Figma** — always available. Its branch document is `references/branches/push-to-figma.md`.
-3. **Profile branches** — read the optional Branches table in `profile/PROFILE.md` and append every declared row in table order. Use the row's Branch value as the display name and its Doc value as the branch document. If the section or table has no rows, append nothing.
-4. **Platform branches** — read the active `platform` from the profile frontmatter. If `platforms/<platform>/branches/` exists, append every `.md` file in filename order; derive its display name from the filename stem (for example, `prototype.md` becomes `Prototype`). Do not open the documents while assembling the list. If the directory is absent or contains no branch documents, append nothing.
-
+3. **Profile branches** — read the optional Branches table in `profileDir/PROFILE.md` and append every declared row in table order. Use the row's Branch value as the display name and its Doc value as the branch document. Resolve a `profile/`-prefixed Doc inside `profileDir`. If the section or table has no rows, append nothing.
 Assign display letters (`A`, `B`, `C`, …) to the assembled list only when presenting it. Letters are presentation-local and never part of a branch document's identity. Show the description already available from this method or the profile row's Notes text; do not open any branch workflow document yet.
 
-**Critical for A:** Before acting on feedback, read `annotationsPath`. For each file, find the greatest numeric ID in the `through` field of its `consumed` entries; annotations for that file with greater IDs are pending. Capture the last pending ID you actually read for each file. Annotations and typed feedback are the same input and may arrive together in one turn. Apply both directly without restating annotations; hot reload is the confirmation. Always edit the SAME file for iterative changes. Only create new files for new screens.
+**Critical for A:** Before acting on feedback, read `annotationsPath`. For each file, find the greatest numeric ID in the `through` field of its `consumed` entries; annotations for that file with greater IDs are pending. Capture the last pending ID you actually read for each file. Annotations and typed feedback are the same input and may arrive together in one turn. Apply both directly without restating annotations; hot reload is the confirmation. Always edit the SAME stage fragments for iterative changes. Only prepare a new stage for a new screen or state.
 
-After the edit is written, acknowledge only the last ID you captured for that file:
+After the fragments are edited, assembled, and validated, acknowledge only the last ID you captured for that file:
 
 ```bash
 node "<skill-dir>/scripts/acknowledge-annotations.cjs" "<stateDir>" "<screen-file>" "<through-id>"
@@ -269,16 +343,16 @@ node "<skill-dir>/scripts/acknowledge-annotations.cjs" "<stateDir>" "<screen-fil
 
 Run it once per edited file that had pending annotations. Never acknowledge an ID that arrived after your read; file writes do not consume annotations automatically.
 
-For per-screen feedback about preview chrome, change only the `variant` or `title` attributes on `<preview-chrome …>` in that screen file. Never edit `platforms/*/chrome.html`, `assets/page-template.html`, or `assets/frame.css` in response to per-screen feedback.
+For per-screen feedback about preview chrome, change only the `variant` or `title` attributes on `<preview-chrome …>` in that screen's content fragment. Never edit `screenDir/*.html`, `platforms/*/chrome.html`, `assets/page-template.html`, or `assets/frame.css` in response to feedback.
 
-**Critical for non-Feedback branches:** After the user chooses, load only that branch's document. Do not load unselected shared, profile, or platform branch workflows into context. If the required input for the selected branch is missing, ask for it in one short message and do not substitute a screenshot-only or text-only deliverable unless that branch explicitly allows it.
+**Critical for non-Feedback branches:** After the user chooses, load only that branch's document. Do not load unselected shared or profile branch workflows into context. If the required input for the selected branch is missing, ask for it in one short message and do not substitute a screenshot-only or text-only deliverable unless that branch explicitly allows it.
 
 ---
 
 ## Design Principles
 
 - **More on writing in design.** Words appear in a design for one reason: to make it easier to understand, and therefore easier to use. They are design material, not decoration. Bring the same intentionality to copy that you would bring to spacing and color. Before writing anything, ask what the design needs to say, and how it can best be said to help the person navigate the experience. If a design is good enough, it is self-explanatory without extra words. Don't add words that aren't 100% necessary
-- **Stay in the design system.** Every component uses the profile's tokens and patterns. Never introduce a colour, radius, or font that isn't in `profile/design-system/tokens.css`.
+- **Stay grounded in the design system.** In `preserve` mode, use the profile's tokens and patterns. In explicit `explore` mode, keep identity anchors and product laws while allowing the requested art direction; verify coherence and contrast from the rendered screenshot.
 - **Make it feel real with light interaction.** Where a flow has a natural tap — open a popup, expand an option group, switch a tab, toggle a filter, step a carousel — wire it up so the user can click through and feel the journey rather than reading a stack of static screens. Prefer pure CSS (`:checked` checkbox/radio hack, `:target` popovers, `<details>`, `@keyframes`), reach for minimal native JS only when CSS falls short. Encouraged, not required: add it when it aids understanding, never as decoration. Keep any motion short and contained inside the phone frame.
 
 ---
@@ -299,26 +373,34 @@ Method mistakes. **The profile's product laws are the other half of this table**
 
 | Mistake | Fix |
 |---------|-----|
-| Inventing layouts from scratch | Always copy from `profile/screens/` templates |
-| Not reading `profile/PROFILE.md` before generating | Step 3 is mandatory; every product law lives there |
+| Treating a production screen as a hard gate | Use `rework` for an existing screen; otherwise use `compose`, with a useful analogue when available or no template for a genuinely new page |
+| Not reading `profileDir/PROFILE.md` before generating | Step 3 is mandatory; every product law lives there |
 | Calling a generic simplify routine | Use the Shared Simplify Pass in this method |
 | Skipping the profile's passes | Steps 4/5 run Simplify **and** every pass the profile declares |
-| Custom/generic navbar | Use the preview-chrome placeholder from a production template |
+| Custom/generic navbar | Use the profile-documented `<preview-chrome>` placeholder; copy a production example when one exists |
 | Writing navbar SVGs from scratch | Never hand-write chrome; the server expands it from the platform pack |
 | Heavy motion or JS that overflows the frame or stalls rendering | Keep interaction light — CSS patterns first, minimal native JS; QA gate flags authored `<script>` only as a warning |
 | Showing bare HTML pages | Always wrap in `.phone-mockup` |
 | Calling old standalone skills from Step 4/5 | Use the Shared Simplify Pass and the profile-declared passes from this `brainstorm` skill |
-| Hard-coding Step 6 letters or Prototype availability | Assemble the branch list from shared, profile, and active-platform contributions, then assign letters for that presentation |
-| Hardcoding a colour, radius, or font | Use a token from `profile/design-system/tokens.css` — it is the single source of truth |
+| Hard-coding Step 6 letters | Assemble the branch list from shared and profile contributions, then assign letters for that presentation |
+| Hardcoding a colour, radius, or font | Use a token from `profileDir/design-system/tokens.css` — it is the single source of truth |
+| Freezing a brand surface's implementation | Preserve its declared identity anchors; layout, typography, spacing, shape, modifiers, and scoped styles remain editable |
+| Treating brand exploration as normal rework | Use `--brand-mode explore` only for an explicit brand, palette, or art-direction request, then judge the screenshot |
+| Referencing an invented CSS variable | Use a declared variable or provide a valid fallback; validation blocks unresolved `var()` references |
 | Adding frame styles manually | Server links `assets/frame.css` automatically — no manual linking or copying needed |
+| Editing assembled files in `screenDir` | Edit the owning stage's fragments, then assemble and validate |
+| Reading every template or knowledge file | Prepare one selected template, or template-free `compose`, and read only the returned `contextFiles` |
+| Continuing a new stage in the same worker | End the worker at its validation criterion; dispatch the next stage from `workerBriefFile` |
+| Passing assembled `solutions.html` forward | Run `select`; hand off the hashed selected fragment, styles, and caption |
+| Estimating token use in an interactive run | Leave token fields null; exact counts require a `codex exec --json` event file |
 | CTA pinned to screen bottom behind a void | Place the CTA where the source template places it (often centered right after content) |
 | Asking which element the user means while annotations are waiting | Read `annotationsPath` first |
-| Editing a product fact in this file | Product facts belong in `profile/`; this file names no product |
+| Editing a product fact in this file | Product facts belong in `profileDir`; this file names no product |
 
 ---
 
 ## Quick Reference
 
-The active product's palette, typography, and chrome are in the Quick reference section of `profile/PROFILE.md`. `profile/design-system/tokens.css` is the single source of truth for every value.
+The active product's palette, typography, and chrome are in the Quick reference section of `profileDir/PROFILE.md`. `profileDir/design-system/tokens.css` is the single source of truth for every value.
 
-**Production screens & terminology:** Read `profile/PROFILE.md` and the closest matching template in `profile/screens/`.
+**Production screens & terminology:** Read `profileDir/PROFILE.md` and the closest matching template in `profileDir/screens/`.

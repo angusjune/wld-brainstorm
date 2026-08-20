@@ -6,7 +6,7 @@
              two offer cards → footer + tab bar
      ========================================================================== -->
 
-<div class="wld-page" id="screen-dual-offer">
+<div class="wld-page" id="screen-dual-offer" style="background: var(--wld-surface);">
 
   <!-- ===== WECHAT CHROME (Presentation-only) ===== -->
   <preview-chrome variant="home" title="微粒贷"></preview-chrome>
@@ -15,12 +15,14 @@
   <div class="wld-page-body">
 
     <!-- Interest rate info bar -->
-    <div class="wld-dual-rate-bar">年利率 (单利) 10.8%，1千元用1天只需0.3元</div>
+    <div class="wld-rate-bar">年利率 (单利) 10.8%，1千元用1天只需0.3元</div>
+
+    <div class="wld-home-content">
 
     <!-- Credit display -->
-    <div class="wld-dual-credit">
-      <div class="wld-dual-credit-label">预估可借</div>
-      <div class="wld-dual-credit-amount"><span class="wld-dual-credit-symbol">¥</span>60000</div>
+    <div class="wld-home-credit">
+        <span class="wld-home-label">预估可借</span>
+        <span class="wld-home-amount">&#165;60000</span>
     </div>
 
     <!-- "新用户优惠 2 选 1" decorative header -->
@@ -54,8 +56,10 @@
 
     </div>
 
+    </div>
+
     <!-- Footer -->
-    <div class="wld-footer wld-dual-footer">
+    <div class="wld-footer">
       <div class="wld-footer-links">
         <a href="#">借钱须知</a>
       </div>
@@ -65,7 +69,7 @@
   </div>
 
   <!-- ===== TAB BAR ===== -->
-  <div class="wld-tabbar wld-dual-tabbar">
+  <div class="wld-tabbar">
     <button class="wld-tabbar-item">
       <div class="wld-tabbar-icon">
         <img src="/profile/design-system/assets/tab-icon-home-filled.svg" alt="借钱" width="22" height="22">
@@ -116,7 +120,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 24px 30px 16px;
+    padding: 5px 0 0;
   }
   .wld-dual-heading-line {
     flex: 1;
@@ -135,6 +139,7 @@
     white-space: nowrap;
   }
   .wld-dual-offers {
+      width: 100%;
     display: flex;
     gap: 10px;
     padding: 0 30px;
@@ -153,7 +158,6 @@
   }
   .wld-dual-offer-kicker {
     font-size: var(--wld-text-body2);
-    color: var(--wld-text-secondary);
   }
   .wld-dual-offer-value {
     line-height: 1.2;

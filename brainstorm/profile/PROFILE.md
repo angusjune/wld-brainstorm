@@ -8,7 +8,7 @@ tokenPrefix: wld
 
 # WLD (微粒贷) Product Profile
 
-Everything in this file is specific to 微粒贷. `SKILL.md` holds the method and points here for product facts. The frontmatter above is the machine-readable half of the profile — `scripts/serve-preview.cjs`, `scripts/run-qa-gate.mjs`, `npm run validate`, the Mini Program token generator and the site build read `platform`, `pageClass` and `tokenPrefix` from it.
+Everything in this file is specific to 微粒贷. `SKILL.md` holds the method and points here for product facts. The frontmatter above is the machine-readable half of the profile — preview, workflow, QA, validation, and site tooling read `platform`, `pageClass` and `tokenPrefix` from it.
 
 Read this file at Step 3, before writing any screen HTML.
 
@@ -36,6 +36,7 @@ Production-accurate HTML in `profile/screens/`, exported from Figma. **This tabl
 | 欢迎页 | `欢迎页.html` | Welcome / first-run landing — value prop + 3 feature icons + primary CTA (white bg) |
 | 更换还款卡 | `更换还款卡.html` | Change repayment card — current card selected + alternatives + add new |
 | 我的Tab | `我的Tab.html` | Account tab — avatar header, feature grid, welfare row (我的 active, `#F5F5F5` bg) |
+| 逾期 | `逾期.html` | Home — overdue state (red indicator + 征信 warning, 逾期金额, 部分/全部还款, 应还详情) |
 
 **When the user names a screen in Chinese** (e.g. "优化个人中心样式"), read the matching file and use it as the base template.
 
@@ -108,7 +109,7 @@ Non-negotiable. These win over anything a template appears to show.
 - **Text on gold is never white.** Always `rgba(0,0,0,0.9)` (`--wld-text-on-theme`).
 - **Buttons are always pill-shaped** (`border-radius: 999px`). Never squared.
 - **Quick-amount chips are the exception:** `border-radius: 4px`, NOT `999px`.
-- **Background depends on screen depth.** Home screens use `#FFFFFF` on `.wld-page` (and a white navbar). Inner/detail screens use the default `#F5F5F5`. Check the template you are copying.
+- **Background depends on the screen.** The home offer states use `#FFFFFF` on `.wld-page` (and a white navbar). The overdue home state and every inner/detail screen use the default `#F5F5F5` — 逾期 also matches its navbar to the page. Check the template you are copying.
 - **No artificial urgency.** No `立即领取`, countdowns, `仅剩`, `秒杀`, or pressure language.
 - **No thousands separators.** Production writes `¥60000`, never `¥60,000` — consistently on every screen.
 - **Large currency amounts are `font-weight: 500`**, not semibold.
@@ -139,6 +140,7 @@ Use the placeholder from the production template:
 ```html
 <preview-chrome variant="home" title="微粒贷"></preview-chrome>
 <preview-chrome variant="inner" title="提前还清借款"></preview-chrome>
+<preview-chrome variant="home" title="微粒贷" nav-bg="var(--wld-bg)"></preview-chrome>  <!-- 逾期: navbar matches the grey page -->
 ```
 
 Never hand-write status bar, navbar, capsule, or back-arrow markup. The server expands the placeholder. This chrome is presentation only — it is not WLD production code.
@@ -151,11 +153,11 @@ Never hand-write status bar, navbar, capsule, or back-arrow markup. The server e
 
 ## Product rules and pitfalls
 
-After reading the template, read `profile/knowledge/README.md` to find the screen's COMP_ID. If one exists, load matching entries from `profile/knowledge/memory-cache/product-patterns.yaml` and `profile/knowledge/memory-cache/common-pitfalls.yaml` per that file's filter rule, and inject them under its labelled headers before generating solutions.
+`profile/quality/workflow-contracts.json` declares the exact knowledge context for each template. When it includes `profile/knowledge/README.md` and memory-cache files, read them and apply that page's COMP_ID filter before generating solutions. The same declared context is supplied to both `compose` and `rework`.
 
 Patterns describe state splits, hidden product variants, and default-selection rules the visual template alone does not capture (e.g. 首借/非首借 keyboard CTA differs; the 期数 sheet has two independent variants). Pitfalls are must-avoid constraints, not cleanup suggestions.
 
-If a rule conflicts with the template, **the rule wins** — flag the conflict to the user. If no COMP_ID is mapped or the cache file is missing, skip silently.
+If a rule conflicts with the template, **the rule wins** — flag the conflict to the user. Templates without mapped knowledge omit those files from their workflow contract. A declared context file must exist; repair an incomplete profile instead of silently dropping it.
 
 **Do not edit `profile/knowledge/memory-cache/` during normal use** — it is a bundled product knowledge snapshot.
 
@@ -178,7 +180,7 @@ This profile declares no additional product branches. A profile that needs produ
 | Branch | Doc | Notes |
 |--------|-----|-------|
 
-The branch rows are offered in table order. Keep the table absent or empty when the product contributes no branches; shared and platform branches remain available independently.
+The branch rows are offered in table order. Keep the table absent or empty when the product contributes no branches; shared branches remain available independently.
 
 ---
 

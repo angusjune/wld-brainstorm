@@ -23,35 +23,39 @@
 
     <!-- Centered loan offer content -->
     <div class="wld-home-content">
-      <span class="wld-home-label">预估可借</span>
-      <span class="wld-home-amount">&#165;55000</span>
-      <span class="wld-home-total">总额度 &#165;60000</span>
+        <div class="wld-home-credit">
+            <span class="wld-home-label">预估可借</span>
+            <span class="wld-home-amount">&#165;55000</span>
+            <span class="wld-home-total">总额度 &#165;60000</span>
+        </div>
       <button class="wld-btn-circle">借钱</button>
+
+      <!-- Loan details card -->
+      <div class="wld-loan-card">
+        <!-- Row 1: Next repayment due -->
+        <div class="wld-loan-row">
+          <span class="wld-loan-row-label">9月16日应还</span>
+          <div class="wld-loan-row-right">
+            <span class="wld-loan-row-value">&#165;537.20</span>
+            <!-- Chevron right -->
+            <img class="wld-loan-chevron" src="/profile/design-system/assets/chevron-right.svg" alt="" width="18" height="18">
+          </div>
+        </div>
+        <!-- Divider -->
+        <div class="wld-loan-divider"></div>
+        <!-- Row 2: Early payoff -->
+        <div class="wld-loan-row">
+          <span class="wld-loan-row-label">提前还清借款</span>
+          <div class="wld-loan-row-right">
+            <span class="wld-loan-row-value">1 笔</span>
+            <!-- Chevron right -->
+            <img class="wld-loan-chevron" src="/profile/design-system/assets/chevron-right.svg" alt="" width="18" height="18">
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Loan details card -->
-    <div class="wld-loan-card">
-      <!-- Row 1: Next repayment due -->
-      <div class="wld-loan-row">
-        <span class="wld-loan-row-label">9月16日应还</span>
-        <div class="wld-loan-row-right">
-          <span class="wld-loan-row-value">&#165;537.20</span>
-          <!-- Chevron right -->
-          <img class="wld-loan-chevron" src="/profile/design-system/assets/chevron-right.svg" alt="" width="18" height="18">
-        </div>
-      </div>
-      <!-- Divider -->
-      <div class="wld-loan-divider"></div>
-      <!-- Row 2: Early payoff -->
-      <div class="wld-loan-row">
-        <span class="wld-loan-row-label">提前还清借款</span>
-        <div class="wld-loan-row-right">
-          <span class="wld-loan-row-value">1 笔</span>
-          <!-- Chevron right -->
-          <img class="wld-loan-chevron" src="/profile/design-system/assets/chevron-right.svg" alt="" width="18" height="18">
-        </div>
-      </div>
-    </div>
+
 
     <!-- Footer -->
     <div class="wld-footer">
@@ -101,7 +105,7 @@
   .wld-loan-card {
     background: var(--wld-section);
     border-radius: 12px;
-    margin: 0 30px;
+    width: calc(100% - 60px);
     flex-shrink: 0;
   }
   .wld-loan-row {

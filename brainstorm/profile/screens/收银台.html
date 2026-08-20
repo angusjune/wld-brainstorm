@@ -8,7 +8,7 @@
 <div class="wld-page">
 
   <!-- ===== WECHAT CHROME (Presentation-only) ===== -->
-  <preview-chrome variant="inner" title=""></preview-chrome>
+  <preview-chrome variant="inner" title="" nav-bg="var(--wld-bg)"></preview-chrome>
 
   <!-- ===== PAGE BODY ===== -->
   <div class="wld-page-body">
@@ -26,11 +26,7 @@
       <div class="wld-cashier-row">
         <!-- ICBC bank circular icon -->
         <span class="wld-bank-icon wld-bank-icon--icbc">
-          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-            <rect x="3" y="5" width="16" height="12" stroke="#C41230" stroke-width="1.4" fill="none"/>
-            <path d="M3 9h16" stroke="#C41230" stroke-width="1.4"/>
-            <text x="11" y="15" text-anchor="middle" font-size="8" font-weight="700" fill="#C41230" font-family="-apple-system, sans-serif">工</text>
-          </svg>
+            <img src="/profile/design-system/assets/logo-icbc.svg" alt="工商银行" width="24" height="24">
         </span>
         <span class="wld-cashier-row-label">工商银行 (2004)</span>
         <!-- Checked round checkbox -->
@@ -54,10 +50,7 @@
       <div class="wld-cashier-row" style="padding-top: 14px; padding-bottom: 14px;">
         <!-- Transfer icon (light yellow square) -->
         <span class="wld-cashier-transfer-icon">
-          <svg width="22" height="18" viewBox="0 0 22 18" fill="none">
-            <path d="M3 5h14M14 2l3 3-3 3" stroke="rgba(0,0,0,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M19 13H5M8 16l-3-3 3-3" stroke="rgba(0,0,0,0.7)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
+            <img src="/profile/design-system/assets/icn-transfer.svg" alt="转账" width="24" height="24">
         </span>
         <div class="wld-cashier-row-stack">
           <span class="wld-cashier-row-label">转账还款</span>
@@ -122,6 +115,7 @@
     min-height: 52px;
   }
   .wld-cashier-row-label {
+      flex: 1;
     font-size: var(--wld-text-body1);
     font-weight: var(--wld-font-weight-semibold);
     color: var(--wld-text-primary);
@@ -146,7 +140,6 @@
     width: 24px;
     height: 24px;
     border-radius: 50%;
-    border: 1.2px solid #C41230;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -156,10 +149,8 @@
 
   /* Transfer icon — light yellow rounded square */
   .wld-cashier-transfer-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    background: var(--wld-theme-100);
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -7,10 +7,10 @@
  * - Watches the screen directory and pushes reload events on changes
  *
  * Usage:
- *   node scripts/serve-preview.cjs --project-dir /path/to/project [--port 3210] [--host 127.0.0.1]
+ *   node scripts/serve-preview.cjs --project-dir /path/to/project --run-label loan-detail-redesign [--use-bundled-profile] [--port 3210] [--host 127.0.0.1]
  *
  * Returns JSON on startup:
- *   { "url": "http://localhost:3210", "screenDir": "...", "stateDir": "...", "annotationsPath": "..." }
+ *   { "url": "http://localhost:3210", "runDir": "...", "screenDir": "...", "stateDir": "...", "annotationsPath": "..." }
  */
 
 const http = require('http');
@@ -18,11 +18,14 @@ const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
 const { EVENT_FILE, EVENTS, appendSessionEvent } = require('./lib/session-telemetry.cjs');
+const { resolveProfile } = require('./lib/profile-selection.cjs');
+const { createRunDirectory, validateRunLabel } = require('./lib/run-directory.cjs');
 const {
   ANNOTATION_FILE,
   appendAnnotation,
   normalizeAnnotation,
 } = require('./lib/annotations.cjs');
+const { expandChrome, loadChrome, readProfileConfig } = require('./lib/chrome.cjs');
 
 // --- Args ---
 const args = process.argv.slice(2);
@@ -36,13 +39,52 @@ const HOST = getArg('host', '127.0.0.1');
 const PROJECT_DIR = getArg('project-dir', process.cwd());
 const STARTED_AT_MS = Date.now();
 const SESSION_ID = `${process.pid}-${STARTED_AT_MS}`;
-const SESSION_DIR = path.join(PROJECT_DIR, '.brainstorm', SESSION_ID);
-const SCREEN_DIR = path.join(SESSION_DIR, 'screens');
-const STATE_DIR = path.join(SESSION_DIR, 'state');
+let RUN_LABEL;
+try {
+  RUN_LABEL = validateRunLabel(getArg('run-label'));
+} catch (error) {
+  console.error(`Run label is invalid: ${error.message}`);
+  process.exit(2);
+}
 const SKILL_DIR = path.resolve(__dirname, '..');
 const ASSETS_DIR = path.join(SKILL_DIR, 'assets');
-const PROFILE_DIR = path.join(SKILL_DIR, 'profile');
+let profileSelection;
+try {
+  profileSelection = resolveProfile({
+    projectDir: PROJECT_DIR,
+    skillDir: SKILL_DIR,
+    useBundled: args.includes('--use-bundled-profile'),
+  });
+} catch (error) {
+  console.error(`Profile selection failed: ${error.message}`);
+  process.exit(1);
+}
+const PROFILE_DIR = profileSelection.profileDir;
 const PLATFORMS_DIR = path.join(SKILL_DIR, 'platforms');
+const PROFILE = readProfileConfig(PROFILE_DIR);
+const PROFILE_ISSUES = [...profileSelection.issues];
+for (const field of ['platform', 'pageClass']) {
+  if (!PROFILE[field]) PROFILE_ISSUES.push(`PROFILE.md frontmatter is missing ${field}`);
+}
+const PLATFORM_NAME = PROFILE.platform || null;
+let PLATFORM_DIR = PLATFORM_NAME ? path.join(PLATFORMS_DIR, PLATFORM_NAME) : null;
+if (PLATFORM_DIR && !fs.existsSync(PLATFORM_DIR)) {
+  PROFILE_ISSUES.push(`platform pack does not exist: platforms/${PLATFORM_NAME}`);
+  PLATFORM_DIR = null;
+}
+const PROFILE_COMPLETE = PROFILE_ISSUES.length === 0;
+
+let run;
+try {
+  run = createRunDirectory({ projectDir: PROJECT_DIR, runLabel: RUN_LABEL, startedAtMs: STARTED_AT_MS });
+} catch (error) {
+  console.error(`Run directory creation failed: ${error.message}`);
+  process.exit(1);
+}
+const RUN_DIR = run.runDir;
+const RUN_NAME = run.runName;
+const SCREEN_DIR = path.join(RUN_DIR, 'screens');
+const STATE_DIR = path.join(RUN_DIR, 'state');
 
 fs.mkdirSync(SCREEN_DIR, { recursive: true });
 fs.mkdirSync(STATE_DIR, { recursive: true });
@@ -54,7 +96,16 @@ function recordEvent(event, details = {}) {
   });
 }
 
-recordEvent(EVENTS.SESSION_STARTED, { projectDir: PROJECT_DIR });
+recordEvent(EVENTS.SESSION_STARTED, {
+  projectDir: PROJECT_DIR,
+  runDir: RUN_DIR,
+  runName: RUN_NAME,
+  runLabel: RUN_LABEL,
+  profileDir: PROFILE_DIR,
+  profileSource: profileSelection.source,
+  profileComplete: PROFILE_COMPLETE,
+  profileIssues: PROFILE_ISSUES,
+});
 
 // --- SSE clients for live reload ---
 const sseClients = new Set();
@@ -125,55 +176,9 @@ if (!fs.existsSync(FRAME_STYLESHEET_PATH)) {
 const FRAME_STYLESHEET_TAG = '<link rel="stylesheet" href="/assets/frame.css" data-bs-frame>';
 
 // --- Presentation-only chrome, resolved from the active platform pack ---
-// Nothing here knows what WeChat is: the tag is always <preview-chrome>, and
-// what it renders comes from the single chrome.html of the pack the profile
-// selects. Swapping platform is a PROFILE.md frontmatter edit, not a code change.
-const CHROME_TAG = 'preview-chrome';
-
-// The profile's machine-readable config is the frontmatter block at the top of
-// profile/PROFILE.md: flat `key: value` lines between two `---` fences.
-function readProfileConfig(profileDir) {
-  let text = '';
-  try { text = fs.readFileSync(path.join(profileDir, 'PROFILE.md'), 'utf8'); } catch {}
-  const block = text.match(/^---\n([\s\S]*?)\n---/);
-  const config = {};
-  if (block) {
-    for (const line of block[1].split('\n')) {
-      const m = line.match(/^([\w-]+):\s*(.*)$/);
-      if (m) config[m[1]] = m[2].trim();
-    }
-  }
-  return config;
-}
-
-const PROFILE = readProfileConfig(PROFILE_DIR);
-const PLATFORM_NAME = PROFILE.platform || null;
-const PLATFORM_DIR = PLATFORM_NAME ? path.join(PLATFORMS_DIR, PLATFORM_NAME) : null;
-
-if (PLATFORM_DIR && !fs.existsSync(PLATFORM_DIR)) {
-  console.error(`Unknown platform "${PLATFORM_NAME}" — no platforms/${PLATFORM_NAME}/ directory. Check the frontmatter in profile/PROFILE.md.`);
-  process.exit(1);
-}
-
-// The pack's chrome.html carries one <style> block (injected once into every
-// served page) and the nav markup stamped into each <preview-chrome> tag. A
-// pack without chrome.html is chrome-less: the tag expands to nothing.
-const CHROME_STYLE_RE = /<style[^>]*>[\s\S]*?<\/style>/i;
-let CHROME_STYLE_TAG = '';
-let CHROME_MARKUP = '';
-if (PLATFORM_DIR) {
-  let chromeHtml = '';
-  try { chromeHtml = fs.readFileSync(path.join(PLATFORM_DIR, 'chrome.html'), 'utf8'); } catch {}
-  const styleMatch = chromeHtml.match(CHROME_STYLE_RE);
-  if (styleMatch) CHROME_STYLE_TAG = styleMatch[0];
-  CHROME_MARKUP = chromeHtml.replace(CHROME_STYLE_RE, '').trim();
-}
-// CHROME_MARKUP has already had its <style> block stripped, so stamping every
-// opening tag cannot accidentally alter CSS text or the pack's layout.
-const STAMPED_CHROME_MARKUP = CHROME_MARKUP.replace(
-  /<([a-zA-Z][\w-]*)(?=[\s>/])/g,
-  '<$1 data-bs-chrome',
-);
+// Chrome expansion lives in lib/chrome.cjs so this server and the repo's
+// screen-corpus dev server render a screen identically.
+const { style: CHROME_STYLE_TAG, markup: CHROME_MARKUP } = loadChrome(PLATFORM_DIR);
 
 // URL prefix -> directory. `/assets/` is shared machinery, `/profile/` is the
 // product profile, `/platform/` is the active platform pack. Screens name none
@@ -183,47 +188,6 @@ const STATIC_MOUNTS = [
   { prefix: '/profile/', dir: PROFILE_DIR },
   ...(PLATFORM_DIR ? [{ prefix: '/platform/', dir: PLATFORM_DIR }] : []),
 ];
-
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-function parseTagAttrs(rawAttrs) {
-  const attrs = {};
-  const attrRe = /([:\w-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/g;
-  let match;
-  while ((match = attrRe.exec(rawAttrs)) !== null) {
-    attrs[match[1]] = match[2] ?? match[3] ?? match[4] ?? '';
-  }
-  return attrs;
-}
-
-// Which variants exist is the pack's business: a variant attribute becomes a
-// chrome-navbar--<variant> modifier class, and the pack's own CSS decides what
-// (if anything) that modifier changes. No attribute means the default shell.
-function renderChrome(attrs) {
-  if (!STAMPED_CHROME_MARKUP) return '';
-  const variant = attrs.variant || attrs.type;
-  const variantClass = variant ? `chrome-navbar--${variant}` : '';
-  return STAMPED_CHROME_MARKUP
-    .replaceAll('{{variant_class}}', escapeHtml(variantClass))
-    .replaceAll('{{title}}', escapeHtml(attrs.title || ''));
-}
-
-const CHROME_TAG_RE = new RegExp(
-  `<${CHROME_TAG}\\b([^>]*)\\/?>\\s*(?:<\\/${CHROME_TAG}>)?`,
-  'gi',
-);
-
-// A pack with no variants (or no platform at all) expands the tag to nothing,
-// which is what a chrome-less product wants.
-function expandChrome(html) {
-  return html.replace(CHROME_TAG_RE, (_, rawAttrs) => renderChrome(parseTagAttrs(rawAttrs)));
-}
 
 // --- Helper script injection ---
 function helperScript(screenBasename) {
@@ -238,7 +202,7 @@ window.__BRAINSTORM_SCREEN_FILE = ${JSON.stringify(screenBasename)};
 }
 
 function injectHelper(html, screenBasename) {
-  html = expandChrome(html);
+  html = expandChrome(html, CHROME_MARKUP);
   // Inject the pack's chrome styles + preview-frame stylesheet before </head>
   // (or before <body> as fallback).
   const headTags = [CHROME_STYLE_TAG, FRAME_STYLESHEET_TAG].filter(Boolean).join('\n');
@@ -443,9 +407,16 @@ server.listen(PORT, HOST, () => {
     url: `http://${HOST}:${PORT}`,
     host: HOST,
     port: PORT,
+    runDir: RUN_DIR,
+    runName: RUN_NAME,
+    runLabel: RUN_LABEL,
     screenDir: SCREEN_DIR,
     stateDir: STATE_DIR,
     assetsDir: ASSETS_DIR,
+    profileDir: PROFILE_DIR,
+    profileSource: profileSelection.source,
+    profileComplete: PROFILE_COMPLETE,
+    profileIssues: PROFILE_ISSUES,
     sessionId: SESSION_ID,
     startedAt: new Date(STARTED_AT_MS).toISOString(),
     startedAtMs: STARTED_AT_MS,

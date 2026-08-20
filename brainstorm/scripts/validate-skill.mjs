@@ -15,16 +15,35 @@
  *   5. profile/PROFILE.md screen table matches profile/screens/ on disk (both directions).
  *   6. Root-absolute src/href in screen templates resolve through a server mount.
  *   7. The canonical page scaffold and preview-frame stylesheet keep their contract.
+ *   8. Every profile screen has a valid deterministic workflow contract.
+ *   9. Skill instructions and UI metadata match runtime paths and existing assets.
  *
- * Usage: node scripts/validate-skill.mjs [--json]
+ * Usage: node scripts/validate-skill.mjs [--json] [--profile <dir>]
  */
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '..');
+const require = createRequire(import.meta.url);
+const { WORKSPACE_PROFILE_DIRNAME } = require('./lib/profile-selection.cjs');
+const { RUNS_DIRNAME } = require('./lib/run-directory.cjs');
+
+const argv = process.argv.slice(2);
+const json = argv.includes('--json');
+let activeProfileDir = path.join(ROOT, 'profile');
+for (let index = 0; index < argv.length; index += 1) {
+  if (argv[index] !== '--profile') continue;
+  if (!argv[index + 1]) {
+    console.error('Usage: node scripts/validate-skill.mjs [--json] [--profile <dir>]');
+    process.exit(2);
+  }
+  activeProfileDir = path.resolve(argv[index + 1]);
+  index += 1;
+}
 
 const FORBIDDEN = ['.git', 'node_modules', '.env', '__pycache__', '.DS_Store'];
 const SIZE_LIMIT_BYTES = 100 * 1024 * 1024;
@@ -40,13 +59,36 @@ function walk(dir, onEntry) {
   }
 }
 
-// Check 1: SKILL.md exists at root
-if (!fs.existsSync(path.join(ROOT, 'SKILL.md'))) {
+// Check 1 + 9: required entrypoint, runtime naming, and UI metadata.
+const skillPath = path.join(ROOT, 'SKILL.md');
+if (!fs.existsSync(skillPath)) {
   errors.push('缺少根目录 SKILL.md');
+} else {
+  const skill = fs.readFileSync(skillPath, 'utf8');
+  for (const runtimePath of [WORKSPACE_PROFILE_DIRNAME, RUNS_DIRNAME]) {
+    if (!skill.includes(runtimePath)) errors.push(`SKILL.md 未声明运行时路径: ${runtimePath}`);
+  }
 }
 
-// Check 7: shared page-authoring contract. Generated files copy one canonical
-// scaffold, while preview-only frame styles stay in a separate server-linked
+const openaiYamlPath = path.join(ROOT, 'agents', 'openai.yaml');
+if (fs.existsSync(openaiYamlPath)) {
+  const openaiYaml = fs.readFileSync(openaiYamlPath, 'utf8');
+  const defaultPrompt = openaiYaml.match(/^\s*default_prompt:\s*"([^"]*)"\s*$/m)?.[1];
+  if (defaultPrompt && !defaultPrompt.includes('$brainstorm')) {
+    errors.push('agents/openai.yaml 的 default_prompt 必须显式包含 $brainstorm');
+  }
+  for (const key of ['icon_small', 'icon_large']) {
+    const value = openaiYaml.match(new RegExp(`^\\s*${key}:\\s*"([^"]+)"\\s*$`, 'm'))?.[1];
+    if (!value) continue;
+    const target = path.resolve(ROOT, value);
+    if (!target.startsWith(`${ROOT}${path.sep}`) || !fs.existsSync(target) || !fs.statSync(target).isFile()) {
+      errors.push(`agents/openai.yaml 的 ${key} 引用了不存在或越界的文件: ${value}`);
+    }
+  }
+}
+
+// Check 7: shared page-authoring contract. Deterministic assembly owns one
+// canonical scaffold, while preview-only frame styles stay in a server-linked
 // stylesheet. Keep these responsibilities distinct so SKILL.md cannot drift
 // from an ignored HTML shell inside the style asset.
 const pageTemplatePath = path.join(ROOT, 'assets', 'page-template.html');
@@ -72,6 +114,67 @@ if (!fs.existsSync(pageTemplatePath)) {
   }
   if (/\/assets\/frame\.css|\/assets\/(?:live-reload|annotate)\.js/.test(pageTemplate)) {
     errors.push('assets/page-template.html 不应手动链接预览框架或辅助脚本；这些由服务注入');
+  }
+}
+
+// Check 8: deterministic workflow contracts are mandatory profile data. The
+// generation workflow must not fall back to prose-only invariants.
+const workflowContractsPath = path.join(activeProfileDir, 'quality', 'workflow-contracts.json');
+if (!fs.existsSync(workflowContractsPath)) {
+  errors.push('缺少 profile/quality/workflow-contracts.json');
+} else {
+  let workflowContracts;
+  try {
+    workflowContracts = JSON.parse(fs.readFileSync(workflowContractsPath, 'utf8'));
+  } catch (error) {
+    errors.push(`profile/quality/workflow-contracts.json JSON 无效: ${error.message}`);
+  }
+  if (workflowContracts) {
+    if (workflowContracts.version !== 2 || !workflowContracts.templates || typeof workflowContracts.templates !== 'object') {
+      errors.push('profile/quality/workflow-contracts.json 必须使用 version 2 并包含 templates 对象');
+    } else {
+      const screenNames = fs.existsSync(path.join(activeProfileDir, 'screens'))
+        ? fs.readdirSync(path.join(activeProfileDir, 'screens')).filter((name) => name.endsWith('.html')).sort()
+        : [];
+      for (const name of screenNames) {
+        const contract = workflowContracts.templates[name];
+        if (!contract) {
+          errors.push(`模板缺少 workflow contract: profile/screens/${name}`);
+          continue;
+        }
+        for (const key of ['contextFiles', 'requiredTextPerScreen']) {
+          if (!Array.isArray(contract[key]) || contract[key].some((value) => typeof value !== 'string')) {
+            errors.push(`workflow contract ${name}.${key} 必须是字符串数组`);
+          }
+        }
+        for (const key of ['requiredAssetsPerScreen', 'brandIdentitySelectors', 'diversitySelectors']) {
+          if (contract[key] !== undefined
+            && (!Array.isArray(contract[key]) || contract[key].some((value) => typeof value !== 'string'))) {
+            errors.push(`workflow contract ${name}.${key} 必须是字符串数组`);
+          }
+        }
+        for (const selector of contract.brandIdentitySelectors || []) {
+          if (!/^\.[a-zA-Z_][\w-]*$/.test(selector)) {
+            errors.push(`workflow contract ${name}.brandIdentitySelectors 只能声明简单 class selector: ${selector}`);
+          }
+        }
+        for (const selector of contract.diversitySelectors || []) {
+          if (!/^\.[a-zA-Z_][\w-]*$/.test(selector)) {
+            errors.push(`workflow contract ${name}.diversitySelectors 只能声明简单 class selector: ${selector}`);
+          }
+        }
+        for (const relative of contract.contextFiles || []) {
+          if (path.isAbsolute(relative) || relative.split(/[\\/]/).includes('..')) {
+            errors.push(`workflow contract ${name} 的 contextFiles 越界: ${relative}`);
+          } else if (!fs.existsSync(path.join(activeProfileDir, relative))) {
+            errors.push(`workflow contract ${name} 引用了不存在的 context file: ${relative}`);
+          }
+        }
+      }
+      for (const name of Object.keys(workflowContracts.templates)) {
+        if (!screenNames.includes(name)) errors.push(`workflow contract 引用了不存在的模板: ${name}`);
+      }
+    }
   }
 }
 if (!fs.existsSync(frameStylesheetPath)) {
@@ -131,20 +234,22 @@ addMarkdownDocs(path.join(ROOT, 'references'));
 addMarkdownDocs(path.join(ROOT, 'profile', 'quality', 'passes'));
 addMarkdownDocs(path.join(ROOT, 'profile', 'branches'));
 
-const platformsDir = path.join(ROOT, 'platforms');
-if (fs.existsSync(platformsDir)) {
-  for (const entry of fs.readdirSync(platformsDir, { withFileTypes: true })) {
-    if (entry.isDirectory()) {
-      addMarkdownDocs(path.join(platformsDir, entry.name, 'branches'));
-    }
-  }
-}
-
 // A token is a "concrete in-package path" when it starts with a known top-level
 // segment or is a known root file, and carries a file extension (so we skip
 // prose, dirs-as-concepts, and generated-output examples like `home.html`).
-const IN_PKG_PREFIXES = ['assets/', 'profile/', 'platforms/', 'references/', 'tools/', 'scripts/', 'quality-benchmark/'];
+const IN_PKG_PREFIXES = ['assets/', 'profile/', 'platforms/', 'references/', 'tools/', 'scripts/'];
 const ROOT_FILES = new Set(['AGENTS.md', 'README.md', 'SKILL.md', 'package.json']);
+
+// These exact paths describe optional, conditionally-loaded profile mechanisms
+// (the QA rule-pack and the knowledge cache)
+// that shared docs reference illustratively when explaining the mechanism, not
+// as an assertion that every profile carries them. A profile that legitimately
+// skips the mechanism (see references/setup-profile.md Steps 6/7) won't have
+// these on disk — that's a valid, documented end state, not a broken link.
+const OPTIONAL_MECHANISM_PATHS = new Set([
+  'profile/quality/rules.mjs',
+  'profile/knowledge/README.md',
+]);
 
 function looksLikeInPackagePath(tok) {
   if (/^https?:\/\//.test(tok)) return false;
@@ -171,6 +276,7 @@ for (const docPath of docsToScan) {
       continue;
     }
     if (!looksLikeInPackagePath(tok)) continue;
+    if (OPTIONAL_MECHANISM_PATHS.has(tok)) continue;
     const target = path.join(ROOT, tok.replace(/\/$/, ''));
     if (!fs.existsSync(target)) {
       errors.push(`${path.relative(ROOT, docPath)} 引用了不存在的包内文件: ${tok}`);
@@ -181,8 +287,8 @@ for (const docPath of docsToScan) {
 // Check 5: profile/PROFILE.md screen table <-> profile/screens/ (both directions).
 // PROFILE.md names templates and nothing else, so every .html it mentions must
 // exist and vice versa — no need to guess which names are templates.
-const screensDir = path.join(ROOT, 'profile', 'screens');
-const profileDoc = path.join(ROOT, 'profile', 'PROFILE.md');
+const screensDir = path.join(activeProfileDir, 'screens');
+const profileDoc = path.join(activeProfileDir, 'PROFILE.md');
 if (!fs.existsSync(screensDir)) {
   errors.push('缺少 profile/screens/ 目录');
 } else if (!fs.existsSync(profileDoc)) {
@@ -223,7 +329,7 @@ if (fs.existsSync(screensDir)) {
   // The profile's machine-readable config is PROFILE.md's frontmatter block.
   const profileConfig = (() => {
     try {
-      const text = fs.readFileSync(path.join(ROOT, 'profile', 'PROFILE.md'), 'utf8');
+      const text = fs.readFileSync(profileDoc, 'utf8');
       const block = text.match(/^---\n([\s\S]*?)\n---/);
       const config = {};
       for (const line of (block ? block[1] : '').split('\n')) {
@@ -237,7 +343,7 @@ if (fs.existsSync(screensDir)) {
   })();
   const mounts = {
     '/assets/': path.join(ROOT, 'assets'),
-    '/profile/': path.join(ROOT, 'profile'),
+    '/profile/': activeProfileDir,
     ...(profileConfig.platform
       ? { '/platform/': path.join(ROOT, 'platforms', profileConfig.platform) }
       : {}),
@@ -264,7 +370,6 @@ if (fs.existsSync(screensDir)) {
   notes.push(`screen asset refs: ${refCount} 个绝对路径引用已校验`);
 }
 
-const json = process.argv.includes('--json');
 if (json) {
   console.log(JSON.stringify({ ok: errors.length === 0, errors, notes, sizeMB: +(totalBytes / 1024 / 1024).toFixed(2) }, null, 2));
 } else {

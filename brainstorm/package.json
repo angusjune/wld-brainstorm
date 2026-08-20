@@ -1,15 +1,13 @@
 {
   "name": "brainstorm-skill",
-  "version": "1.1.1",
   "private": true,
   "type": "module",
-  "description": "Self-contained design brainstorm skill: shared method, platform packs, and one swappable product profile.",
+  "description": "Self-contained design brainstorm skill with a best-effort workspace-profile seam and explicit bundled fallback.",
   "scripts": {
     "preview": "node scripts/serve-preview.cjs",
+    "workflow": "node scripts/workflow.mjs",
     "session:report": "node scripts/report-session-telemetry.mjs",
     "validate": "node scripts/validate-skill.mjs",
-    "gen:wxss-tokens": "node platforms/wechat/prototype/generate-wxss-tokens.mjs",
-    "benchmark:report": "node quality-benchmark/report.mjs",
-    "test": "node --test --test-concurrency=1 scripts/tests/*.mjs && node platforms/wechat/prototype/generate-wxss-tokens.mjs --check"
+    "test": "node --test --test-concurrency=1 scripts/tests/*.mjs"
   }
 }

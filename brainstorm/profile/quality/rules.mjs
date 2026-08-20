@@ -16,7 +16,8 @@
  * pageClass, contexts, screens, text, utils.
  *
  * Rules are plain JavaScript rather than declarative config on purpose: the
- * borrow-tab background rule below is procedural and could not be expressed as
+ * background rule below reads a screen's own style contexts, and the gold-CTA
+ * rule counts elements across a screen — neither could be expressed as
  * regex-plus-severity without inventing a language nobody else would use.
  */
 
@@ -27,26 +28,10 @@ const GOLD_BG_RE = /background[^;:]*:\s*[^;]*(#ffd143|var\(--wld-theme-500\)|var
 const WHITE_BG_RE = /background[^;:]*:\s*[^;]*(var\(--wld-surface\)|#fff\b|#ffffff\b|(?<![-\w])white(?![-\w])|rgba?\(\s*255\s*,\s*255\s*,\s*255)/i;
 const PILL_RADIUS_RE = /^(999px|50%|var\(--wld-radius-pill\))$/;
 
-// The borrow (借钱) tab identifies a home screen, which must be white. This is
-// the rule that made the old gate impossible to reuse: it greps the page for a
-// Chinese product term.
-function findBorrowTab(segmentText) {
-  const itemRe = /<(button|div)\b[^>]*class\s*=\s*"([^"]*\bwld-tabbar-item\b[^"]*)"[^>]*>/g;
-  const items = [];
-  let match;
-  while ((match = itemRe.exec(segmentText)) !== null) {
-    items.push({ cls: match[2], start: match.index });
-  }
-  for (let i = 0; i < items.length; i += 1) {
-    const end = i + 1 < items.length ? items[i + 1].start : Math.min(items[i].start + 400, segmentText.length);
-    if (segmentText.slice(items[i].start, end).includes('借钱')) return items[i];
-  }
-  return null;
-}
 
 export default {
   severity: {
-    'bg-mismatch': 'error', // home/inner background rules violated
+    'bg-mismatch': 'error', // inner screen forced to white
     'urgency-copy': 'error', // pressure language is banned in WLD
     'white-on-gold': 'error', // text on gold is always rgba(0,0,0,0.9)
     'square-button': 'error', // WLD buttons are always pill-shaped
@@ -104,12 +89,10 @@ export default {
         const pageSelectorRe = new RegExp(`(^|[\\s,])[.#][\\w-]*${pageClass}`);
         const pageForcedWhite = WHITE_BG_RE.test(screen.openTag)
           || contexts.some((ctx) => ctx.selector && pageSelectorRe.test(ctx.selector) && WHITE_BG_RE.test(ctx.body));
-        const borrowTab = findBorrowTab(screen.text);
-        if (variant === 'home' && borrowTab && !borrowTab.cls.includes('--inactive')) {
-          if (!pageForcedWhite && !WHITE_BG_RE.test(screen.text)) {
-            add('bg-mismatch', `screen ${screen.index}: borrow-tab home screen without a white background — home screens use #FFFFFF (var(--wld-surface))`, screen.start);
-          }
-        } else if (variant === 'inner' && pageForcedWhite) {
+        // Home screens are not checked: the offer states are white, the overdue
+        // state is the default grey with a navbar to match, and both are
+        // production. Only inner pages have one right answer.
+        if (variant === 'inner' && pageForcedWhite) {
           add('bg-mismatch', `screen ${screen.index}: inner screen forces white on .${pageClass} — inner pages keep the default #F5F5F5`, screen.start);
         }
       },

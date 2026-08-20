@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * Summarise one brainstorm session's performance telemetry.
+ * Summarise one brainstorm run's performance telemetry.
  *
  * Usage:
- *   node scripts/report-session-telemetry.mjs [--json] <session-dir|state-dir|session-events.jsonl>
+ *   node scripts/report-session-telemetry.mjs [--json] <run-dir|state-dir|session-events.jsonl>
  */
 
 import fs from 'node:fs';
@@ -59,6 +59,8 @@ function summarise(events) {
   const latestWrite = writes.at(-1) || null;
 
   return {
+    runName: started?.runName || null,
+    runLabel: started?.runLabel || null,
     sessionId: started?.sessionId || events[0]?.sessionId || null,
     eventCount: events.length,
     serverReadyMs: listening?.elapsedMs ?? null,
@@ -91,7 +93,7 @@ const json = argv.includes('--json');
 const targets = argv.filter((arg) => arg !== '--json');
 
 if (targets.length !== 1) {
-  console.error('用法: node scripts/report-session-telemetry.mjs [--json] <session-dir|state-dir|session-events.jsonl>');
+  console.error('用法: node scripts/report-session-telemetry.mjs [--json] <run-dir|state-dir|session-events.jsonl>');
   process.exit(2);
 }
 
@@ -101,7 +103,8 @@ try {
   if (json) {
     console.log(JSON.stringify(summary, null, 2));
   } else {
-    console.log(`会话: ${summary.sessionId || '未知'}`);
+    console.log(`运行: ${summary.runName || '未知'}`);
+    console.log(`内部会话 ID: ${summary.sessionId || '未知'}`);
     console.log(`服务启动: ${duration(summary.serverReadyMs)}`);
     console.log(`准备并生成首版 solutions: ${duration(summary.solutions.prepareAndGenerateMs)}`);
     console.log(`首版写入到首次自动 QA gate 通过: ${duration(summary.solutions.qaAfterFirstWriteMs)}`);

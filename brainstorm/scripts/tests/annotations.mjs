@@ -21,11 +21,35 @@ const SERVER = path.join(BRAINSTORM_DIR, 'scripts/serve-preview.cjs');
 const ACKNOWLEDGE = path.join(BRAINSTORM_DIR, 'scripts/acknowledge-annotations.cjs');
 const ANNOTATE_CLIENT = path.join(BRAINSTORM_DIR, 'assets/annotate.js');
 const PROFILE = path.join(BRAINSTORM_DIR, 'profile/PROFILE.md');
-const PROFILE_FIXTURE = path.join(BRAINSTORM_DIR, 'profile/quality/benchmark/fixtures/clean-inner.html');
+const PROFILE_FIXTURE = path.join(BRAINSTORM_DIR, 'profile/quality/fixtures/clean-inner.html');
 const PROFILE_SCREENS = path.join(BRAINSTORM_DIR, 'profile/screens');
+const PAGE_TEMPLATE = path.join(BRAINSTORM_DIR, 'assets/page-template.html');
+
+// profile/screens/*.html are bare page-class fragments (no <head>/<body>) by
+// design — the real preview pipeline always composes them through
+// assets/page-template.html first. When no dedicated QA fixture exists,
+// this test must do the same composition rather than assume a raw fragment is
+// a complete document; otherwise injectHelper() finds neither </head> nor
+// <body> to anchor its <link>/<script> injection on and silently no-ops.
+function composeFragmentAsDocument(fragmentPath) {
+  const template = fs.readFileSync(PAGE_TEMPLATE, 'utf8');
+  const fragment = fs.readFileSync(fragmentPath, 'utf8');
+  const styleMatch = fragment.match(/(<style>[\s\S]*?<\/style>)\s*$/);
+  const body = styleMatch ? fragment.slice(0, styleMatch.index) : fragment;
+  const styles = styleMatch ? styleMatch[1] : '';
+  const composed = template
+    .replace('<!-- SCREEN CONTENT -->', body)
+    .replace('<!-- SCREEN STYLES -->', styles);
+  const out = path.join(os.tmpdir(), `brainstorm-annotations-fixture-${process.pid}.html`);
+  fs.writeFileSync(out, composed);
+  return out;
+}
+
 const CLEAN_SCREEN = fs.existsSync(PROFILE_FIXTURE)
   ? PROFILE_FIXTURE
-  : path.join(PROFILE_SCREENS, fs.readdirSync(PROFILE_SCREENS).find((file) => file.endsWith('.html')));
+  : composeFragmentAsDocument(
+      path.join(PROFILE_SCREENS, fs.readdirSync(PROFILE_SCREENS).find((file) => file.endsWith('.html'))),
+    );
 const {
   ANNOTATION_FILE,
   LIMITS,
@@ -63,7 +87,12 @@ async function waitFor(check, label, timeoutMs = 3000) {
 }
 
 async function startServer(projectDir, port) {
-  const child = spawn(process.execPath, [SERVER, '--project-dir', projectDir, '--port', String(port)], {
+  const child = spawn(process.execPath, [
+    SERVER,
+    '--project-dir', projectDir,
+    '--run-label', 'annotations-test',
+    '--port', String(port),
+  ], {
     cwd: BRAINSTORM_DIR,
     stdio: ['ignore', 'pipe', 'pipe'],
   });

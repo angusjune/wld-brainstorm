@@ -1,12 +1,12 @@
 # Brainstorm Solution Archetypes
 
-Use this reference before generating the three-option `solutions.html` page. These are examples of directions to choose from, not fixed layouts. Keep visual execution grounded in `profile/screens/` templates.
+Use this reference before generating the three-option `solutions.html` page. These are examples of directions to choose from, not fixed layouts. Keep visual execution grounded in the selected `profileDir/screens/` templates.
 
 ## UX Strategy Archetypes
 
 Use when the user is still exploring what the screen or flow should do.
 
-UX directions depend on what the product actually does, so they live in the profile: **read the Solution archetypes section of `profile/PROFILE.md`** for the ones that fit this product's screens.
+UX directions depend on what the product actually does, so they live in the profile: **read the Solution archetypes section of `profileDir/PROFILE.md`** for the ones that fit this product's screens.
 
 When the profile lists none for the screen at hand, these generic lenses still apply — each makes a different thing the dominant object:
 

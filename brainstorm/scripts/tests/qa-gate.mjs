@@ -4,7 +4,7 @@
  * Self-test for the local brainstorm QA gate.
  *
  * Guarantees:
- * 1. Every fixture in profile/quality/benchmark/fixtures/ produces exactly the finding
+ * 1. Every fixture in profile/quality/fixtures/ produces exactly the finding
  *    codes listed in expected.json.
  * 2. Every bundled production template in profile/screens/ has 0 errors.
  */
@@ -16,7 +16,7 @@ import { spawnSync } from 'node:child_process';
 
 const BRAINSTORM_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const GATE = path.join(BRAINSTORM_DIR, 'scripts/run-qa-gate.mjs');
-const FIXTURES_DIR = path.join(BRAINSTORM_DIR, 'profile/quality/benchmark/fixtures');
+const FIXTURES_DIR = path.join(BRAINSTORM_DIR, 'profile/quality/fixtures');
 const SCREENS_DIR = path.join(BRAINSTORM_DIR, 'profile/screens');
 
 let failures = 0;
@@ -52,7 +52,7 @@ function codesOf(report) {
 console.log('Fixture contract:');
 const expectedPath = path.join(FIXTURES_DIR, 'expected.json');
 if (!fs.existsSync(expectedPath)) {
-  console.log('  SKIP profile has no quality-benchmark fixtures');
+  console.log('  SKIP profile has no QA fixtures');
 } else {
   const expected = JSON.parse(fs.readFileSync(expectedPath, 'utf8'));
   for (const [fixture, expectedCodes] of Object.entries(expected)) {

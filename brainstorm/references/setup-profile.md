@@ -14,9 +14,8 @@
 - [第 6 步：处理产品知识](#第-6-步处理产品知识)
 - [第 7 步：处理产品质量规则](#第-7-步处理产品质量规则)
 - [第 8 步：处理产品专属分支](#第-8-步处理产品专属分支)
-- [第 9 步：处理 Prototype 产品模板](#第-9-步处理-prototype-产品模板)
-- [第 10 步：处理研究材料](#第-10-步处理研究材料)
-- [第 11 步：清理残留并完成验证](#第-11-步清理残留并完成验证)
+- [第 9 步：处理研究材料](#第-9-步处理研究材料)
+- [第 10 步：清理残留并完成验证](#第-10-步清理残留并完成验证)
 
 ## 启动方式
 
@@ -85,7 +84,7 @@ exclude:
 10. 只改 `profile/`。不要为新产品修改 `SKILL.md`、`assets/`、`scripts/`、`references/` 或 `platforms/`；不要创建 active profile、profile selector 或生成器。若发现真正的通用缺陷，单独向用户说明。
 11. 禁止外部 git、submodule 和需要持续同步的上游仓库。可以读取用户明确提供的本地文件、设计链接或文档，但最终运行所需内容必须复制进 `profile/`，保持 skill 自包含。
 12. 替换已有文件前先读取它们，保留用户已经完成且明确属于新产品的修改。涉及成批删除时列出精确目标；第 1 步的 `replaceCurrentProfile: true` 只授权替换 `profile/` 内旧产品内容。
-13. 设置过程中允许暂时无法通过完整验证，但不得把中间状态说成可用。只有第 11 步全部通过后才能宣布新档案完成。
+13. 设置过程中允许暂时无法通过完整验证，但不得把中间状态说成可用。只有第 10 步全部通过后才能宣布新档案完成。
 
 用户提供文件时，优先接受以下形式：
 
@@ -127,7 +126,7 @@ primarySources:
 3. 校验 `product`、`pageClass`、`tokenPrefix`；确保它们合法、稳定且不会与共享 class/token 混淆。
 4. 向用户展示预填 YAML、每个推断的来源和低置信度项。用户只需回复“确认”或覆盖错误字段。
 5. 用户确认后：
-   - 盘点当前 `profile/`，记录旧产品名、短代号、class 前缀、token 前缀以及可选目录，供第 11 步使用；
+   - 盘点当前 `profile/`，记录旧产品名、短代号、class 前缀、token 前缀以及可选目录，供第 10 步使用；
    - 检查当前档案里是否已有属于新产品的未完成工作，避免盲目覆盖；
    - 将五个字段写入 `profile/PROFILE.md` frontmatter，但不把旧正文当成新产品事实。
 
@@ -222,8 +221,7 @@ unresolved: []
 3. 展示预填 YAML、来源、推断置信度和视觉预览。用户只需确认或改值。
 4. 用户确认后，把唯一 token 来源写入 `profile/design-system/tokens.css`，统一使用第 1 步的产品 token 前缀。
 5. 提供共享展示层使用的中性 hook，并让它们引用产品 token：`--brand-accent`、`--brand-accent-hover`、`--brand-accent-text`、`--brand-success`、`--brand-warning`、`--brand-error`、`--brand-selected-bg`、`--phone-screen-bg`、`--chrome-navbar-bg`。不要在 hook 中复制另一套品牌色字面量。
-6. 如果第 9 步计划保留微信小程序 Prototype，至少准备 token 生成器需要的语义后缀：`theme-500`、`theme-100`、`theme-600`、`danger-500`、`text-primary`、`text-secondary`、`text-tertiary`、`text-on-theme`、`surface`、`bg`、`divider`、`radius-pill`、`radius-card`、`font-family`。
-7. 搜索新模板中的硬编码样式，区分确属单屏例外的值与应当抽取的 token。
+6. 搜索新模板中的硬编码样式，区分确属单屏例外的值与应当抽取的 token。
 
 ### 完成标准
 
@@ -399,7 +397,7 @@ passes:
   - name: Check Details
     source: generated-from-confirmed-rules
 tools: []
-benchmarkPrompts: skip
+evaluationFixtures: skip
 unresolved: []
 ```
 
@@ -411,7 +409,7 @@ unresolved: []
   1. 阅读 `scripts/run-qa-gate.mjs` 的当前 rule-pack 接口，再重写可选的 `profile/quality/rules.mjs`；不要复制旧产品判断后只换名。
   2. 将每个 pass 写到 `profile/quality/passes/`，写清必需输入、执行步骤、无法执行时的处理和完成标准。
   3. 将 pass 所需的确定性工具放到 `profile/quality/tools/` 并实际运行代表性用例。
-  4. 只在有真实评估任务时建立 `profile/quality/benchmark/`；删除旧产品 prompts、fixtures 和 runs。
+  4. 只在需要校准产品 QA 规则时建立 `profile/quality/fixtures/`；删除旧产品 fixtures。
   5. 先向用户展示规则摘要和代表性 pass/fail 结果；确认后按执行顺序更新 `profile/PROFILE.md` 的 Passes 表。
 - `mode: skip`：
   1. 删除旧 `profile/quality/`。
@@ -428,7 +426,7 @@ unresolved: []
 
 ### Agent 自动识别定稿后流程
 
-搜索产品规范、交付文档和当前产品工具，判断是否存在只有该产品需要的定稿后流程。共享 Push to Figma 和平台分支不属于这里。先展示已预填决策：
+搜索产品规范、交付文档和当前产品工具，判断是否存在只有该产品需要的定稿后流程。共享 Push to Figma 不属于这里。先展示已预填决策：
 
 ```yaml
 mode: create
@@ -459,44 +457,7 @@ unresolved: []
 - 分支说明满足输入、步骤和完成标准要求。
 - 没有旧产品分支残留。
 
-## 第 9 步：处理 Prototype 产品模板
-
-### Agent 自动判断并生成 Prototype
-
-检查当前平台包是否提供 Prototype 分支、已确认屏幕是否足以形成入口流程，以及主来源中是否已有可信实现。若平台支持且素材足够，默认预填 `create`：优先改造用户已有实现；没有实现时由 Agent 从已确认屏幕、tokens 和组件生成，不要求用户提供代码。
-
-```yaml
-mode: create
-source: generated-from-confirmed-screens
-targetPlatform: wechat
-entryScreens:
-  - 首页
-  - 确认页
-implementationSource: none
-previewRequired: true
-unresolved: []
-```
-
-如果当前平台没有 Prototype 分支或素材不足，预填 `mode: skip` 并说明原因。用户只需确认推荐模式，或提供一个现有实现路径。
-
-### Agent 处理
-
-- `mode: create`：
-  1. 确认当前平台包确实提供 Prototype 分支。
-  2. Agent 自行生成或改造当前产品实现，完整替换 `profile/prototype/`；不得保留旧产品组件、页面名、AppID 或资源。
-  3. 让模板引用第 3、4 步确定的 token、组件和资源。
-  4. 对微信小程序运行 `npm run gen:wxss-tokens`，不要手改生成的 token 区块；再运行平台包提供的静态验证。
-  5. 启动可用的模拟器或预览，向用户展示实现结果；根据视觉反馈由 Agent 继续修改，用户不负责实现。
-- `mode: skip`：
-  1. 删除旧 `profile/prototype/`。
-  2. 确认产品档案没有声称该产品拥有 Prototype 实现；平台分支可以存在，但选择后必须能说明缺少产品模板。
-
-### 完成标准
-
-- 保留时，Prototype 只包含当前产品且通过平台静态检查。
-- 跳过时，旧产品实现已经删除，说明与磁盘一致。
-
-## 第 10 步：处理研究材料
+## 第 9 步：处理研究材料
 
 ### Agent 自动分类已有来源
 
@@ -525,7 +486,7 @@ Agent 展示已预填分类和保留理由。用户只需确认或修正分类�
 - `profile/research/` 要么只含当前产品材料，要么不存在。
 - 实验记录与运行时规则的边界明确。
 
-## 第 11 步：清理残留并完成验证
+## 第 10 步：清理残留并完成验证
 
 ### Agent 预填最终审计范围
 
@@ -561,19 +522,12 @@ npm run validate
 npm test
 ```
 
-6. 若保留微信 Prototype，再运行：
-
-```bash
-npm run gen:wxss-tokens
-node platforms/wechat/prototype/verify-miniprogram.mjs profile/prototype
-```
-
-7. 修复所有失败后重新运行对应命令。失败属于哪个步骤就回到该步骤索取准确缺失输入；不得通过放宽通用校验掩盖问题。
-8. 输出最终清单：
+6. 修复所有失败后重新运行对应命令。失败属于哪个步骤就回到该步骤索取准确缺失输入；不得通过放宽通用校验掩盖问题。
+7. 输出最终清单：
    - 产品身份与平台；
    - 生产模板数量及基准屏；
    - token、组件和图标状态；
-   - knowledge、quality、branches、prototype、research 的保留或跳过状态；
+   - knowledge、quality、branches、research 的保留或跳过状态；
    - 运行过的验证命令与结果；
    - 用户明确接受的未覆盖范围。
 

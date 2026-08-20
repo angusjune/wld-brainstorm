@@ -24,8 +24,10 @@ function makeFixture() {
   return fixtureRoot;
 }
 
-function runValidator(fixtureRoot) {
-  const result = spawnSync(process.execPath, ['scripts/validate-skill.mjs', '--json'], {
+function runValidator(fixtureRoot, profileDir = null) {
+  const args = ['scripts/validate-skill.mjs', '--json'];
+  if (profileDir) args.push('--profile', profileDir);
+  const result = spawnSync(process.execPath, args, {
     cwd: fixtureRoot,
     encoding: 'utf8',
   });
@@ -40,20 +42,21 @@ function addProfileBranchRow(fixtureRoot, docPath) {
   const profilePath = path.join(fixtureRoot, 'profile', 'PROFILE.md');
   const profile = fs.readFileSync(profilePath, 'utf8');
   const header = '|--------|-----|-------|';
-  assert.ok(profile.includes(header));
+  const row = `| Export handoff | \`${docPath}\` | Fixture branch. |`;
   fs.writeFileSync(
     profilePath,
-    profile.replace(header, `${header}\n| Export handoff | \`${docPath}\` | Fixture branch. |`),
+    profile.includes(header)
+      ? profile.replace(header, `${header}\n${row}`)
+      : `${profile.trimEnd()}\n\n## Branches\n\n| Branch | Doc | Notes |\n${header}\n${row}\n`,
   );
 }
 
 describe('branch document path validation', () => {
-  test('scans shared, profile, and platform branch directories recursively', () => {
+  test('scans shared and profile branch directories recursively', () => {
     const fixtureRoot = makeFixture();
     const docs = [
       ['references/branches/nested/shared.md', 'scripts/missing-shared-branch.mjs'],
       ['profile/branches/nested/product.md', 'scripts/missing-profile-branch.mjs'],
-      ['platforms/ios/branches/nested/platform.md', 'scripts/missing-platform-branch.mjs'],
     ];
 
     for (const [docPath, missingPath] of docs) {
@@ -122,5 +125,71 @@ describe('shared page template validation', () => {
         'assets/frame.css 必须只包含 CSS，不能包含 HTML 页面壳',
       ),
     );
+  });
+});
+
+describe('skill interface validation', () => {
+  test('keeps documented directory names aligned with runtime constants', () => {
+    const fixtureRoot = makeFixture();
+    const skillPath = path.join(fixtureRoot, 'SKILL.md');
+    const skill = fs.readFileSync(skillPath, 'utf8');
+    fs.writeFileSync(skillPath, skill.replaceAll('wld-design-profile', 'different-profile'));
+
+    const result = runValidator(fixtureRoot);
+
+    assert.equal(result.stderr, '');
+    assert.equal(result.exitCode, 1);
+    assert.ok(result.report.errors.includes('SKILL.md 未声明运行时路径: wld-design-profile'));
+  });
+
+  test('rejects missing agent interface icons', () => {
+    const fixtureRoot = makeFixture();
+    const openaiYaml = path.join(fixtureRoot, 'agents', 'openai.yaml');
+    fs.appendFileSync(openaiYaml, '  icon_small: "./assets/missing.svg"\n');
+
+    const result = runValidator(fixtureRoot);
+
+    assert.equal(result.stderr, '');
+    assert.equal(result.exitCode, 1);
+    assert.ok(result.report.errors.includes(
+      'agents/openai.yaml 的 icon_small 引用了不存在或越界的文件: ./assets/missing.svg',
+    ));
+  });
+});
+
+describe('workspace profile validation', () => {
+  test('checks the profile passed through the selection seam', () => {
+    const fixtureRoot = makeFixture();
+    const workspaceProfile = path.join(path.dirname(fixtureRoot), 'wld-design-profile');
+    fs.cpSync(path.join(fixtureRoot, 'profile'), workspaceProfile, { recursive: true });
+    fs.writeFileSync(
+      path.join(workspaceProfile, 'screens', '新增模板.html'),
+      '<div class="fixture-page"></div>\n',
+    );
+
+    const result = runValidator(fixtureRoot, workspaceProfile);
+
+    assert.equal(result.stderr, '');
+    assert.equal(result.exitCode, 1);
+    assert.ok(
+      result.report.errors.includes(
+        '模板存在但未在 profile/PROFILE.md 列出: profile/screens/新增模板.html',
+      ),
+    );
+  });
+
+  test('requires brand identity selectors to be simple classes', () => {
+    const fixtureRoot = makeFixture();
+    const contractPath = path.join(fixtureRoot, 'profile', 'quality', 'workflow-contracts.json');
+    const contracts = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
+    const [template] = Object.keys(contracts.templates);
+    contracts.templates[template].brandIdentitySelectors = [':root'];
+    fs.writeFileSync(contractPath, `${JSON.stringify(contracts, null, 2)}\n`);
+
+    const result = runValidator(fixtureRoot);
+
+    assert.equal(result.stderr, '');
+    assert.equal(result.exitCode, 1);
+    assert.ok(result.report.errors.some((error) => error.includes('brandIdentitySelectors')));
   });
 });

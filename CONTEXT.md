@@ -17,11 +17,11 @@ _Avoid_: Wrapper skill, plugin package, provider package
 ### Layers
 
 **Product Profile**:
-The single directory holding everything specific to one product — its tokens, component styles, screen corpus, product rules, and bundled knowledge. It is the only thing a forking team rewrites, and there is exactly one per copy of the skill.
+The single selected directory holding everything specific to one product — its tokens, component styles, screen corpus, product rules, and bundled knowledge. Runtime uses the fixed project-root `wld-design-profile/` seam when it exists, otherwise the bundled `brainstorm/profile/`; one run never mixes them.
 _Avoid_: Theme, tenant, config, plugin, preset, brand pack
 
 **Platform Pack**:
-The furniture belonging to a surface rather than a product — its preview chrome, that chrome's variant vocabulary, and any branch that only exists there. Reusable across every product on that surface.
+The preview furniture belonging to a surface rather than a product — its chrome and that chrome's variant vocabulary. Reusable across every product on that surface.
 _Avoid_: Adapter, driver, target, renderer
 
 **Shared Machinery**:
@@ -29,7 +29,7 @@ The parts that vary by nothing: the method in `SKILL.md`, the preview server, th
 _Avoid_: Core, framework, engine, runtime
 
 **Page Scaffold**:
-The canonical complete HTML document copied for every generated screen. It owns
+The canonical complete HTML document read only by the deterministic workflow assembler. It owns
 the stable document shell, product design-system links, and insertion markers,
 but no preview-only styles or runtime helpers.
 _Avoid_: Frame template, example page
@@ -47,7 +47,7 @@ A step run inline during solution and flow generation, before anything is shown 
 _Avoid_: Embedded workflow, filter, post-process, hook
 
 **Branch**:
-A path the user may choose after approving a screen or flow. Contributed by shared machinery, the product profile, or a platform pack. Shared branches live in `references/branches/`; product branches are declared by the profile and live in `profile/branches/`; platform branches live in the active pack's `branches/` directory.
+A path the user may choose after approving a screen or flow. Shared branches live in `references/branches/`; product branches are declared by the profile and live in `profile/branches/`.
 _Avoid_: Embedded workflow, mode, plugin, exporter
 
 ### Product knowledge

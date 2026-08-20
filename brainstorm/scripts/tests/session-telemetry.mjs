@@ -20,7 +20,7 @@ const BRAINSTORM_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url))
 const SERVER = path.join(BRAINSTORM_DIR, 'scripts/serve-preview.cjs');
 const GATE = path.join(BRAINSTORM_DIR, 'scripts/run-qa-gate.mjs');
 const REPORTER = path.join(BRAINSTORM_DIR, 'scripts/report-session-telemetry.mjs');
-const PROFILE_FIXTURE = path.join(BRAINSTORM_DIR, 'profile/quality/benchmark/fixtures/clean-inner.html');
+const PROFILE_FIXTURE = path.join(BRAINSTORM_DIR, 'profile/quality/fixtures/clean-inner.html');
 const PROFILE_SCREENS = path.join(BRAINSTORM_DIR, 'profile/screens');
 const CLEAN_SCREEN = fs.existsSync(PROFILE_FIXTURE)
   ? PROFILE_FIXTURE
@@ -65,8 +65,14 @@ function readEvents(stateDir) {
     .map((line) => JSON.parse(line));
 }
 
-async function startServer(projectDir, port) {
-  const child = spawn(process.execPath, [SERVER, '--project-dir', projectDir, '--port', String(port)], {
+async function startServer(projectDir, port, extraArgs = []) {
+  const child = spawn(process.execPath, [
+    SERVER,
+    '--project-dir', projectDir,
+    '--run-label', 'telemetry-test',
+    '--port', String(port),
+    ...extraArgs,
+  ], {
     cwd: BRAINSTORM_DIR,
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -91,14 +97,45 @@ let running;
 
 try {
   const port = await getFreePort();
+  const missingLabel = spawnSync(process.execPath, [SERVER, '--project-dir', projectDir, '--port', String(port)], {
+    cwd: BRAINSTORM_DIR,
+    encoding: 'utf8',
+  });
+  if (missingLabel.status !== 2 || !missingLabel.stderr.includes('--run-label is required')) {
+    fail(`server did not reject a missing run label: ${missingLabel.status} ${missingLabel.stderr}`);
+  }
+  pass('server requires a human-readable run label');
+
   running = await startServer(projectDir, port);
   const { child, info } = running;
   const eventPath = path.join(info.stateDir, EVENT_FILE);
+
+  if (info.runLabel !== 'telemetry-test'
+    || !/^\d{8}-\d{6}-telemetry-test$/.test(info.runName)
+    || info.runDir !== path.join(projectDir, 'wld-design-brainstorms', info.runName)
+    || info.screenDir !== path.join(info.runDir, 'screens')
+    || info.stateDir !== path.join(info.runDir, 'state')) {
+    fail(`unexpected run layout: ${JSON.stringify(info)}`);
+  }
+  if (info.sessionId === info.runName) fail('internal session ID leaked into the human run name');
+  pass('server creates the documented human-readable run layout');
+
+  if (info.profileSource !== 'bundled' || info.profileDir !== path.join(BRAINSTORM_DIR, 'profile')) {
+    fail(`unexpected profile selection: ${info.profileSource} ${info.profileDir}`);
+  }
+  if (info.profileComplete !== true || info.profileIssues.length !== 0) {
+    fail(`unexpected bundled profile diagnostics: ${JSON.stringify(info.profileIssues)}`);
+  }
+  pass('server reports bundled profile selection');
 
   await waitFor(() => fs.existsSync(eventPath), 'telemetry file');
   let events = readEvents(info.stateDir);
   for (const required of [EVENTS.SESSION_STARTED, EVENTS.SERVER_LISTENING]) {
     if (!events.some((event) => event.event === required)) fail(`missing ${required} event`);
+  }
+  const started = events.find((event) => event.event === EVENTS.SESSION_STARTED);
+  if (started.runDir !== info.runDir || started.runName !== info.runName || started.runLabel !== info.runLabel) {
+    fail('session-started event lacks run identity');
   }
   pass('server startup events recorded');
 
@@ -155,11 +192,33 @@ try {
   });
   if (report.status !== 0) fail(`reporter failed: ${report.stdout} ${report.stderr}`);
   const summary = JSON.parse(report.stdout);
+  if (summary.runName !== info.runName || summary.runLabel !== info.runLabel) fail('report lacks human run identity');
   if (summary.solutions.revisions !== 2) fail(`report revisions ${summary.solutions.revisions} != 2`);
   if (summary.solutions.qaRuns !== 1) fail(`report QA runs ${summary.solutions.qaRuns} != 1`);
   if (!Number.isFinite(summary.solutions.prepareAndGenerateMs)) fail('report missing prepareAndGenerateMs');
   if (!Number.isFinite(summary.solutions.qaAfterFirstWriteMs)) fail('report missing qaAfterFirstWriteMs');
   pass('session summary reports stage timings');
+
+  const incompleteProfile = path.join(projectDir, 'wld-design-profile');
+  fs.mkdirSync(path.join(incompleteProfile, 'screens'), { recursive: true });
+  running = await startServer(projectDir, await getFreePort());
+  if (running.info.profileSource !== 'workspace' || running.info.profileComplete !== false) {
+    fail('server did not keep the incomplete workspace profile active');
+  }
+  if (!running.info.profileIssues.some((issue) => issue.includes('PROFILE.md'))) {
+    fail(`server did not report incomplete workspace issues: ${JSON.stringify(running.info.profileIssues)}`);
+  }
+  running.child.kill('SIGTERM');
+  await new Promise((resolve) => running.child.once('exit', resolve));
+  pass('server starts with incomplete workspace profile diagnostics');
+
+  running = await startServer(projectDir, await getFreePort(), ['--use-bundled-profile']);
+  if (running.info.profileSource !== 'bundled' || running.info.profileComplete !== true) {
+    fail('explicit bundled fallback did not bypass the incomplete workspace profile');
+  }
+  running.child.kill('SIGTERM');
+  await new Promise((resolve) => running.child.once('exit', resolve));
+  pass('server supports explicit bundled fallback');
 
   console.log('\ntest-session-telemetry: all checks passed');
 } catch (error) {

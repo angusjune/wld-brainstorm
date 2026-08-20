@@ -1,6 +1,6 @@
 # The product profile owns its design system
 
-`brainstorm/profile/` holds everything specific to one product — tokens, component styles, the screen corpus, product rules, PM knowledge, and the Mini Program component library — and it is the only directory a forking team rewrites. There is one profile slot, not a set of profiles with a pointer: switching product means replacing the contents of `profile/`.
+The selected product profile holds everything specific to one product — tokens, component styles, the screen corpus, product rules, product knowledge, workflow contracts, passes, and deterministic product tools. Switching product means replacing the profile as a unit.
 
 The non-obvious part is that **`profile/design-system/components.css` belongs to the profile**, despite looking shared. Its 48 class names are generic (`btn`, `card`, `page`, `tabbar`), which invites a future maintainer to hoist it into shared machinery. Do not. The names are generic; the design decisions are not:
 
@@ -16,4 +16,4 @@ Exactly one thing in `profile/design-system/components.css` was genuinely shared
 
 Each profile owns its own class prefix. `wld-` is not a global convention to be renamed away; it is WLD's profile-local prefix, and a forking team picks their own. Nothing shared refers to it, so there is no rename to perform.
 
-A profile owns its design system in every technology it targets, so the product implementation template used by the Prototype branch lives in `profile/prototype/` too. The token block in `app.wxss` is generated from `profile/design-system/tokens.css` rather than hand-maintained: the two libraries had already drifted to two different golds (`#ffcd00` vs `#FFD143`) and two different fonts, because the palette had been copied into five places by hand. Generation is what keeps one token source honest.
+The HTML design system has one token source: `profile/design-system/tokens.css`. Components and templates consume those variables instead of maintaining parallel palettes.

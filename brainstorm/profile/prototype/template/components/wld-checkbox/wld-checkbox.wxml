@@ -1,8 +1,0 @@
-<view
-    class="wld-checkbox {{disabled ? 'wld-checkbox--disabled' : ''}}"
-    bind:tap="onTap"
->
-    <view class="wld-checkbox__box {{checked ? 'wld-checkbox__box--checked' : ''}}">
-        <image wx:if="{{checked}}" class="wld-checkbox__tick" src="{{tickSvg}}" />
-    </view>
-</view>
