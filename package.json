@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "screens:dev": "node scripts/dev-screens.cjs",
     "site:dev": "npm --prefix site run dev",
     "site:build": "npm --prefix site run build"
   }
