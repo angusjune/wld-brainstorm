@@ -29,8 +29,9 @@ if (!PROFILE_CONFIG.platform) {
   throw new Error('sync-demo-assets: no `platform:` in profile/PROFILE.md frontmatter')
 }
 const PLATFORM = path.join(SKILL, 'platforms', PROFILE_CONFIG.platform)
-const BEYBLADE_SRC = path.join(SKILL, 'tools/beyblade/assets')
-const CANNED = path.join(HERE, '../src/beyblade-demo')
+// The beyblade arena is site-owned: the skill's copy was removed with the tool
+// itself, so its source lives here alongside the canned battle data.
+const BEYBLADE_SRC = path.join(HERE, '../src/beyblade-demo')
 const OUT = path.join(HERE, '../public/demo')
 
 function mustExist(p) {
@@ -87,6 +88,10 @@ export function expandChrome(html, chromeMarkup) {
 export function composeScreenDocument(fragment, title, chromeMarkup) {
   const body = expandChrome(fragment, chromeMarkup)
     .replace(/src="\/assets\//g, 'src="assets/')
+    // The profile's icons live in design-system/assets/; the static site keeps
+    // them under assets/icons/ so they stay separate from the stylesheets that
+    // share the flattened assets/ dir. Must precede the general rule below.
+    .replace(/src="\/profile\/design-system\/assets\//g, 'src="assets/icons/')
     .replace(/src="\/profile\/design-system\//g, 'src="assets/')
     .replace(/src="\/profile\//g, 'src="assets/')
   return `<!DOCTYPE html>
@@ -137,7 +142,7 @@ function sync() {
     fs.copyFileSync(mustExist(path.join(DESIGN_SYSTEM, css)), path.join(OUT, 'assets', css))
   }
   fs.writeFileSync(path.join(OUT, 'assets/chrome.css'), chrome.css)
-  fs.cpSync(mustExist(path.join(DESIGN_SYSTEM, 'icons')), path.join(OUT, 'assets/icons'), { recursive: true })
+  fs.cpSync(mustExist(path.join(DESIGN_SYSTEM, 'assets')), path.join(OUT, 'assets/icons'), { recursive: true })
 
   const screensDir = mustExist(path.join(PROFILE, 'screens'))
   const screenFiles = fs.readdirSync(screensDir).filter((f) => f.endsWith('.html'))
@@ -150,17 +155,11 @@ function sync() {
     fs.writeFileSync(path.join(OUT, file), composeScreenDocument(fragment, title, chrome.markup))
   }
 
+  // Arena sources and canned battle data ship together in one directory.
   fs.mkdirSync(path.join(OUT, 'beyblade'), { recursive: true })
-  const arenaHtml = fs.readFileSync(mustExist(path.join(BEYBLADE_SRC, 'arena.html')), 'utf8')
-  fs.writeFileSync(path.join(OUT, 'beyblade/arena.html'), rewriteArenaHtml(arenaHtml))
-  for (const file of ['arena.css', 'engine.js']) {
-    fs.copyFileSync(mustExist(path.join(BEYBLADE_SRC, file)), path.join(OUT, 'beyblade', file))
-  }
-
-  // Canned battle data is added in a later task; copy when present.
-  if (fs.existsSync(CANNED)) {
-    fs.cpSync(CANNED, path.join(OUT, 'beyblade'), { recursive: true })
-  }
+  fs.cpSync(mustExist(BEYBLADE_SRC), path.join(OUT, 'beyblade'), { recursive: true })
+  const arenaOut = mustExist(path.join(OUT, 'beyblade/arena.html'))
+  fs.writeFileSync(arenaOut, rewriteArenaHtml(fs.readFileSync(arenaOut, 'utf8')))
 
   console.log(`sync-demo-assets: composed ${screenFiles.length} screens → ${OUT}`)
 }
