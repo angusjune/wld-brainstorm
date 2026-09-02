@@ -4,7 +4,7 @@ const { command } = Astro.props
 ---
 <div class="copy-command">
   <code>{command}</code>
-  <!-- <button type="button" data-command={command}>复制</button> -->
+  <button type="button" data-command={command} aria-label={`复制命令：${command}`}>复制</button>
 </div>
 
 <script>
@@ -25,7 +25,7 @@ const { command } = Astro.props
 <style>
   .copy-command {
     display: flex;
-    width: fit-content;
+    width: min(100%, 720px);
     margin: 8px 0;
     align-items: center;
     gap: 12px;
@@ -36,7 +36,12 @@ const { command } = Astro.props
     backdrop-filter: blur(8px);
   }
   .copy-command code { font-size: 14px; color: inherit; }
+  .copy-command code {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
   .copy-command button {
+    flex: 0 0 auto;
     border: 0;
     border-radius: 8px;
     padding: 6px 14px;

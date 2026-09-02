@@ -1,6 +1,6 @@
 # The product profile is grouped by responsibility
 
-We organize `brainstorm/profile/` by the responsibility and lifecycle of its contents:
+We organize `skills/brainstorm/profile/` by the responsibility and lifecycle of its contents:
 
 - `screens/` is the production screen corpus and stays at the profile root because it is the primary authoring input and the most frequently read directory.
 - `design-system/` owns tokens, reusable component styles, and icons.

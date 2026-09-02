@@ -1,2 +1,1 @@
-# Claude Code Instructions
-@AGENTS.md
+AGENTS.md

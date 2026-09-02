@@ -1,0 +1,7 @@
+interface:
+  display_name: "Setup profile 设置产品档案"
+  short_description: "初始化、修改、新增页面模板、设计组件、design token 等文件"
+  default_prompt: "$setup-profile 在当前工作区初始化或编辑产品档案。"
+  icon_small: "../../assets/icon-setup-profile.svg"
+  icon_large: "../../assets/icon-setup-profile.svg"
+  brand_color: "#456CE6"

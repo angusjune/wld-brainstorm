@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "wld-brainstorm",
+  "metadata": {
+    "description": "微粒贷脑暴工具箱"
+  },
+  "owner": {
+    "name": "anguszhu"
+  },
+  "plugins": [
+    {
+      "name": "wld-brainstorm",
+      "source": "./",
+      "version": "1.2.0",
+      "category": "design"
+    }
+  ]
+}

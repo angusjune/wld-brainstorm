@@ -118,7 +118,6 @@ function topTarget(n) { return clamp(TOP_TARGET_BASE - (n - 2) * 4.5, 60, 88); }
 function buildTop(img, structure, color, count) {
   const m = buildMaster(img);
   const cols = m.cols, rows = m.rows;
-  const solid = (r, c) => r >= 0 && c >= 0 && r < rows && c < cols; // full frame: every tile solid
 
   // nodes (all tiles), mass biased toward content-dense tiles → natural imbalance.
   const nodes = [], nodeAt = {};
@@ -363,7 +362,7 @@ function applyFracture(top, bodies, stress, fx) {
   for (const k in stress) { const i = +k, s = stress[k]; if (s <= 0) continue;
     const nk = (top.neckOf && top.neckOf[i] != null) ? top.neckOf[i] : i;
     if (s > (neckStress[nk] || 0)) neckStress[nk] = s; }
-  const result = [], bs = top.stats.bondStrength; let anyBreak = false;
+  const result = [], bs = top.stats.bondStrength;
   for (const b of bodies) {
     const nodeSet = new Set(b.nodeIdxs); let broke = false;
     for (const k in neckStress) { const nk = +k; if (!nodeSet.has(nk)) continue;
@@ -381,7 +380,6 @@ function applyFracture(top, bodies, stress, fx) {
       }
     }
     if (!broke) { result.push(b); continue; }
-    anyBreak = true;
     const idxArr = b.nodeIdxs, pos = {}; idxArr.forEach((v, k) => pos[v] = k);
     const parent = idxArr.map((_, k) => k);
     const find = x => { while (parent[x] !== x) { parent[x] = parent[parent[x]]; x = parent[x]; } return x; };
@@ -492,7 +490,7 @@ async function start(config) {
   if (tops.length < 2) return;
   tops.forEach((t, i) => t.owner = i);
 
-  buildHUD(tops, config);
+  buildHUD(tops);
   SIM = { tops, fx: [], shake: 0, finished: false, winner: null, raf: 0, wreck: [] };
   setupRound();
   // debug fast-forward: #ff<N> runs N sim ticks synchronously before rendering (for headless testing).
@@ -599,7 +597,7 @@ function render() {
 
 /* ---------- HUD ---------- */
 const STAT_DEFS = [['weight', '重量'], ['attack', '攻击'], ['defense', '防御'], ['stability', '稳定'], ['durability', '耐久']];
-function buildHUD(tops, config) {
+function buildHUD(tops) {
   const host = document.getElementById('bb-hud'); host.innerHTML = ''; HUD = {};
   for (const t of tops) {
     const card = document.createElement('div'); card.className = 'bb-card';

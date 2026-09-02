@@ -1,6 +1,6 @@
 # Fork-and-edit plus one fixed workspace seam
 
-`brainstorm/` remains a self-contained publishable skill directory. A team may replace its bundled `profile/`, while a project may instead keep custom product material at the one fixed runtime seam: `<projectDir>/wld-design-profile/`.
+`skills/brainstorm/` remains a self-contained publishable skill directory. A team may replace its bundled `profile/`, while a project may instead keep custom product material at the one fixed runtime seam: `<projectDir>/wld-design-profile/`.
 
 This is not a multi-profile configuration system. If the workspace directory exists, it is selected even when incomplete and its diagnostics are returned; otherwise runtime uses the bundled `profile/`. An explicit `--use-bundled-profile` bypasses the workspace directory for a run. Runtime never merges the two profiles.
 

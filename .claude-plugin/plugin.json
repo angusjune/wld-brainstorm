@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "wld-brainstorm",
+  "displayName": "WLD Brainstorm",
+  "version": "1.2.0",
+  "description": "微粒贷头脑风暴工具箱",
+  "author": {
+    "name": "anguszhu"
+  },
+  "homepage": "https://github.com/angusjune/wld-brainstorm",
+  "repository": "https://github.com/angusjune/wld-brainstorm",
+  "license": "MIT",
+  "skills": [
+    "./skills/brainstorm",
+    "./skills/setup-profile",
+    "./skills/wtf"
+  ]
+}

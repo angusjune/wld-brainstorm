@@ -12,39 +12,58 @@ const steps = [
   {
     marker: glyphScene('clarify'),
     title: '澄清需求',
-    body: '一次问清核心动作、页面数量、要展示的数据。已经说明白的就跳过，回复「默认」即可开始。',
+    body: '围绕核心动作、页面状态、业务数据与非目标逐层确认，直到设计树没有被默默假设的分支。',
   },
   {
     marker: glyphScene('align'),
-    title: '对齐生产模板',
-    body: '读取 assets/screens/ 的生产环境 HTML 模板与 PROFILE.md 规范，再按页面提取关联的业务规律与易错点，确保视觉和逻辑都不偏离微粒贷。',
+    title: '选择产品档案',
+    body: '优先读取工作区 wld-design-profile；未创建时使用插件内置档案。再从 profile/screens/ 选择最接近的生产模板。',
   },
   {
     marker: glyphScene('three'),
     title: '生成 3 个方案',
-    body: '依据需求给出 3 个不同方向，自动注入微信顶栏与手机外壳。交付前内部先跑一遍 Simplify 精简与 Fix Details 细节校验。',
+    body: '从同一需求生成三个真正不同的方向，自动装配页面外壳、平台顶栏和手机预览，不靠换颜色制造差异。',
   },
   {
     marker: glyphScene('finalize'),
-    title: '定稿',
-    body: '选定方向后展开完整流程页面，同样经过精简与校验，浏览器里通过 SSE 热更新实时预览。',
+    title: '校验并定稿',
+    body: '确定性装配、规则检查、浏览器渲染和截图校验全部通过后再展示；选中方向可继续展开完整流程。',
   },
   {
     marker: glyphScene('branch'),
-    title: '延展到四个分支',
-    body: '定稿后无缝接续下一段工作流 —— 不需要切换到别的技能。',
+    title: '继续反馈或推送 Figma',
+    body: '直接在预览页点选元素写批注，继续修改同一方案；定稿后也可以把页面推送成可编辑的 Figma frame。',
   },
 ]
 
 const branches = [
-  { tag: 'A', name: '反馈迭代', desc: '在终端里给反馈，改同一份 HTML，浏览器热更新。' },
+  { tag: 'A', name: '反馈迭代', desc: '输入反馈或在预览页直接点元素批注；同一 run 原地更新并热刷新。' },
   { tag: 'B', name: '推送 Figma', desc: '把定稿页面画成本地 Figma 画布里可编辑的 frame。' },
-  { tag: 'C', name: '小程序 Demo', desc: '从定稿页面生成微信小程序 Demo，手机里能点。' },
-  { tag: 'D', name: '爆旋陀螺 Battle', desc: '把方案变成爆旋陀螺进行混战。' },
+]
+
+const skills = [
+  {
+    command: '$setup-profile',
+    label: '01 · 产品档案',
+    title: '把设计上下文放进工作区',
+    body: '初始化可编辑的产品档案，或根据 Figma、截图、HTML 和文字说明添加生产页面模板、Token 与组件。',
+  },
+  {
+    command: '$brainstorm',
+    label: '02 · 方案探索',
+    title: '从真实模板出发做设计',
+    body: '澄清需求、生成三个方向、在浏览器比较和批注，选定后继续完成页面与流程。',
+  },
+  {
+    command: '$wtf',
+    label: '03 · 重新说明',
+    title: '让 AI 把话说清楚',
+    body: '上一段没有听懂时直接调用，用更短、更具体的语言重新说明当前结论与下一步。',
+  },
 ]
 
 // Real entries from the bundled product-knowledge snapshot
-// (brainstorm/profile/knowledge/memory-cache/common-pitfalls.yaml) — not invented.
+// (skills/brainstorm/profile/knowledge/memory-cache/common-pitfalls.yaml) — not invented.
 const pitfalls = [
   {
     id: 'PIT-001',
@@ -73,19 +92,32 @@ const pitfalls = [
 ]
 ---
 <Base>
+  <header class="site-nav">
+    <div class="container site-nav-inner">
+      <a class="site-brand" href="#hero">WLD DESIGN</a>
+      <nav aria-label="页面导航">
+        <a href="#skills">三个 Skill</a>
+        <a href="#proof">产出</a>
+        <a href="#workflow">工作流</a>
+        <a href="#start">安装</a>
+      </nav>
+      <span class="version">v1.1.1</span>
+    </div>
+  </header>
   <main>
     <!-- 1. Hero -->
     <section id="hero" class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <p class="eyebrow">微粒贷设计 Skill</p>
-          <h1 class="hero-title">/Brainstorm</h1>
+          <p class="eyebrow">WLD Design 插件 · v1.1.1</p>
+          <h1 class="hero-title">Design with<br /><span>/Brainstorm</span></h1>
           <p class="hero-lead">
-            头脑风暴设计 Skill。说出想法，它先澄清需求、对齐生产模板，
-            生成高质量的设计方案。
+            一次安装，获得产品档案、设计脑暴与清晰表达三个 Skill。
+            从真实生产模板出发，把一句想法变成可比较、可批注、可验证的界面。
           </p>
           <div class="hero-actions">
-            <!-- <a class="btn btn-gold" href="#start">开始使用</a> -->
+            <a class="btn btn-gold" href="#start">安装插件</a>
+            <a class="btn btn-line" href="#proof">查看真实产出</a>
           </div>
         </div>
         <div class="hero-art">
@@ -94,31 +126,35 @@ const pitfalls = [
       </div>
     </section>
 
-    <!-- 上手 -->
-    <section id="start">
+    <!-- Skills -->
+    <section id="skills">
       <div class="container">
-        <p class="eyebrow">Get Started</p>
-        <h2 class="section-title">安装使用</h2>
-        <p class="section-sub">一个自包含目录，复制即用，不依赖任何外部技能。</p>
+        <p class="eyebrow">三个 Skill</p>
+        <h2 class="section-title">三个入口，一套设计上下文</h2>
+        <p class="section-sub">产品档案只维护一份；探索、定稿与解释都围绕同一份上下文工作。</p>
 
-        <ol class="start-steps">
-          <li>
-            把 <code>brainstorm/</code> 复制到你的 agent 技能目录，例如
-            <code>.claude/skills/</code>。
-          </li>
-          <li>在对话里用 <code>/brainstorm</code> 开始，直接描述你要设计的界面。</li>
-        </ol>
+        <div class="skills-grid">
+          {skills.map((skill) => (
+            <article class="skill-card">
+              <p class="skill-label">{skill.label}</p>
+              <code>{skill.command}</code>
+              <h3>{skill.title}</h3>
+              <p>{skill.body}</p>
+            </article>
+          ))}
+        </div>
 
-        <p class="start-hint">试试这样说：</p>
-        <CopyCommand command="/brainstorm 帮我设计一个微粒贷的新用户引导页，首次打开时推荐借款额度" />
-        <CopyCommand command="/brainstorm 基于这个设计多出几个不同的方案：https://figma.com/design/xxxx" />
+        <p class="start-hint">第一次使用，先建立工作区产品档案：</p>
+        <CopyCommand command="$setup-profile" />
+        <p class="start-hint prompt-hint">然后直接描述要探索的界面：</p>
+        <CopyCommand command="$brainstorm 强化个人中心的限时降价优惠样式" />
       </div>
     </section>
 
     <!-- 2. 真实会话产出 -->
     <section id="proof">
       <div class="container">
-        <p class="eyebrow">Proof</p>
+        <p class="eyebrow">真实产出</p>
         <h2 class="section-title">真实会话产出</h2>
         <p class="section-sub">
           这些不是概念图，而是一次真实运行会话里生成的三方案对比 —— 直接在浏览器里翻看、比较、挑选。
@@ -157,10 +193,10 @@ const pitfalls = [
     <!-- 3. 工作流 -->
     <section id="workflow">
       <div class="container">
-        <p class="eyebrow">Workflow</p>
+        <p class="eyebrow">工作流</p>
         <h2 class="section-title">工作流</h2>
         <p class="section-sub">
-          澄清 → 对齐生产模板 → 3 个方案（自动精简 + 细节校验）→ 定稿 → 四个分支。
+          澄清 → 选择产品档案与生产模板 → 3 个方案 → 确定性校验 → 定稿 → 反馈或推送 Figma。
         </p>
 
         <ol class="steps">
@@ -190,10 +226,10 @@ const pitfalls = [
     <!-- 4. 它懂微粒贷 -->
     <section id="knowledge">
       <div class="container">
-        <p class="eyebrow">Product Knowledge</p>
+        <p class="eyebrow">产品知识</p>
         <h2 class="section-title">内置产品规则</h2>
         <p class="section-sub">
-          Skill 带着内置产品知识快照跑：状态机、产品规律、历史易错点。
+          Brainstorm 带着当前产品档案运行：生产模板、设计 Token、组件、产品规律与历史易错点。
           下面是快照里真实记录的易错点 —— 每一条都来自过往被纠正过的设计。
         </p>
       </div>
@@ -214,10 +250,44 @@ const pitfalls = [
       </div>
     </section>
 
+    <!-- 安装 -->
+    <section id="start">
+      <div class="container">
+        <p class="eyebrow">开始使用</p>
+        <h2 class="section-title">安装 WLD Design 插件</h2>
+        <p class="section-sub">从插件市场安装后，三个 Skill 会一起出现；不再复制单独的 Skill 目录。</p>
+
+        <div class="install-grid">
+          <article class="install-card">
+            <p class="install-label">Codex Desktop</p>
+            <h3>从 Personal Marketplace 安装</h3>
+            <ol class="start-steps">
+              <li>打开侧边栏 Plugins，点击 Add → Add a marketplace。</li>
+              <li>输入 <code>angusjune/wld-brainstorm</code>，回到 Personal 标签安装插件。</li>
+            </ol>
+          </article>
+
+          <article class="install-card">
+            <p class="install-label">Codex CLI</p>
+            <h3>添加市场，再进入插件面板</h3>
+            <CopyCommand command="codex plugin marketplace add angusjune/wld-brainstorm" />
+            <CopyCommand command="/plugins" />
+          </article>
+
+          <article class="install-card">
+            <p class="install-label">Claude Code</p>
+            <h3>添加市场并重新加载</h3>
+            <CopyCommand command="/plugin marketplace add angusjune/wld-brainstorm" />
+            <CopyCommand command="/reload-plugins" />
+          </article>
+        </div>
+      </div>
+    </section>
+
     <!-- 7. 彩蛋 -->
     <section id="egg" class="beyblade">
       <div class="container">
-        <p class="eyebrow">Easter Egg</p>
+        <p class="eyebrow">彩蛋</p>
         <h2 class="section-title">不确定用哪个方案？</h2>
         <p class="section-sub">
           把界面变成爆旋陀螺打一场，哪个赢了用哪个。
@@ -240,13 +310,63 @@ const pitfalls = [
       })
     </script>
   </main>
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>WLD Design 插件 · v1.1.1</span>
+      <a href="https://github.com/angusjune/wld-brainstorm">GitHub</a>
+    </div>
+  </footer>
 </Base>
 
 <style>
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    border-bottom: 1px solid var(--line-soft);
+    background: rgba(13, 16, 20, 0.88);
+    backdrop-filter: blur(16px);
+  }
+  .site-nav-inner {
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+  .site-brand {
+    color: var(--text);
+    font-family: var(--font-display);
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-decoration: none;
+  }
+  .site-nav nav {
+    display: flex;
+    gap: 24px;
+    margin-left: auto;
+  }
+  .site-nav nav a {
+    color: var(--text-2);
+    font-size: 13px;
+    text-decoration: none;
+  }
+  .site-nav nav a:hover {
+    color: var(--text);
+  }
+  .version {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px 10px;
+    color: var(--text-3);
+    font-family: var(--font-display);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+
   /* 1. Hero */
   .hero {
     border-top: 0;
-    padding: clamp(88px, 14vh, 160px) 0 120px;
+    padding: clamp(72px, 12vh, 140px) 0 120px;
   }
   .hero-grid {
     display: grid;
@@ -261,6 +381,9 @@ const pitfalls = [
     line-height: 1.04;
     letter-spacing: 0.01em;
     margin-bottom: 28px;
+  }
+  .hero-title span {
+    color: var(--gold);
   }
   .hero-lead {
     font-size: 17px;
@@ -307,6 +430,51 @@ const pitfalls = [
   }
   .btn-line:hover {
     border-color: var(--text-2);
+  }
+
+  /* Skills */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+  .skill-card {
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.025), transparent 60%);
+  }
+  .skill-label,
+  .install-label {
+    color: var(--text-3);
+    font-family: var(--font-display);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .skill-card code {
+    display: inline-block;
+    margin: 48px 0 20px;
+    color: var(--gold);
+    font-size: 18px;
+  }
+  .skill-card h3,
+  .install-card h3 {
+    margin-bottom: 12px;
+    font-size: 18px;
+    line-height: 1.4;
+  }
+  .skill-card > p:last-child {
+    color: var(--text-2);
+    font-size: 14px;
+  }
+  .prompt-hint {
+    margin-top: 28px;
   }
 
   /* 2. Proof — screenshots */
@@ -490,14 +658,32 @@ const pitfalls = [
     }
   }
 
-  /* 6. Get started */
+  /* Get started */
+  .install-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .install-card {
+    min-width: 0;
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+  }
+  .install-card h3 {
+    margin-top: 32px;
+    min-height: 52px;
+  }
+  .install-card :global(.copy-command) {
+    width: 100%;
+  }
   .start-steps {
     counter-reset: step;
     list-style: none;
     display: grid;
     gap: 14px;
     margin: 0 0 40px;
-    max-width: 640px;
+    max-width: 720px;
   }
   .start-steps li {
     position: relative;
@@ -536,6 +722,12 @@ const pitfalls = [
     margin-bottom: 12px;
   }
 
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+  }
+
   /* 7. Beyblade */
   .beyblade .arena-slot {
     background: #05090d;
@@ -566,6 +758,12 @@ const pitfalls = [
   }
 
   @media (max-width: 820px) {
+    .site-nav nav {
+      display: none;
+    }
+    .version {
+      margin-left: auto;
+    }
     .hero-grid {
       grid-template-columns: 1fr;
       gap: 40px;
@@ -575,6 +773,51 @@ const pitfalls = [
     }
     .hero-art :global(.hero-morph) {
       max-width: 260px;
+    }
+    .skills-grid,
+    .install-grid {
+      grid-template-columns: 1fr;
+    }
+    .skill-card {
+      min-height: 0;
+    }
+    .skill-card code {
+      margin-top: 32px;
+    }
+    .install-card h3 {
+      min-height: 0;
+    }
+    .beyblade .arena-slot {
+      min-height: 420px;
+    }
+    .beyblade .arena-slot :global(iframe) {
+      height: 600px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .hero-title {
+      font-size: clamp(38px, 12vw, 58px);
+    }
+    .hero-actions {
+      align-items: stretch;
+      flex-direction: column;
+    }
+    .btn {
+      text-align: center;
+    }
+    .step {
+      gap: 16px;
+    }
+    .step :global(.step-marker) {
+      width: 48px;
+      height: 38px;
+    }
+    .pit-card {
+      flex-basis: min(320px, calc(100vw - 48px));
+    }
+    .footer-inner {
+      flex-direction: column;
     }
   }
 </style>

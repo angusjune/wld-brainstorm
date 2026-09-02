@@ -1,13 +1,13 @@
 # Page scaffold and preview frame are separate
 
 Every generated screen is assembled from one canonical HTML scaffold at
-`brainstorm/assets/page-template.html`. The scaffold owns the document
+`skills/brainstorm/assets/page-template.html`. The scaffold owns the document
 structure, product design-system links, frame containers, and insertion markers
 for screen content and local styles. Only `scripts/workflow.mjs assemble` reads
 and fills this file; authoring workers edit prepared fragments rather than the scaffold or assembled output.
 
 Preview-only presentation styles live separately at
-`brainstorm/assets/frame.css`. The preview server links that stylesheet into
+`skills/brainstorm/assets/frame.css`. The preview server links that stylesheet into
 served pages together with its other runtime helpers. Generated files do not
 copy or link the stylesheet themselves.
 

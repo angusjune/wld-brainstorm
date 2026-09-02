@@ -1,0 +1,25 @@
+{
+  "name": "wld-brainstorm",
+  "version": "1.2.0",
+  "description": "微粒贷脑暴工具箱",
+  "author": {
+    "name": "anguszhu"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "WeBank Design",
+    "shortDescription": "生成并迭代微粒贷脑暴方案",
+    "longDescription": "基于内置或工作区的微粒贷产品档案、现有界面或文字需求，生成多个差异化的移动端 UI 方案，通过浏览器实时预览进行比较和迭代。",
+    "developerName": "anguszhu",
+    "category": "Design",
+    "capabilities": ["Read", "Write"],
+    "defaultPrompt": [
+      "在个人中心新增快捷借钱功能",
+      "基于这个设计多出几个不同的方案：https://figma.com/design/xxxx",
+      "使用 $setup-profile 将内置产品档案复制到当前工作区，并根据我提供的设计添加页面模板"
+    ],
+    "brandColor": "#456CE6",
+    "composerIcon": "./assets/composer-icon.png",
+    "logo": "./assets/logo.png"
+  }
+}

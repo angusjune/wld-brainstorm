@@ -1,0 +1,9 @@
+interface:
+  display_name: "What the F*ck"
+  short_description: "用简明易懂的语言重述上一条难以理解的内容，并补充必要上下文"
+  default_prompt: "$wtf"
+  icon_small: "../../assets/icon-wtf.svg"
+  icon_large: "../../assets/icon-wtf.svg"
+  brand_color: "#456CE6"
+policy:
+  allow_implicit_invocation: false

@@ -14,7 +14,7 @@
  */
 
 const path = require('path');
-const { escapeHtml, expandChrome } = require('../../brainstorm/scripts/lib/chrome.cjs');
+const { escapeHtml, expandChrome } = require('../../skills/brainstorm/scripts/lib/chrome.cjs');
 
 const LIVE_RELOAD_TAGS = `
 <script>window.__BRAINSTORM_SSE_URL = '/api/events';</script>

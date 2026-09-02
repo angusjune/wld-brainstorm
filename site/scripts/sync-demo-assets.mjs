@@ -1,7 +1,7 @@
 /*
  * Composes the brainstorm skill's canonical demo assets into site/public/demo/.
- * READ-ONLY toward brainstorm/ — mirrors what the brainstorm
- * server (brainstorm/scripts/serve-preview.cjs) does at request time.
+ * READ-ONLY toward skills/brainstorm/ — mirrors what the brainstorm
+ * server (skills/brainstorm/scripts/serve-preview.cjs) does at request time.
  * public/demo is gitignored; this runs as predev/prebuild.
  */
 import fs from 'node:fs'
@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url'
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const REPO = path.resolve(HERE, '../..')
-const SKILL = path.join(REPO, 'brainstorm')
+const SKILL = path.join(REPO, 'skills', 'brainstorm')
 const PROFILE = path.join(SKILL, 'profile')
 const DESIGN_SYSTEM = path.join(PROFILE, 'design-system')
 // Resolve the platform pack the way scripts/serve-preview.cjs does, from the frontmatter of
@@ -92,6 +92,7 @@ export function composeScreenDocument(fragment, title, chromeMarkup) {
     // them under assets/icons/ so they stay separate from the stylesheets that
     // share the flattened assets/ dir. Must precede the general rule below.
     .replace(/src="\/profile\/design-system\/assets\//g, 'src="assets/icons/')
+    .replace(/url\((["']?)\/profile\/design-system\/assets\//g, 'url($1assets/icons/')
     .replace(/src="\/profile\/design-system\//g, 'src="assets/')
     .replace(/src="\/profile\//g, 'src="assets/')
   return `<!DOCTYPE html>

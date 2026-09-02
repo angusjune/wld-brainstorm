@@ -11,13 +11,13 @@ The way another team adopts this skill — copying the publishable skill directo
 _Avoid_: Install, onboard, configure, tenant, instance
 
 **Publishable Skill Directory**:
-A single self-contained skill directory with a root `SKILL.md` and every runtime file it references, suitable to upload on its own. For this bundle, `brainstorm/` is the publishable skill directory.
+A single self-contained skill directory with a root `SKILL.md` and every runtime file it references, suitable to upload on its own. For this plugin, `skills/brainstorm/` is the publishable Brainstorm skill directory.
 _Avoid_: Wrapper skill, plugin package, provider package
 
 ### Layers
 
 **Product Profile**:
-The single selected directory holding everything specific to one product — its tokens, component styles, screen corpus, product rules, and bundled knowledge. Runtime uses the fixed project-root `wld-design-profile/` seam when it exists, otherwise the bundled `brainstorm/profile/`; one run never mixes them.
+The single selected directory holding everything specific to one product — its tokens, component styles, screen corpus, product rules, and bundled knowledge. Runtime uses the fixed project-root `wld-design-profile/` seam when it exists, otherwise the bundled `skills/brainstorm/profile/`; one run never mixes them.
 _Avoid_: Theme, tenant, config, plugin, preset, brand pack
 
 **Platform Pack**:
@@ -54,6 +54,7 @@ _Avoid_: Embedded workflow, mode, plugin, exporter
 
 **Screen Corpus**:
 The production screen templates a profile ships. It is the ground truth the model copies from rather than inventing against, and it is what most determines output quality.
+Every authoring worker receives the active corpus as read-only design evidence; stage-local authorities decide which facts and invariants apply to the current task.
 _Avoid_: Examples, samples, fixtures, mockups
 
 **Bundled Product Knowledge Snapshot**:

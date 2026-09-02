@@ -17,7 +17,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
-const { loadChrome, readProfileConfig } = require('../brainstorm/scripts/lib/chrome.cjs');
+const { loadChrome, readProfileConfig } = require('../skills/brainstorm/scripts/lib/chrome.cjs');
 const { renderScreenDocument, renderGalleryDocument } = require('./lib/screen-render.cjs');
 
 const args = process.argv.slice(2);
@@ -29,7 +29,7 @@ function getArg(name, fallback) {
 const PORT = parseInt(getArg('port', '3311'), 10);
 const HOST = getArg('host', '127.0.0.1');
 
-const SKILL_DIR = path.resolve(__dirname, '..', 'brainstorm');
+const SKILL_DIR = path.resolve(__dirname, '..', 'skills', 'brainstorm');
 const ASSETS_DIR = path.join(SKILL_DIR, 'assets');
 const PROFILE_DIR = path.join(SKILL_DIR, 'profile');
 const SCREEN_DIR = path.join(PROFILE_DIR, 'screens');

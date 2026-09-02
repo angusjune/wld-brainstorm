@@ -1,0 +1,11 @@
+{
+  "clean-inner.html": [],
+  "bg-mismatch.html": ["bg-mismatch"],
+  "urgency-copy.html": ["urgency-copy"],
+  "white-on-gold.html": ["white-on-gold"],
+  "square-button.html": ["square-button"],
+  "multi-gold-cta.html": ["multi-gold-cta"],
+  "thick-border.html": ["thick-border"],
+  "amount-weight.html": ["amount-weight"],
+  "thousands-separator.html": ["thousands-separator"]
+}

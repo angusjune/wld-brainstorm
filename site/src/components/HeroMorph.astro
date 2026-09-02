@@ -16,7 +16,7 @@ const svg = heroMorphScene()
   set:html={svg}
 />
 
-<script define:vars={{ sequence: HERO_SEQUENCE, letterCells: HERO_LETTER_CELLS }}>
+<script is:inline define:vars={{ sequence: HERO_SEQUENCE, letterCells: HERO_LETTER_CELLS }}>
   const host = document.getElementById('hero-morph')
   const reduced = matchMedia('(prefers-reduced-motion: reduce)')
   if (host && !reduced.matches) {

@@ -41,6 +41,16 @@ test('composeScreenDocument rewrites root-absolute icon paths to relative', () =
   assert.doesNotMatch(doc, /src="\/profile\//)
 })
 
+test('composeScreenDocument rewrites root-absolute CSS asset URLs to relative', () => {
+  const doc = composeScreenDocument(
+    '<div class="icon"></div><style>.icon{background:url(/profile/design-system/assets/icn-feature-a.svg)}</style>',
+    'x',
+    chromeMarkup,
+  )
+  assert.match(doc, /url\(assets\/icons\/icn-feature-a\.svg\)/)
+  assert.doesNotMatch(doc, /url\(\/profile\//)
+})
+
 test('rewriteArenaHtml makes all three root-absolute refs relative', () => {
   const html = `<link rel="stylesheet" href="/arena.css"><script src="/engine.js"></script>
     fetch('/battle-config.json', { cache: 'no-store' })`

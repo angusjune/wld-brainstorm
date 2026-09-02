@@ -1,6 +1,6 @@
 # Platform packs, and why an unused iOS pack ships
 
-A platform pack (`brainstorm/platforms/<name>/`) owns the preview furniture that belongs to a surface rather than to a product: one `chrome.html` and its variant vocabulary. It is a third layer between shared method and the product profile.
+A platform pack (`skills/brainstorm/platforms/<name>/`) owns the preview furniture that belongs to a surface rather than to a product: one `chrome.html` and its variant vocabulary. It is a third layer between shared method and the product profile.
 
 Platform packs do not contribute product code, passes, or workflow branches. Step 6 branches are shared or declared by the selected product profile.
 

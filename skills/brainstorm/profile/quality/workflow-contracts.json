@@ -1,0 +1,231 @@
+{
+  "version": 3,
+  "templates": {
+    "个人中心.html": {
+      "authorityFiles": [],
+      "requiredTextPerScreen": [
+        "借钱须知",
+        "实际可借以当次借款审批为准"
+      ],
+      "requiredAssetsPerScreen": [
+        "tab-icon-home-filled.svg",
+        "tab-icon-me.svg"
+      ],
+      "brandIdentitySelectors": [
+        ".wld-rate-bar",
+        ".wld-btn-circle"
+      ],
+      "diversitySelectors": []
+    },
+    "个人中心-有借款.html": {
+      "authorityFiles": [],
+      "requiredTextPerScreen": [
+        "借钱须知",
+        "实际可借以当次借款审批为准",
+        "提前还清借款"
+      ],
+      "requiredAssetsPerScreen": [
+        "tab-icon-home-filled.svg",
+        "tab-icon-me.svg"
+      ],
+      "brandIdentitySelectors": [
+        ".wld-rate-bar",
+        ".wld-btn-circle"
+      ],
+      "diversitySelectors": [
+        ".wld-home-credit",
+        ".wld-loan-card"
+      ]
+    },
+    "个人中心-双offer.html": {
+      "authorityFiles": [],
+      "requiredTextPerScreen": [
+        "借钱须知",
+        "实际可借以当次借款审批为准",
+        "优惠年利率"
+      ],
+      "requiredAssetsPerScreen": [
+        "tab-icon-home-filled.svg",
+        "tab-icon-me.svg"
+      ],
+      "brandIdentitySelectors": [
+        ".wld-rate-bar"
+      ],
+      "diversitySelectors": [
+        ".wld-home-credit",
+        ".wld-dual-offers"
+      ]
+    },
+    "个人中心-单offer.html": {
+      "authorityFiles": [],
+      "requiredTextPerScreen": [
+        "借钱须知",
+        "实际可借以当次借款审批为准"
+      ],
+      "requiredAssetsPerScreen": [
+        "tab-icon-home-filled.svg",
+        "tab-icon-me.svg"
+      ],
+      "brandIdentitySelectors": [
+        ".wld-rate-bar",
+        ".wld-btn-circle"
+      ],
+      "diversitySelectors": []
+    },
+    "输入金额.html": {
+      "authorityFiles": [
+        "knowledge/README.md",
+        "knowledge/memory-cache/product-patterns.yaml",
+        "knowledge/memory-cache/common-pitfalls.yaml"
+      ],
+      "requiredTextPerScreen": [
+        "协议相关",
+        "按日计息，次日起可提前还，免违约金",
+        "下一步"
+      ],
+      "requiredAssetsPerScreen": [
+        "logo-icbc.svg"
+      ],
+      "brandIdentitySelectors": [
+        ".wld-btn-primary"
+      ],
+      "diversitySelectors": [
+        ".wld-loan-amount",
+        ".wld-promo-row",
+        ".wld-loan-options"
+      ]
+    },
+    "提前还清.html": {
+      "authorityFiles": [],
+      "requiredTextPerScreen": [
+        "全选",
+        "总计",
+        "还款"
+      ],
+      "requiredAssetsPerScreen": [],
+      "brandIdentitySelectors": [
+        ".wld-btn-primary"
+      ],
+      "diversitySelectors": [
+        ".wld-repay-card",
+        ".wld-repay-action-bar"
+      ]
+    },
+    "本期应还.html": {
+      "authorityFiles": [],
+      "requiredTextPerScreen": [
+        "自动还款"
+      ],
+      "requiredAssetsPerScreen": [],
+      "brandIdentitySelectors": [],
+      "diversitySelectors": [
+        ".wld-repay-summary",
+        ".wld-repay-card"
+      ]
+    },
+    "收银台.html": {
+      "authorityFiles": [],
+      "requiredTextPerScreen": [
+        "银行卡还款",
+        "转账还款",
+        "还款不限额，实时到账",
+        "下一步"
+      ],
+      "requiredAssetsPerScreen": [
+        "logo-icbc.svg",
+        "icn-transfer.svg"
+      ],
+      "brandIdentitySelectors": [
+        ".wld-btn-primary"
+      ],
+      "diversitySelectors": [
+        ".wld-cashier-summary"
+      ]
+    },
+    "借款详情.html": {
+      "authorityFiles": [],
+      "requiredTextPerScreen": [
+        "还款中"
+      ],
+      "requiredAssetsPerScreen": [],
+      "brandIdentitySelectors": [],
+      "diversitySelectors": [
+        ".wld-loan-header",
+        ".wld-loan-installments"
+      ]
+    },
+    "欢迎页.html": {
+      "authorityFiles": [],
+      "requiredTextPerScreen": [
+        "本服务由微众银行提供",
+        "查看额度"
+      ],
+      "requiredAssetsPerScreen": [],
+      "brandIdentitySelectors": [
+        ".wld-welcome-hero",
+        ".wld-btn-primary"
+      ],
+      "diversitySelectors": [
+        ".wld-welcome-features"
+      ]
+    },
+    "更换还款卡.html": {
+      "authorityFiles": [],
+      "requiredTextPerScreen": [
+        "每月还款日优先从该卡自动还款",
+        "当前还款卡",
+        "确认"
+      ],
+      "requiredAssetsPerScreen": [
+        "logo-icbc.svg",
+        "logo-boc.svg",
+        "logo-cbc.svg"
+      ],
+      "brandIdentitySelectors": [
+        ".wld-btn-primary"
+      ],
+      "diversitySelectors": [
+        ".wld-changecard-header"
+      ]
+    },
+    "我的Tab.html": {
+      "authorityFiles": [],
+      "requiredTextPerScreen": [
+        "借还记录",
+        "更换还款卡",
+        "帮助中心"
+      ],
+      "requiredAssetsPerScreen": [
+        "tab-icon-home.svg",
+        "tab-icon-me-filled.svg"
+      ],
+      "brandIdentitySelectors": [],
+      "diversitySelectors": [
+        ".wld-me-header",
+        ".wld-me-grid"
+      ]
+    },
+    "逾期.html": {
+      "authorityFiles": [],
+      "requiredTextPerScreen": [
+        "逾期信息已上报人行征信",
+        "本服务由微众银行提供",
+        "部分还款",
+        "全部还款",
+        "应还详情"
+      ],
+      "requiredAssetsPerScreen": [
+        "tab-icon-home-filled.svg",
+        "tab-icon-me.svg"
+      ],
+      "brandIdentitySelectors": [
+        ".wld-footer-disclaimer"
+      ],
+      "diversitySelectors": [
+        ".wld-overdue-card",
+        ".wld-overdue-actions",
+        ".wld-overdue-details"
+      ]
+    }
+  }
+}
