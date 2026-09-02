@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "wld-brainstorm",
   "displayName": "WLD Brainstorm",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "微粒贷头脑风暴工具箱",
   "author": {
     "name": "anguszhu"

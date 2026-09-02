@@ -1,13 +1,13 @@
 {
   "name": "wld-brainstorm",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "微粒贷脑暴工具箱",
   "author": {
     "name": "anguszhu"
   },
   "skills": "./skills/",
   "interface": {
-    "displayName": "WeBank Design",
+    "displayName": "WLD Brainstorm",
     "shortDescription": "生成并迭代微粒贷脑暴方案",
     "longDescription": "基于内置或工作区的微粒贷产品档案、现有界面或文字需求，生成多个差异化的移动端 UI 方案，通过浏览器实时预览进行比较和迭代。",
     "developerName": "anguszhu",

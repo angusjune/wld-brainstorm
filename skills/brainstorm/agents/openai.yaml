@@ -2,4 +2,6 @@ interface:
   display_name: "Brainstorm 移动端方案头脑风暴"
   short_description: "生成、比较并迭代移动端页面、流程与交互设计方案"
   default_prompt: "$brainstorm 为现有移动端页面探索三种不同的信息层级方案"
+  icon_small: "../../assets/icon-brainstorm.svg"
+  icon_large: "../../assets/icon-brainstorm.svg"
   brand_color: "#456CE6"
