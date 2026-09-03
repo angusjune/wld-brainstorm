@@ -145,7 +145,11 @@ describe('skill interface validation', () => {
   test('rejects missing agent interface icons', () => {
     const fixtureRoot = makeFixture();
     const openaiYaml = path.join(fixtureRoot, 'agents', 'openai.yaml');
-    fs.appendFileSync(openaiYaml, '  icon_small: "./assets/missing.svg"\n');
+    const metadata = fs.readFileSync(openaiYaml, 'utf8');
+    fs.writeFileSync(openaiYaml, metadata.replace(
+      /^\s*icon_small:.*$/m,
+      '  icon_small: "./assets/missing.svg"',
+    ));
 
     const result = runValidator(fixtureRoot);
 
@@ -193,20 +197,4 @@ describe('workspace profile validation', () => {
     assert.ok(result.report.errors.some((error) => error.includes('brandIdentitySelectors')));
   });
 
-  test('keeps screen templates out of authoritative product knowledge', () => {
-    const fixtureRoot = makeFixture();
-    const contractPath = path.join(fixtureRoot, 'profile', 'quality', 'workflow-contracts.json');
-    const contracts = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
-    const [template] = Object.keys(contracts.templates);
-    contracts.templates[template].authorityFiles = [`screens/${template}`];
-    fs.writeFileSync(contractPath, `${JSON.stringify(contracts, null, 2)}\n`);
-
-    const result = runValidator(fixtureRoot);
-
-    assert.equal(result.stderr, '');
-    assert.equal(result.exitCode, 1);
-    assert.ok(result.report.errors.includes(
-      `workflow contract ${template} 的 authorityFiles 不应包含页面模板: screens/${template}`,
-    ));
-  });
 });

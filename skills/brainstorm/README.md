@@ -1,6 +1,6 @@
 # Brainstorm 设计 Skill
 
-用于移动端界面头脑风暴：澄清需求、生成三种方案、选择方向、补全流程，并通过本地预览与点选批注持续迭代。
+用于移动端界面头脑风暴：澄清需求、生成并比较三种方向，并通过本地预览与点选批注持续迭代；选定方向后可推送 Figma 或交给产品档案声明的后续分支。
 
 Skill 内置一份可直接运行的产品档案。项目根目录存在 `wld-design-profile/` 时优先使用该工作区档案，否则使用内置 `profile/`；一次运行始终只使用一份档案，不会混合两者。
 
@@ -29,7 +29,7 @@ brainstorm/
 
 三层边界：
 
-- `profile/` 保存产品名、设计 token、组件、生产模板、业务知识、产品规则和确定性工具。
+- `profile/` 保存产品名、设计 token、组件、生产模板、产品规则、passes 和确定性工具。
 - `platforms/` 只保存平台预览外壳；由档案的 `platform` 字段选择。
 - 其余目录是产品、平台中立的共享机制。
 
@@ -39,8 +39,8 @@ brainstorm/
 2. `scripts/workflow.mjs` 的 `prepare` 命令为当前 stage 生成隔离的 worker brief、分角色上下文与可编辑 fragments；任务事实和产品规则属于权威来源，完整生产页面语料作为只读设计参考。
 3. Agent 只编辑 brief 声明的 fragments；`assemble` 使用 `assets/page-template.html` 确定性组装完整 HTML。
 4. `validate` 检查页面壳、必需文案与资源、方案差异、CSS 变量、产品 QA、浏览器布局和截图。
-5. 用户选择方案后，`select` 写入紧凑 handoff；后续 screen 或 flow stage 从该 handoff 继续。
-6. 用户可继续反馈，或选择共享 Push to Figma 和产品档案声明的分支。
+5. 用户选择方案后，`select` 写入紧凑 handoff；Brainstorm 到此停止扩展页面或流程。
+6. 用户可继续修改同一组三方案，或选择共享 Push to Figma 和产品档案声明的后续分支。
 
 预览页右下角可开启点选批注。Agent 修改 fragments、重新组装和验证后，再通过 `scripts/acknowledge-annotations.cjs` 确认本轮实际读取的批注。
 
@@ -79,7 +79,7 @@ npm run screens:dev
 1. 重写 `profile/PROFILE.md` 的 frontmatter、模板表、路由、设计语言、产品规则、passes 和分支表。
 2. 替换 `profile/screens/` 的生产模板。
 3. 替换 `profile/design-system/` 的 token、组件样式和图标。
-4. 重写或删除 `profile/knowledge/` 与 `profile/quality/` 中不属于新产品的内容。
+4. 重写或删除 `profile/quality/` 中不属于新产品的规则、passes 和工具。
 5. 运行完整验证，并通过真实预览检查 workflow 截图。
 
 不要为换产品修改 `SKILL.md`、`scripts/`、`assets/` 或 `platforms/`；只有新产品暴露出通用缺陷时，才单独修共享机制。

@@ -5,17 +5,16 @@ import test from 'node:test'
 import { fileURLToPath } from 'node:url'
 
 const SITE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const REPO = path.resolve(SITE, '..')
 const page = fs.readFileSync(path.join(SITE, 'src/pages/index.astro'), 'utf8')
 const layout = fs.readFileSync(path.join(SITE, 'src/layouts/Base.astro'), 'utf8')
-const version = JSON.parse(fs.readFileSync(path.join(REPO, 'package.json'), 'utf8')).version
 
 test('site presents the current plugin and all three skills', () => {
   assert.match(page, /WLD Design 插件/)
   assert.match(page, /\$setup-profile/)
   assert.match(page, /\$brainstorm/)
   assert.match(page, /\$wtf/)
-  assert.match(page, new RegExp(`v${version.replaceAll('.', '\\.')}`))
+  assert.match(page, /import packageJson from '\.\.\/\.\.\/\.\.\/package\.json'/)
+  assert.equal(page.match(/v\{packageJson\.version\}/g)?.length, 3)
   assert.match(layout, /WLD Design 插件/)
 })
 

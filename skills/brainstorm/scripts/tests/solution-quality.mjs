@@ -6,8 +6,9 @@ import workflow from '../lib/workflow-contract.cjs';
 
 const {
   screenSegments,
-  solutionQualityFindings,
+  solutionQualityReport,
 } = workflow;
+const solutionQualityFindings = (options) => solutionQualityReport(options).findings;
 
 const source = `<div class="fixture-page">
   <div class="brand-hero">Brand header</div>

@@ -1,29 +1,11 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import {
-  splitChrome,
-  expandChrome,
   composeScreenDocument,
   rewriteArenaHtml,
 } from './sync-demo-assets.mjs'
 
 const chromeMarkup = '<nav class="chrome-navbar {{variant_class}}">{{title}}</nav>'
-
-test('splitChrome separates the style block from the nav markup', () => {
-  const chrome = splitChrome(`<style data-platform-chrome>.chrome-navbar { height: 88px; }</style>\n${chromeMarkup}`)
-  assert.equal(chrome.css, '.chrome-navbar { height: 88px; }')
-  assert.equal(chrome.markup, chromeMarkup)
-})
-
-test('expandChrome stamps the variant class and title into the markup', () => {
-  const html = '<div><preview-chrome variant="home" title="微粒贷"></preview-chrome></div>'
-  assert.equal(expandChrome(html, chromeMarkup), '<div><nav class="chrome-navbar chrome-navbar--home">微粒贷</nav></div>')
-})
-
-test('expandChrome leaves the variant class empty by default and handles self-closing tag', () => {
-  const html = '<preview-chrome title="借款详情"/>'
-  assert.equal(expandChrome(html, chromeMarkup), '<nav class="chrome-navbar ">借款详情</nav>')
-})
 
 test('composeScreenDocument wraps fragment in full doc with relative CSS links', () => {
   const doc = composeScreenDocument('<div class="wld-page">hi</div>', '欢迎页', chromeMarkup)

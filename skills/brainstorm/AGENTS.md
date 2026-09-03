@@ -19,7 +19,7 @@
 
 ```text
 brainstorm/
-├── SKILL.md                 # Agent 执行的主方法与通用 Simplify pass；保持产品、平台中立
+├── SKILL.md                 # Agent 执行的主方法；保持产品、平台中立
 ├── AGENTS.md                # 本维护指南
 ├── package.json             # 维护命令入口
 ├── assets/                  # 通用展示资源；预览服务自动注入
@@ -39,12 +39,11 @@ brainstorm/
 - `references/setup-profile.md`：维护者完整新建或替换内置产品档案时使用的逐步交互向导；用户工作区的复制与增量模板由同级 `setup-profile` Skill 负责。
 - `references/branches/push-to-figma.md`：所有产品和平台共用的 Push to Figma 分支。
 - `profile/PROFILE.md`：产品档案入口；frontmatter 给脚本读，正文给 Agent 读。
-- `profile/branches/`：可选的产品专属 Step 6 分支；必须在 `PROFILE.md` 的 Branches 表中声明。
+- `profile/branches/`：可选的产品专属 Step 5 分支；必须在 `PROFILE.md` 的 Branches 表中声明。
 - `profile/screens/`：生产页面模板语料，是生成质量的主要来源；authoring worker 将其作为完整、只读的应用级设计参考语料。
 - `profile/design-system/`：token、组件样式和图标。
-- `profile/knowledge/`：可选的知识桥接说明与只读快照。
 - `profile/quality/`：产品生成契约、规则、passes 和确定性工具。
-- `profile/quality/workflow-contracts.json`：每个模板必需的权威知识文件与逐屏必须保留的文本/资源不变量；模板清单必须一一对应，页面模板不进入 `authorityFiles`。
+- `profile/quality/workflow-contracts.json`：每个模板逐屏必须保留的文本/资源不变量与设计锚点；模板清单必须一一对应。
 - `platforms/<platform>/chrome.html`：该平台的预览外壳。
 
 ## 脚本职责
@@ -54,7 +53,7 @@ brainstorm/
 | 路径 | 职责 | 何时修改 |
 |---|---|---|
 | `scripts/serve-preview.cjs` | 启动本地预览服务；选择固定工作区 seam 或内置档案，创建可追溯的 run 目录、挂载 `/assets/`、`/profile/`、`/platform/`，展开 `<preview-chrome>`，注入展示样式、热更新和点选批注客户端，并记录会话事件。 | 修改档案选择、预览协议、挂载点、平台外壳展开或会话生命周期时。 |
-| `scripts/workflow.mjs` | 按 stage 生成隔离 worker brief、分角色权威来源和只读页面语料，记录选择、用紧凑 handoff 提升或播种下一 stage、组装规范页面、执行终端/浏览器契约，并写 usage report。 | 修改生成上下文、scaffold、handoff、硬性不变量或计量协议时。 |
+| `scripts/workflow.mjs` | 按 stage 生成隔离 worker brief、分角色权威来源和只读页面语料，记录选定方向的紧凑 handoff、组装规范页面、执行终端/浏览器契约，并写 usage report。 | 修改生成上下文、scaffold、handoff、硬性不变量或计量协议时。 |
 | `scripts/acknowledge-annotations.cjs` | 在 Agent 应用批注后显式确认本轮实际读取到的最后一个 ID；文件写入本身不会消费批注。 | 修改批注 pending/consumed 协议时。 |
 | `scripts/run-qa-gate.mjs` | 对生成 HTML 跑确定性通用检查，并按约定加载可选的 `profile/quality/rules.mjs`。 | 新增所有产品都成立的机械规则时；产品规则不要写进这里。 |
 | `scripts/report-session-telemetry.mjs` | 汇总某次会话的 `session-events.jsonl`，输出生成、QA、预览等阶段耗时。 | 遥测 schema 或分析指标变化时。 |
@@ -92,18 +91,15 @@ brainstorm/
 3. 重写 `profile/design-system/tokens.css`、`profile/design-system/components.css` 和 `profile/design-system/assets/`。
    - `profile/design-system/tokens.css` 是唯一 token 来源；组件和模板优先引用 token。
    - class 与 token 前缀属于产品档案，可整体更换；通用脚本不应依赖具体前缀。
-4. 重写或删除可选产品知识。
-   - `profile/knowledge/` 与 `profile/research/` 都只能保留新产品内容。
-   - 如果不使用知识快照，清空 `profile/knowledge/README.md` 的映射并删除旧 cache，不要让 Agent 读到旧业务规则。
-5. 重写产品 passes、规则和工具。
+4. 重写产品 passes、规则和工具。
    - `profile/quality/passes/` 定义生成前的产品校验步骤。
    - `profile/quality/rules.mjs` 是可选 QA rule pack；不需要时直接删除，不要修改通用 QA gate 来绕过旧规则。
    - `profile/quality/tools/` 与 pass 一起替换，删除不再使用的计算器或数据文件。
-6. 处理产品分支。
-   - 产品专属 Step 6 分支文档放进 `profile/branches/`，并按展示顺序写入 `PROFILE.md` 的 Branches 表。
+5. 处理产品分支。
+   - 产品专属 Step 5 分支文档放进 `profile/branches/`，并按展示顺序写入 `PROFILE.md` 的 Branches 表。
    - 没有产品分支时删除整个目录并让 Branches 表保持空白；共享分支不受影响。
    - 新增或删除产品分支不应修改 `SKILL.md`。
-7. 不要为换产品修改 `SKILL.md`、`scripts/`、`assets/` 或 `references/`。如果新产品暴露的是通用缺陷，单独修通用机制，并确认没有加入产品事实。
+6. 不要为换产品修改 `SKILL.md`、`scripts/`、`assets/` 或 `references/`。如果新产品暴露的是通用缺陷，单独修通用机制，并确认没有加入产品事实。
 
 ## 修改后的验证
 

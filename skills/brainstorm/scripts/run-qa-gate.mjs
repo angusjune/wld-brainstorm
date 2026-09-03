@@ -21,10 +21,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import profileSelection from './lib/profile-selection.cjs';
 import telemetry from './lib/session-telemetry.cjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SKILL_DIR = path.resolve(__dirname, '..');
+const { readProfileConfig } = profileSelection;
 const { EVENTS, appendSessionEvent, findSessionStateDir } = telemetry;
 
 // Universal checks only — these hold for any product on any platform. Product
@@ -87,22 +89,6 @@ function isColorLiteral(value) {
 }
 
 // ---- Profile / platform / rule-pack loading ----
-
-// The profile's machine-readable config is the frontmatter block at the top of
-// profile/PROFILE.md: flat `key: value` lines between two `---` fences.
-function readProfileConfig(profileDir) {
-  let text = '';
-  try { text = fs.readFileSync(path.join(profileDir, 'PROFILE.md'), 'utf8'); } catch {}
-  const block = text.match(/^---\n([\s\S]*?)\n---/);
-  const config = {};
-  if (block) {
-    for (const line of block[1].split('\n')) {
-      const m = line.match(/^([\w-]+):\s*(.*)$/);
-      if (m) config[m[1]] = m[2].trim();
-    }
-  }
-  return config;
-}
 
 // A profile without quality/rules.mjs is valid and passes the core checks — that is the
 // point: a forking team's first run must not be blocked by another product's

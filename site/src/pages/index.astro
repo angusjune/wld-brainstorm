@@ -1,7 +1,7 @@
 ---
 import { Image } from 'astro:assets'
+import packageJson from '../../../package.json'
 import Base from '../layouts/Base.astro'
-import Voxel from '../components/Voxel.astro'
 import HeroMorph from '../components/HeroMorph.astro'
 import CopyCommand from '../components/CopyCommand.astro'
 import { glyphScene } from '../lib/voxel.js'
@@ -26,19 +26,19 @@ const steps = [
   },
   {
     marker: glyphScene('finalize'),
-    title: '校验并定稿',
-    body: '确定性装配、规则检查、浏览器渲染和截图校验全部通过后再展示；选中方向可继续展开完整流程。',
+    title: '校验并比较',
+    body: '确定性装配、规则检查、浏览器渲染和截图校验全部通过后再展示；用户可比较并选定方向。',
   },
   {
     marker: glyphScene('branch'),
     title: '继续反馈或推送 Figma',
-    body: '直接在预览页点选元素写批注，继续修改同一方案；定稿后也可以把页面推送成可编辑的 Figma frame。',
+    body: '直接在预览页点选元素写批注，继续修改同一组三方案；选定方向后也可以推送成可编辑的 Figma frame。',
   },
 ]
 
 const branches = [
   { tag: 'A', name: '反馈迭代', desc: '输入反馈或在预览页直接点元素批注；同一 run 原地更新并热刷新。' },
-  { tag: 'B', name: '推送 Figma', desc: '把定稿页面画成本地 Figma 画布里可编辑的 frame。' },
+  { tag: 'B', name: '推送 Figma', desc: '把选定方向画成本地 Figma 画布里可编辑的 frame。' },
 ]
 
 const skills = [
@@ -52,7 +52,7 @@ const skills = [
     command: '$brainstorm',
     label: '02 · 方案探索',
     title: '从真实模板出发做设计',
-    body: '澄清需求、生成三个方向、在浏览器比较和批注，选定后继续完成页面与流程。',
+    body: '澄清需求、生成三个方向、在浏览器比较和批注，选定后可继续反馈、推送 Figma 或交给产品分支。',
   },
   {
     command: '$wtf',
@@ -62,34 +62,6 @@ const skills = [
   },
 ]
 
-// Real entries from the bundled product-knowledge snapshot
-// (skills/brainstorm/profile/knowledge/memory-cache/common-pitfalls.yaml) — not invented.
-const pitfalls = [
-  {
-    id: 'PIT-001',
-    tag: '空态 · CTA',
-    desc: '未输入金额的空状态下，底部「下一步」默认禁用（浅黄色）—— 不能假设可点击，也不该把空状态连到提交流程。',
-    fix: '空状态不设指向 SUBMITTING 的 transition，只有已填入金额才能提交。',
-  },
-  {
-    id: 'PIT-002',
-    tag: '浮层 · 状态识别',
-    desc: '底部浮层（Sheet）常被漏识别为独立状态，只盯着主页面截图看。',
-    fix: '每个浮层都建独立状态 + 弹出 / 关闭 transition；有异步加载再拆 LOADING / LOADED / ERROR。',
-  },
-  {
-    id: 'PIT-003',
-    tag: '首借 / 非首借 · 键盘',
-    desc: '首借与非首借的键盘 CTA 不同：「确定」只收起键盘，「下一步」直接提交，容易被合并成同一种状态。',
-    fix: '拆成 EDITING_FIRST 与 EDITING_RELOAN 两个独立状态，各记各的提交行为。',
-  },
-  {
-    id: 'PIT-004',
-    tag: '存量改动 · 影响链',
-    desc: '分析存量改动时只看 PM 直接点名的组件（tier-1），漏掉 depends_on 关联的间接影响（tier-2）。',
-    fix: '影响地图分两层输出，tier-1 与 tier-2 一并给 PM 确认改动范围。',
-  },
-]
 ---
 <Base>
   <header class="site-nav">
@@ -101,7 +73,7 @@ const pitfalls = [
         <a href="#workflow">工作流</a>
         <a href="#start">安装</a>
       </nav>
-      <span class="version">v1.1.1</span>
+      <span class="version">v{packageJson.version}</span>
     </div>
   </header>
   <main>
@@ -109,7 +81,7 @@ const pitfalls = [
     <section id="hero" class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
-          <p class="eyebrow">WLD Design 插件 · v1.1.1</p>
+          <p class="eyebrow">WLD Design 插件 · v{packageJson.version}</p>
           <h1 class="hero-title">Design with<br /><span>/Brainstorm</span></h1>
           <p class="hero-lead">
             一次安装，获得产品档案、设计脑暴与清晰表达三个 Skill。
@@ -131,7 +103,7 @@ const pitfalls = [
       <div class="container">
         <p class="eyebrow">三个 Skill</p>
         <h2 class="section-title">三个入口，一套设计上下文</h2>
-        <p class="section-sub">产品档案只维护一份；探索、定稿与解释都围绕同一份上下文工作。</p>
+        <p class="section-sub">产品档案只维护一份；建档、探索与解释都围绕同一份上下文工作。</p>
 
         <div class="skills-grid">
           {skills.map((skill) => (
@@ -196,13 +168,13 @@ const pitfalls = [
         <p class="eyebrow">工作流</p>
         <h2 class="section-title">工作流</h2>
         <p class="section-sub">
-          澄清 → 选择产品档案与生产模板 → 3 个方案 → 确定性校验 → 定稿 → 反馈或推送 Figma。
+          澄清 → 选择产品档案与生产模板 → 3 个方案 → 确定性校验 → 选定方向 → 反馈或推送 Figma。
         </p>
 
         <ol class="steps">
           {steps.map((step) => (
             <li class="step">
-              <Voxel svg={step.marker} class="step-marker" />
+              <div class="step-marker" aria-hidden="true" set:html={step.marker} />
               <div class="step-body">
                 <h3>{step.title}</h3>
                 <p>{step.body}</p>
@@ -218,33 +190,6 @@ const pitfalls = [
               <h3>{b.name}</h3>
               <p>{b.desc}</p>
             </div>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    <!-- 4. 它懂微粒贷 -->
-    <section id="knowledge">
-      <div class="container">
-        <p class="eyebrow">产品知识</p>
-        <h2 class="section-title">内置产品规则</h2>
-        <p class="section-sub">
-          Brainstorm 带着当前产品档案运行：生产模板、设计 Token、组件、产品规律与历史易错点。
-          下面是快照里真实记录的易错点 —— 每一条都来自过往被纠正过的设计。
-        </p>
-      </div>
-
-      <div class="pit-carousel" role="group" aria-label="常见易错点，自动滚动">
-        <div class="pit-track">
-          {[...pitfalls, ...pitfalls].map((p, i) => (
-            <article class="pit-card" aria-hidden={i >= pitfalls.length ? 'true' : undefined}>
-              <div class="pit-card-head">
-                <span class="badge">{p.id}</span>
-                <span class="pit-tag">{p.tag}</span>
-              </div>
-              <p class="pit-desc">{p.desc}</p>
-              <p class="pit-fix"><span class="pit-fix-label">纠正</span>{p.fix}</p>
-            </article>
           ))}
         </div>
       </div>
@@ -312,7 +257,7 @@ const pitfalls = [
   </main>
   <footer class="site-footer">
     <div class="container footer-inner">
-      <span>WLD Design 插件 · v1.1.1</span>
+      <span>WLD Design 插件 · v{packageJson.version}</span>
       <a href="https://github.com/angusjune/wld-brainstorm">GitHub</a>
     </div>
   </footer>
@@ -400,8 +345,8 @@ const pitfalls = [
     display: flex;
     justify-content: center;
   }
-  /* Voxel/HeroMorph render child component roots, which Astro's cid
-     scoping misses — scope via the ancestor instead. */
+  /* HeroMorph renders a child component root, which Astro's cid scoping
+     misses — scope via the ancestor instead. */
   .hero-art :global(.hero-morph) {
     width: 100%;
     max-width: 380px;
@@ -528,11 +473,19 @@ const pitfalls = [
   .step:first-child {
     border-top: 0;
   }
-  .step :global(.step-marker) {
+  .step-marker {
+    display: block;
+    line-height: 0;
     width: 64px;
     height: 48px;
     flex-shrink: 0;
     margin-top: 2px;
+  }
+  .step-marker :global(svg) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
   }
   .step-body h3 {
     font-size: 19px;
@@ -561,101 +514,6 @@ const pitfalls = [
   }
   .branch h3 {
     margin-top: 6px;
-  }
-
-  /* 4. Product knowledge */
-  .badge {
-    display: inline-block;
-    font-size: 12px;
-    padding: 3px 12px;
-    border-radius: 999px;
-    background: var(--gold-tint);
-    color: var(--gold);
-  }
-
-  /* Auto-scrolling pitfall carousel — pure-CSS marquee. The track holds
-     two copies of the list; translating it -50% loops seamlessly. */
-  .pit-carousel {
-    overflow: hidden;
-    -webkit-mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
-    mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
-  }
-  .pit-track {
-    display: flex;
-    width: max-content;
-    padding: 4px 24px;
-    animation: pit-scroll 48s linear infinite;
-  }
-  .pit-carousel:hover .pit-track,
-  .pit-carousel:focus-within .pit-track {
-    animation-play-state: paused;
-  }
-  @keyframes pit-scroll {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-  }
-  .pit-card {
-    flex: 0 0 340px;
-    /* Uniform slot width (card + margin) so -50% lands exactly one set over. */
-    margin-right: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding: 22px 24px;
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    background: var(--surface);
-  }
-  .pit-card-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .pit-tag {
-    font-size: 12px;
-    color: var(--text-3);
-    letter-spacing: 0.02em;
-  }
-  .pit-desc {
-    font-size: 14px;
-    color: var(--text);
-    line-height: 1.7;
-  }
-  .pit-fix {
-    margin-top: auto;
-    padding-top: 12px;
-    border-top: 1px solid var(--line-soft);
-    font-size: 13px;
-    color: var(--text-2);
-    line-height: 1.7;
-  }
-  .pit-fix-label {
-    margin-right: 8px;
-    color: var(--gold);
-    font-weight: 600;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .pit-carousel {
-      -webkit-mask: none;
-      mask: none;
-    }
-    .pit-track {
-      flex-wrap: wrap;
-      width: auto;
-      gap: 16px;
-      padding: 4px 24px;
-      max-width: 1080px;
-      margin: 0 auto;
-      animation: none;
-    }
-    .pit-card {
-      flex: 1 1 300px;
-      margin-right: 0;
-    }
-    /* Drop the duplicated set when it can't scroll. */
-    .pit-card[aria-hidden='true'] {
-      display: none;
-    }
   }
 
   /* Get started */
@@ -809,12 +667,9 @@ const pitfalls = [
     .step {
       gap: 16px;
     }
-    .step :global(.step-marker) {
+    .step-marker {
       width: 48px;
       height: 38px;
-    }
-    .pit-card {
-      flex-basis: min(320px, calc(100vw - 48px));
     }
     .footer-inner {
       flex-direction: column;

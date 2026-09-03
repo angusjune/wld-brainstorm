@@ -8,8 +8,8 @@ The context manifest assigns every source a role:
 
 - the primary template is content authority for `rework` and the closest design
   reference for `compose`;
-- product knowledge, product laws, tokens, components, and selected handoffs are
-  authoritative sources;
+- product laws, tokens, components, and selected handoffs are authoritative
+  sources;
 - every other production template is a design reference;
 - the worker brief is the instruction entrypoint.
 
@@ -21,11 +21,10 @@ independently requires them. Validation continues to enforce only the active
 stage's declared invariants; it does not judge similarity to reference screens
 or prescribe which patterns a solution must use.
 
-Profile workflow contracts therefore use `authorityFiles` only for task-specific
-product knowledge. Screen templates are discovered automatically and cannot be
-declared as authorities. All context sources are hashed so a stage cannot silently
-change after preparation. Deterministic promotion remains compact and does not
-load the corpus because it dispatches no authoring worker.
+Profile workflow contracts declare per-template invariants. Screen templates are
+discovered automatically, and all context sources are hashed so a stage cannot
+silently change after preparation. Deterministic selection remains compact and
+does not load the corpus because it dispatches no authoring worker.
 
 This places the seam between content authority and design awareness, rather than
 between the current page and the rest of the app. It preserves stage-local facts

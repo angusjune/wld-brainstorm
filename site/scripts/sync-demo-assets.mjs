@@ -7,24 +7,18 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import chromeModule from '../../skills/brainstorm/scripts/lib/chrome.cjs'
+import profileModule from '../../skills/brainstorm/scripts/lib/profile-selection.cjs'
+
+const { escapeHtml, expandChrome, loadChrome } = chromeModule
+const { readProfileConfig } = profileModule
 
 const HERE = path.dirname(fileURLToPath(import.meta.url))
 const REPO = path.resolve(HERE, '../..')
 const SKILL = path.join(REPO, 'skills', 'brainstorm')
 const PROFILE = path.join(SKILL, 'profile')
 const DESIGN_SYSTEM = path.join(PROFILE, 'design-system')
-// Resolve the platform pack the way scripts/serve-preview.cjs does, from the frontmatter of
-// profile/PROFILE.md (flat `key: value` lines), rather than hardcoding wechat.
-function readFrontmatter(text) {
-  const block = text.match(/^---\n([\s\S]*?)\n---/)
-  const config = {}
-  for (const line of (block ? block[1] : '').split('\n')) {
-    const m = line.match(/^([\w-]+):\s*(.*)$/)
-    if (m) config[m[1]] = m[2].trim()
-  }
-  return config
-}
-const PROFILE_CONFIG = readFrontmatter(fs.readFileSync(path.join(PROFILE, 'PROFILE.md'), 'utf8'))
+const PROFILE_CONFIG = readProfileConfig(PROFILE)
 if (!PROFILE_CONFIG.platform) {
   throw new Error('sync-demo-assets: no `platform:` in profile/PROFILE.md frontmatter')
 }
@@ -39,50 +33,6 @@ function mustExist(p) {
     throw new Error(`sync-demo-assets: missing required asset: ${p}`)
   }
   return p
-}
-
-function parseTagAttrs(rawAttrs) {
-  const attrs = {}
-  const attrRe = /([:\w-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+))/g
-  let match
-  while ((match = attrRe.exec(rawAttrs)) !== null) {
-    attrs[match[1]] = match[2] ?? match[3] ?? match[4] ?? ''
-  }
-  return attrs
-}
-
-function escapeHtml(value) {
-  return String(value)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-}
-
-// A platform pack is a single chrome.html: one <style> block plus the nav
-// markup stamped into each <preview-chrome> tag (same split scripts/serve-preview.cjs does).
-export function splitChrome(chromeHtml) {
-  const styleRe = /<style[^>]*>([\s\S]*?)<\/style>/i
-  const styleMatch = chromeHtml.match(styleRe)
-  return {
-    css: styleMatch ? styleMatch[1] : '',
-    markup: chromeHtml.replace(styleRe, '').trim(),
-  }
-}
-
-export function expandChrome(html, chromeMarkup) {
-  return html.replace(
-    /<preview-chrome\b([^>]*)\/?>\s*(?:<\/preview-chrome>)?/gi,
-    (_, rawAttrs) => {
-      if (!chromeMarkup) return ''
-      const attrs = parseTagAttrs(rawAttrs)
-      const variant = attrs.variant || attrs.type
-      const variantClass = variant ? `chrome-navbar--${variant}` : ''
-      return chromeMarkup
-        .replaceAll('{{variant_class}}', escapeHtml(variantClass))
-        .replaceAll('{{title}}', escapeHtml(attrs.title || ''))
-    },
-  )
 }
 
 export function composeScreenDocument(fragment, title, chromeMarkup) {
@@ -132,7 +82,8 @@ export function rewriteArenaHtml(html) {
 
 function sync() {
   // Chrome comes from the active platform pack's chrome.html, as at runtime.
-  const chrome = splitChrome(fs.readFileSync(mustExist(path.join(PLATFORM, 'chrome.html')), 'utf8'))
+  mustExist(path.join(PLATFORM, 'chrome.html'))
+  const chrome = loadChrome(PLATFORM)
 
   fs.rmSync(OUT, { recursive: true, force: true })
   fs.mkdirSync(path.join(OUT, 'assets'), { recursive: true })

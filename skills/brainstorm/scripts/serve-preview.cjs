@@ -22,6 +22,7 @@ const { EVENT_FILE, EVENTS, appendSessionEvent } = require('./lib/session-teleme
 const {
   WORKSPACE_PROFILE_DIRNAME,
   inspectProfile,
+  readProfileConfig,
   resolveProfile,
 } = require('./lib/profile-selection.cjs');
 const {
@@ -36,8 +37,37 @@ const {
   normalizeAnnotation,
   readEntries,
 } = require('./lib/annotations.cjs');
-const { expandChrome, loadChrome, readProfileConfig } = require('./lib/chrome.cjs');
-const { contentTypeFor, isReadableFile, isWithinRoot } = require('./lib/static-files.cjs');
+const { expandChrome, loadChrome } = require('./lib/chrome.cjs');
+
+const CONTENT_TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'application/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+  '.gif': 'image/gif',
+  '.svg': 'image/svg+xml',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+  '.ttf': 'font/ttf',
+  '.otf': 'font/otf',
+};
+
+function contentTypeFor(filePath) {
+  return CONTENT_TYPES[path.extname(filePath).toLowerCase()] || 'application/octet-stream';
+}
+
+function isReadableFile(filePath) {
+  try { return fs.statSync(filePath).isFile(); } catch { return false; }
+}
+
+function isWithinRoot(root, candidate) {
+  const relative = path.relative(path.resolve(root), path.resolve(candidate));
+  return relative === '' || (!relative.startsWith(`..${path.sep}`) && relative !== '..' && !path.isAbsolute(relative));
+}
 
 // --- Args ---
 const args = process.argv.slice(2);
@@ -247,7 +277,8 @@ const FRAME_STYLESHEET_TAG = '<link rel="stylesheet" href="/assets/frame.css" da
 // --- Presentation-only chrome, resolved from the active platform pack ---
 // Chrome expansion lives in lib/chrome.cjs so this server and the repo's
 // screen-corpus dev server render a screen identically.
-const { style: CHROME_STYLE_TAG, markup: CHROME_MARKUP } = loadChrome(PLATFORM_DIR);
+const { css: CHROME_CSS, markup: CHROME_MARKUP } = loadChrome(PLATFORM_DIR);
+const CHROME_STYLE_TAG = CHROME_CSS ? `<style data-platform-chrome>${CHROME_CSS}</style>` : '';
 
 // URL prefix -> directory. `/assets/` is shared machinery, `/profile/` is the
 // product profile, `/platform/` is the active platform pack. Screens name none

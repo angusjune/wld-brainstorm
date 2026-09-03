@@ -51,7 +51,7 @@ function renderScreenDocument({ fragment, chrome, title, pageClass, liveReload =
   <title>${escapeHtml(title)}</title>
   <link rel="stylesheet" href="/profile/design-system/tokens.css">
   <link rel="stylesheet" href="/profile/design-system/components.css">
-${chrome.style}
+${chrome.css ? `<style data-platform-chrome>${chrome.css}</style>` : ''}
   <style>${screenReset(pageClass)}
   </style>
 </head>

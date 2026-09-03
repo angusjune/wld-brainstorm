@@ -17,7 +17,8 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { URL } = require('url');
-const { loadChrome, readProfileConfig } = require('../skills/brainstorm/scripts/lib/chrome.cjs');
+const { loadChrome } = require('../skills/brainstorm/scripts/lib/chrome.cjs');
+const { readProfileConfig } = require('../skills/brainstorm/scripts/lib/profile-selection.cjs');
 const { renderScreenDocument, renderGalleryDocument } = require('./lib/screen-render.cjs');
 
 const args = process.argv.slice(2);

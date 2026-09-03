@@ -11,6 +11,18 @@ const REQUIRED_PROFILE_ENTRIES = [
   ['quality/workflow-contracts.json', 'file'],
 ];
 
+function readProfileConfig(profileDir) {
+  let text = '';
+  try { text = fs.readFileSync(path.join(profileDir, 'PROFILE.md'), 'utf8'); } catch {}
+  const block = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  const config = {};
+  for (const line of (block ? block[1] : '').split(/\r?\n/)) {
+    const match = line.match(/^([\w-]+):\s*(.*)$/);
+    if (match) config[match[1]] = match[2].trim();
+  }
+  return config;
+}
+
 function inspectProfile(profileDir) {
   if (!fs.existsSync(profileDir)) {
     return {
@@ -121,5 +133,6 @@ module.exports = {
   WORKSPACE_PROFILE_DIRNAME,
   assertProfile,
   inspectProfile,
+  readProfileConfig,
   resolveProfile,
 };

@@ -69,15 +69,6 @@
     .presentation--dark, .presentation--dark .phone-gallery { background: #1a1a1a; }
     .presentation--dark .phone-caption { color: #aaa; }
     .presentation--dark .phone-caption-sub { color: #666; }
-    .phone-gallery--flow { gap: 20px; }
-    .phone-flow-arrow {
-      align-self: center;
-      flex-shrink: 0;
-      padding-bottom: 40px;
-      color: #ccc;
-      font-size: 28px;
-    }
-
     /* ===== THEME VARIABLES ===== */
     :root {
       --frame-bg-primary: #f0f0f0;

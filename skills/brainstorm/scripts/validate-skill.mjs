@@ -31,7 +31,7 @@ const ROOT = path.resolve(__dirname, '..');
 const require = createRequire(import.meta.url);
 const { WORKSPACE_PROFILE_DIRNAME } = require('./lib/profile-selection.cjs');
 const { RUNS_DIRNAME } = require('./lib/run-directory.cjs');
-const { CONTRACT_VERSION } = require('./lib/workflow-contract.cjs');
+const { PROFILE_CONTRACT_VERSION } = require('./lib/workflow-contract.cjs');
 
 const argv = process.argv.slice(2);
 const json = argv.includes('--json');
@@ -132,8 +132,8 @@ if (!fs.existsSync(workflowContractsPath)) {
     errors.push(`profile/quality/workflow-contracts.json JSON 无效: ${error.message}`);
   }
   if (workflowContracts) {
-    if (workflowContracts.version !== CONTRACT_VERSION || !workflowContracts.templates || typeof workflowContracts.templates !== 'object') {
-      errors.push(`profile/quality/workflow-contracts.json 必须使用 version ${CONTRACT_VERSION} 并包含 templates 对象`);
+    if (workflowContracts.version !== PROFILE_CONTRACT_VERSION || !workflowContracts.templates || typeof workflowContracts.templates !== 'object') {
+      errors.push(`profile/quality/workflow-contracts.json 必须使用 version ${PROFILE_CONTRACT_VERSION} 并包含 templates 对象`);
     } else {
       const screenNames = fs.existsSync(path.join(activeProfileDir, 'screens'))
         ? fs.readdirSync(path.join(activeProfileDir, 'screens')).filter((name) => name.endsWith('.html')).sort()
@@ -144,13 +144,9 @@ if (!fs.existsSync(workflowContractsPath)) {
           errors.push(`模板缺少 workflow contract: profile/screens/${name}`);
           continue;
         }
-        if (Object.hasOwn(contract, 'contextFiles')) {
-          errors.push(`workflow contract ${name}.contextFiles 已废弃，请使用 authorityFiles`);
-        }
-        for (const key of ['authorityFiles', 'requiredTextPerScreen']) {
-          if (!Array.isArray(contract[key]) || contract[key].some((value) => typeof value !== 'string')) {
-            errors.push(`workflow contract ${name}.${key} 必须是字符串数组`);
-          }
+        if (!Array.isArray(contract.requiredTextPerScreen)
+          || contract.requiredTextPerScreen.some((value) => typeof value !== 'string')) {
+          errors.push(`workflow contract ${name}.requiredTextPerScreen 必须是字符串数组`);
         }
         for (const key of ['requiredAssetsPerScreen', 'brandIdentitySelectors', 'diversitySelectors']) {
           if (contract[key] !== undefined
@@ -166,15 +162,6 @@ if (!fs.existsSync(workflowContractsPath)) {
         for (const selector of contract.diversitySelectors || []) {
           if (!/^\.[a-zA-Z_][\w-]*$/.test(selector)) {
             errors.push(`workflow contract ${name}.diversitySelectors 只能声明简单 class selector: ${selector}`);
-          }
-        }
-        for (const relative of contract.authorityFiles || []) {
-          if (path.isAbsolute(relative) || relative.split(/[\\/]/).includes('..')) {
-            errors.push(`workflow contract ${name} 的 authorityFiles 越界: ${relative}`);
-          } else if (relative.split(/[\\/]/)[0] === 'screens') {
-            errors.push(`workflow contract ${name} 的 authorityFiles 不应包含页面模板: ${relative}`);
-          } else if (!fs.existsSync(path.join(activeProfileDir, relative))) {
-            errors.push(`workflow contract ${name} 引用了不存在的 authority file: ${relative}`);
           }
         }
       }
@@ -235,7 +222,6 @@ const docsToScan = new Set([
 for (const doc of [
   path.join(ROOT, 'profile', 'PROFILE.md'),
   path.join(ROOT, 'profile', 'README.md'),
-  path.join(ROOT, 'profile', 'knowledge', 'README.md'),
 ]) {
   if (fs.existsSync(doc)) docsToScan.add(doc);
 }
@@ -257,15 +243,11 @@ addMarkdownDocs(path.join(ROOT, 'profile', 'branches'));
 const IN_PKG_PREFIXES = ['assets/', 'profile/', 'platforms/', 'references/', 'tools/', 'scripts/'];
 const ROOT_FILES = new Set(['AGENTS.md', 'README.md', 'SKILL.md', 'package.json']);
 
-// These exact paths describe optional, conditionally-loaded profile mechanisms
-// (the QA rule-pack and the knowledge cache)
+// This exact path describes an optional, conditionally-loaded profile mechanism
 // that shared docs reference illustratively when explaining the mechanism, not
-// as an assertion that every profile carries them. A profile that legitimately
-// skips the mechanism (see references/setup-profile.md Steps 6/7) won't have
-// these on disk — that's a valid, documented end state, not a broken link.
+// as an assertion that every profile carries it.
 const OPTIONAL_MECHANISM_PATHS = new Set([
   'profile/quality/rules.mjs',
-  'profile/knowledge/README.md',
 ]);
 
 function looksLikeInPackagePath(tok) {

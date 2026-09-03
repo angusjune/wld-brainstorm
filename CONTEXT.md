@@ -17,7 +17,7 @@ _Avoid_: Wrapper skill, plugin package, provider package
 ### Layers
 
 **Product Profile**:
-The single selected directory holding everything specific to one product — its tokens, component styles, screen corpus, product rules, and bundled knowledge. Runtime uses the fixed project-root `wld-design-profile/` seam when it exists, otherwise the bundled `skills/brainstorm/profile/`; one run never mixes them.
+The single selected directory holding everything specific to one product — its tokens, component styles, screen corpus, product rules, workflow contracts, passes, and deterministic tools. Runtime uses the fixed project-root `wld-design-profile/` seam when it exists, otherwise the bundled `skills/brainstorm/profile/`; one run never mixes them.
 _Avoid_: Theme, tenant, config, plugin, preset, brand pack
 
 **Platform Pack**:
@@ -50,13 +50,9 @@ _Avoid_: Embedded workflow, filter, post-process, hook
 A path the user may choose after approving a screen or flow. Shared branches live in `references/branches/`; product branches are declared by the profile and live in `profile/branches/`.
 _Avoid_: Embedded workflow, mode, plugin, exporter
 
-### Product knowledge
+### Design evidence
 
 **Screen Corpus**:
 The production screen templates a profile ships. It is the ground truth the model copies from rather than inventing against, and it is what most determines output quality.
 Every authoring worker receives the active corpus as read-only design evidence; stage-local authorities decide which facts and invariants apply to the current task.
 _Avoid_: Examples, samples, fixtures, mockups
-
-**Bundled Product Knowledge Snapshot**:
-The product rules and structured specs packaged under the product profile. It is treated as a read-only local artifact unless a maintainer intentionally prepares a refreshed bundle.
-_Avoid_: Submodule, upstream PM repository, external knowledge base

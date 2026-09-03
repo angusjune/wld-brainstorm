@@ -17,7 +17,7 @@ const fs = require('fs');
 const path = require('path');
 
 const CHROME_TAG = 'preview-chrome';
-const CHROME_STYLE_RE = /<style[^>]*>[\s\S]*?<\/style>/i;
+const CHROME_STYLE_RE = /<style[^>]*>([\s\S]*?)<\/style>/i;
 
 // The attrs group must skip over quoted attribute values before it looks for
 // the tag's real closing '>' — an attribute like trailing="<svg>...</svg>"
@@ -28,29 +28,13 @@ const CHROME_TAG_RE = new RegExp(
   'gi',
 );
 
-// The profile's machine-readable config is the frontmatter block at the top of
-// the selected PROFILE.md: flat `key: value` lines between two `---` fences.
-function readProfileConfig(profileDir) {
-  let text = '';
-  try { text = fs.readFileSync(path.join(profileDir, 'PROFILE.md'), 'utf8'); } catch {}
-  const block = text.match(/^---\n([\s\S]*?)\n---/);
-  const config = {};
-  if (block) {
-    for (const line of block[1].split('\n')) {
-      const m = line.match(/^([\w-]+):\s*(.*)$/);
-      if (m) config[m[1]] = m[2].trim();
-    }
-  }
-  return config;
-}
-
 /**
  * The pack's chrome.html carries one <style> block (injected once into every
  * served page) and the nav markup stamped into each <preview-chrome> tag. A
  * pack without chrome.html — or no platform at all — is chrome-less: `markup`
  * is empty and the tag expands to nothing.
  *
- * Returns `{ style, markup }`, where `style` is the pack's raw <style> tag and
+ * Returns `{ css, markup }`, where `css` is the pack's stylesheet text and
  * `markup` is the nav markup with every opening tag carrying `data-bs-chrome`.
  * That stamp is load-bearing: the annotation client uses it to keep chrome
  * un-annotatable, and the browser contract counts it to verify expansion.
@@ -62,7 +46,7 @@ function loadChrome(platformDir) {
   }
 
   const styleMatch = chromeHtml.match(CHROME_STYLE_RE);
-  const style = styleMatch ? styleMatch[0] : '';
+  const css = styleMatch ? styleMatch[1] : '';
   // The <style> block is stripped before stamping, so stamping every opening
   // tag cannot accidentally alter CSS text or the pack's layout.
   const markup = chromeHtml
@@ -70,7 +54,7 @@ function loadChrome(platformDir) {
     .trim()
     .replace(/<([a-zA-Z][\w-]*)(?=[\s>/])/g, '<$1 data-bs-chrome');
 
-  return { style, markup };
+  return { css, markup };
 }
 
 function escapeHtml(value) {
@@ -113,11 +97,7 @@ function expandChrome(html, chromeMarkup) {
 }
 
 module.exports = {
-  CHROME_TAG,
   escapeHtml,
   expandChrome,
   loadChrome,
-  parseTagAttrs,
-  readProfileConfig,
-  renderChrome,
 };

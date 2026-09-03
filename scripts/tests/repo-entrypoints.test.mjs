@@ -69,14 +69,14 @@ test('all plugin manifests use the root package version', () => {
   assert.equal(entry?.version, expected);
 });
 
-test('setup-profile documents the workflow contract accepted by the validator', () => {
+test('setup-profile documents the workflow invariants accepted by the validator', () => {
   const reference = fs.readFileSync(
     path.join(REPO, 'skills/setup-profile/references/add-templates.md'),
     'utf8',
   );
 
-  assert.match(reference, /`authorityFiles`/);
-  assert.doesNotMatch(reference, /`contextFiles`/);
+  assert.match(reference, /`requiredTextPerScreen`/);
+  assert.match(reference, /`brandIdentitySelectors`/);
 });
 
 test('repository guidance uses the current plugin layout and runnable commands', () => {

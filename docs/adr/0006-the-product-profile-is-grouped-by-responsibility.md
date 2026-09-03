@@ -4,7 +4,6 @@ We organize `skills/brainstorm/profile/` by the responsibility and lifecycle of 
 
 - `screens/` is the production screen corpus and stays at the profile root because it is the primary authoring input and the most frequently read directory.
 - `design-system/` owns tokens, reusable component styles, and icons.
-- `knowledge/` owns the optional knowledge bridge plus its read-only memory cache.
 - `quality/` owns workflow contracts, the optional product rule pack, passes, and deterministic tools.
 
 The root keeps only the profile entry documents and high-value corpora. Runtime selection remains outside the profile contents at the one fixed workspace seam.

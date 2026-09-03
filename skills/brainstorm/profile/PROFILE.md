@@ -71,7 +71,7 @@ Production-accurate HTML in `profile/screens/`, exported from Figma. **This tabl
 
 ### Principles
 
-1. **One gold action per screen** — the gold accent is the single most powerful visual element. Reserve it for exactly one primary CTA per screen; all other actions use secondary or outline styles. The production dual-offer state is the explicit exception: its two mutually exclusive offer cards each keep their gold `借钱` action.
+1. **Every screen should have an action** — the gold accent is the single most powerful visual element. Generally, reserve it for exactly one primary CTA per screen; all other actions use secondary or outline styles. But this rule can be broken if there's a strong reason.
 2. **Hierarchy through opacity, not color** — three opacity levels on black (0.9 / 0.5 / 0.35) create the reading order. Avoid colored text except links (`--wld-info-500`) and promotional highlights (`--wld-emphasis-500` / `--wld-promo-500`).
 3. **Earn every pixel** — no decorative filler. Remove background patterns, "温馨提示" boilerplate, redundant icons, and anything that doesn't help the user decide or act. If text can be shorter, make it shorter (body text ≤15 characters where possible).
 4. **WeChat-native context** — mockups keep the presentation-only preview chrome; users should never feel they've left WeChat.
@@ -81,11 +81,11 @@ Production-accurate HTML in `profile/screens/`, exported from Figma. **This tabl
 
 - Body: `var(--wld-font-family)`. Numbers: `var(--wld-font-number)` (WeChat Sans SS) — only for large currency amounts.
 - Headlines 20–24px semibold; body 14–16px regular; 12px captions sparingly, for hints only. Hierarchy comes from opacity, not competing weights.
-- **Large currency amounts:** 44px, **weight 500** (not semibold), `letter-spacing: -0.5px`, `line-height: 1.2`. The ¥ prefix may be smaller (20px, as in the dual-offer cards). The 预估可借 label above the amount is 14px semibold.
+- **Large currency amounts:** 44px, **weight 500** (not semibold), `letter-spacing: -0.5px`, `line-height: 1.2`. The ¥ prefix may be smaller (20px, as in the dual-offer cards). The 预估可借 label above the amount is 14px semibold. Write amounts without thousands separators (`¥60000`, never `¥60,000`).
 
 ### Elevation
 
-Minimal shadows: cards may use `var(--wld-shadow-card)`; avoid heavy drop shadows. Depth comes from border contrast and surface color variation.
+Minimal shadows: cards may use `var(--wld-shadow-card)`; avoid heavy drop shadows. Depth comes from border contrast and surface color variation. Dividers are 0.5px (`--wld-divider`); avoid borders 2px or thicker.
 
 ### Component notes
 
@@ -96,30 +96,10 @@ The values live in `profile/design-system/tokens.css` and the CSS lives in `prof
 - **Checkbox:** round or square (2px radius), 20px or 16px. Checked = gold background + black check mark SVG:
   `<svg viewBox="0 0 16 16" fill="none"><path d="M4 8.5l2.5 2.5L12 5" stroke="rgba(0,0,0,0.9)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`
 - **Radio:** round only. Checked = gold border + gold inner dot (10px) — NOT a gold-filled background.
-- **Info icon:** 18×18 SVG circle (stroke `rgba(0,0,0,0.35)`, 1px) with a centered "i" (11px, semibold, same color). Never emoji or unicode.
+- **Icons:** use the profile's icon set or inline SVG; never use emoji or Unicode symbols.
+- **Info icon:** 18×18 SVG circle (stroke `rgba(0,0,0,0.35)`, 1px) with a centered "i" (11px, semibold, same color).
 - **Status icons:** 60×60 gold circles; icon tint is black (`rgba(0,0,0,0.9)`).
 - **Buttons loading:** text becomes invisible and the spinner appears centered — never text + spinner together.
-
----
-
-## Product laws
-
-Non-negotiable. These win over anything a template appears to show.
-
-- **Text on gold is never white.** Always `rgba(0,0,0,0.9)` (`--wld-text-on-theme`).
-- **Buttons are always pill-shaped** (`border-radius: 999px`). Never squared.
-- **Quick-amount chips are the exception:** `border-radius: 4px`, NOT `999px`.
-- **Background depends on the screen.** The home offer states use `#FFFFFF` on `.wld-page` (and a white navbar). The overdue home state and every inner/detail screen use the default `#F5F5F5` — 逾期 also matches its navbar to the page. Check the template you are copying.
-- **No artificial urgency.** No `立即领取`, countdowns, `仅剩`, `秒杀`, or pressure language.
-- **No thousands separators.** Production writes `¥60000`, never `¥60,000` — consistently on every screen.
-- **Large currency amounts are `font-weight: 500`**, not semibold.
-- **Never `font-family: sans-serif`.** Use `var(--wld-font-family)`.
-- **Body text is never `#000`.** Use the opacity scale (`--wld-text-primary/-secondary/-tertiary`).
-- **Dividers are 0.5px** (`--wld-divider`); no thick borders (2px+) on elements.
-- **No emojis anywhere.** Use the profile's icon set or inline SVGs.
-- **Home screens keep the tab bar** (借钱 / 我的).
-- **Required rate, agreement, repayment and risk text stays** whenever the template has it.
-- **One primary gold CTA per screen.** The production dual-offer state is the explicit exception described above.
 
 ### Canonical CTA forms
 
@@ -143,29 +123,21 @@ Use the placeholder from the production template:
 <preview-chrome variant="home" title="微粒贷" nav-bg="var(--wld-bg)"></preview-chrome>  <!-- 逾期: navbar matches the grey page -->
 ```
 
+Home screens keep the 借钱 / 我的 tab bar. The home offer states use `#FFFFFF` for `.wld-page` and the navbar; the overdue home state and every inner/detail screen use the default `#F5F5F5`. Check the template being copied for the exact combination.
+
 Never hand-write status bar, navbar, capsule, or back-arrow markup. The server expands the placeholder. This chrome is presentation only — it is not WLD production code.
 
 ### Screen-specific styles
 
 多个生产模板共用的样式放在 `profile/design-system/components.css`；仅属于单个页面的样式保留在模板底部的 `<style>` 中（例如 `.wld-loan-amount`）。改造模板时必须同时保留其局部样式；同一方案页只保留一份局部 CSS，禁止为每个方案重复复制。
 
----
-
-## Product rules and pitfalls
-
-`profile/quality/workflow-contracts.json` declares the exact knowledge context for each template. When it includes `profile/knowledge/README.md` and memory-cache files, read them and apply that page's COMP_ID filter before generating solutions. The same declared context is supplied to both `compose` and `rework`.
-
-Patterns describe state splits, hidden product variants, and default-selection rules the visual template alone does not capture (e.g. 首借/非首借 keyboard CTA differs; the 期数 sheet has two independent variants). Pitfalls are must-avoid constraints, not cleanup suggestions.
-
-If a rule conflicts with the template, **the rule wins** — flag the conflict to the user. Templates without mapped knowledge omit those files from their workflow contract. A declared context file must exist; repair an incomplete profile instead of silently dropping it.
-
-**Do not edit `profile/knowledge/memory-cache/` during normal use** — it is a bundled product knowledge snapshot.
+Keep every rate, agreement, repayment, and risk disclosure required by the selected template's workflow contract.
 
 ---
 
 ## Passes
 
-Run these in Steps 4 and 5, after the shared Simplify pass, before showing anything to the user.
+Run these in Step 4 during the finishing cycle, before showing anything to the user.
 
 | Pass | Doc | Notes |
 |------|-----|-------|
@@ -175,39 +147,12 @@ Run these in Steps 4 and 5, after the shared Simplify pass, before showing anyth
 
 ## Branches
 
-This profile declares no additional product branches. A profile that needs product-specific Step 6 paths may create workflow documents under `profile/branches/` and declare them in this optional table:
+This profile declares no additional product branches. A profile that needs product-specific Step 5 paths may create workflow documents under `profile/branches/` and declare them in this optional table:
 
 | Branch | Doc | Notes |
 |--------|-----|-------|
 
 The branch rows are offered in table order. Keep the table absent or empty when the product contributes no branches; shared branches remain available independently.
-
----
-
-## Solution archetypes
-
-The UX Strategy directions for this product's screens. `references/solution-archetypes.md` holds the method (UX vs Visual modes, caption format) and the visual archetypes; these are the product-specific ones it points here for.
-
-### Loan amount / borrowing entry
-
-- **Amount-first:** fastest path to entering amount and submitting
-- **Repayment-confidence:** foregrounds monthly repayment, term, and repayment schedule before CTA
-- **Offer-comparison:** helps compare term, rate, and discount tradeoffs
-- **Guardrail-first:** makes eligibility, limits, disabled states, or risk explanations clear before action
-
-### Home / personal center
-
-- **Credit-first:** makes available credit the dominant object
-- **Task-first:** makes the next likely action obvious based on user state
-- **Repayment-aware:** balances borrowing entry with due amount and repayment status
-- **Offer-aware:** lets promotion or preferential rate explain why the user should continue, without pressure
-
-### Repayment / due amount
-
-- **Receipt-first:** makes selected loans, totals, and due items easy to verify
-- **Risk-reduction:** emphasizes what changes after repayment and whether any fee/risk remains
-- **Batch-action:** optimizes selecting or clearing multiple loans quickly
-- **Status-first:** prioritizes paid, overdue, processing, or failed repayment status
 
 ---
 

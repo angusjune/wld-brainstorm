@@ -255,6 +255,16 @@ try {
   if (!frameCss.includes('.phone-mockup')) fail('frame asset is missing phone mockup styles');
   pass('preview frame is served as a standalone stylesheet');
 
+  const iconResponse = await fetch(`${info.url}/profile/design-system/assets/chevron-right.svg`);
+  if (!iconResponse.ok || !iconResponse.headers.get('content-type')?.includes('image/svg+xml')) {
+    fail('profile SVG asset was not served with its image content type');
+  }
+  const traversalResponse = await fetch(`${info.url}/assets/..%2Fprofile%2FPROFILE.md`);
+  if (traversalResponse.status !== 403) {
+    fail(`static mount traversal returned HTTP ${traversalResponse.status} instead of 403`);
+  }
+  pass('static assets preserve content types and mount containment');
+
   const mountRoots = ['/assets/', '/profile/', ...(platform ? ['/platform/'] : [])];
   for (const mountRoot of mountRoots) {
     const directoryResponse = await fetch(`${info.url}${mountRoot}`);

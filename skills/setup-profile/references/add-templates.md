@@ -7,10 +7,10 @@ Use this branch to turn user-supplied design evidence into additive production t
 Read each available workspace-profile file before drafting HTML; record missing or invalid entries instead of stopping immediately:
 
 - `PROFILE.md`, including its frontmatter, screen table, routing table, design language, product laws, canonical actions, and platform chrome rules
-- `quality/workflow-contracts.json`, including the exact generation context and per-screen invariants for related templates
+- `quality/workflow-contracts.json`, including the per-screen invariants for related templates
 - `design-system/tokens.css` and `design-system/components.css`
 - the closest existing files under `screens/`
-- any mapped product knowledge or required quality passes relevant to the requested screen
+- any required quality passes relevant to the requested screen
 
 Extract the screen evidence from any source the user supplied:
 
@@ -56,14 +56,13 @@ After the candidates are ready:
 3. Add or refine rows under **Which template to read** so user intent deterministically reaches each new template.
 4. Update canonical-template or CTA guidance only when the new source establishes it.
 5. Add the exact filename to `quality/workflow-contracts.json`:
-   - `authorityFiles`: only profile-relative files that are necessary for this template beyond `PROFILE.md`, the template itself, design-system CSS, and this contract file. Do not add broad directories.
    - `requiredTextPerScreen`: stable CTA, legal, risk, agreement, or other source facts that every generated adaptation must preserve. Use the smallest sufficient list; do not freeze optional marketing copy.
    - `requiredAssetsPerScreen`: optional stable asset URL substrings that every adaptation must retain.
    - `brandIdentitySelectors`: optional simple class selectors for identity-bearing regions that every rework must retain. Declare the smallest stable anchors; their layout, typography, spacing, shape, modifier classes, and scoped styling remain editable.
    - `diversitySelectors`: optional simple class selectors for essential product capabilities that each solution must contain exactly once.
 6. Preserve the order and content of all unrelated rows, sections, and workflow contracts.
 
-**Completion criterion:** the screen table, `screens/` directory, and workflow-contract keys match in both directions; each template has one clear routing rule and an explicit context/invariant contract.
+**Completion criterion:** the screen table, `screens/` directory, and workflow-contract keys match in both directions; each template has one clear routing rule and an explicit invariant contract.
 
 ## 4. Validate and preview
 

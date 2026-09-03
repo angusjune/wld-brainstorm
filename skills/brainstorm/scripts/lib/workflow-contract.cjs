@@ -1,8 +1,10 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
+const { readProfileConfig } = require('./profile-selection.cjs');
 
-const CONTRACT_VERSION = 3;
+const CONTRACT_VERSION = 4;
+const PROFILE_CONTRACT_VERSION = 4;
 const CONTRACT_FILENAME = 'generation-contract.json';
 const CONTEXT_FILENAME = 'context-manifest.json';
 const RESULT_FILENAME = 'workflow-result.json';
@@ -59,17 +61,6 @@ function writeJson(file, value) {
   fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`);
 }
 
-function readProfileConfig(profileDir) {
-  const text = fs.readFileSync(path.join(profileDir, 'PROFILE.md'), 'utf8');
-  const block = text.match(/^---\r?\n([\s\S]*?)\r?\n---/);
-  const config = {};
-  for (const line of (block ? block[1] : '').split(/\r?\n/)) {
-    const match = line.match(/^([\w-]+):\s*(.*)$/);
-    if (match) config[match[1]] = match[2].trim();
-  }
-  return config;
-}
-
 function workflowPaths(runDir, stage) {
   const resolvedRunDir = path.resolve(runDir);
   const absoluteRunDir = fs.existsSync(resolvedRunDir) ? fs.realpathSync(resolvedRunDir) : resolvedRunDir;
@@ -115,19 +106,15 @@ function resolveRun(runDir, stage) {
 function loadWorkflowContracts(profileDir) {
   const file = path.join(profileDir, 'quality', 'workflow-contracts.json');
   const payload = readJson(file, 'profile workflow contracts');
-  if (payload.version !== CONTRACT_VERSION || !payload.templates || typeof payload.templates !== 'object') {
-    throw new Error(`profile workflow contracts must use version ${CONTRACT_VERSION}`);
+  if (payload.version !== PROFILE_CONTRACT_VERSION || !payload.templates || typeof payload.templates !== 'object') {
+    throw new Error(`profile workflow contracts must use version ${PROFILE_CONTRACT_VERSION}`);
   }
   for (const [template, contract] of Object.entries(payload.templates)) {
     safeTemplateName(template);
     if (!contract || typeof contract !== 'object') throw new Error(`workflow contract for ${template} must be an object`);
-    if (Object.hasOwn(contract, 'contextFiles')) {
-      throw new Error(`workflow contract ${template}.contextFiles is obsolete; use authorityFiles`);
-    }
-    for (const key of ['authorityFiles', 'requiredTextPerScreen']) {
-      if (!Array.isArray(contract[key]) || contract[key].some((value) => typeof value !== 'string')) {
-        throw new Error(`workflow contract ${template}.${key} must be an array of strings`);
-      }
+    if (!Array.isArray(contract.requiredTextPerScreen)
+      || contract.requiredTextPerScreen.some((value) => typeof value !== 'string')) {
+      throw new Error(`workflow contract ${template}.requiredTextPerScreen must be an array of strings`);
     }
     for (const key of ['requiredAssetsPerScreen', 'brandIdentitySelectors', 'diversitySelectors']) {
       if (contract[key] !== undefined
@@ -213,13 +200,12 @@ function initialCaptions(screenCount) {
   }));
 }
 
-function presentationContent(screens, captions, options = {}) {
+function presentationContent(screens, captions) {
   if (!Array.isArray(screens) || !Array.isArray(captions) || screens.length !== captions.length) {
     throw new Error('screen fragments and captions must have the same length');
   }
-  const modifier = screens.length === 1 ? ' presentation--single' : options.flow ? ' phone-gallery--flow' : '';
-  const separator = options.flow ? '\n  <div class="phone-flow-arrow">→</div>\n' : '\n';
-  const slides = screens.map((screen, index) => phoneSlide(screen, captions[index])).join(separator);
+  const modifier = screens.length === 1 ? ' presentation--single' : '';
+  const slides = screens.map((screen, index) => phoneSlide(screen, captions[index])).join('\n');
   return `<div class="phone-gallery${modifier}">\n${slides}\n</div>\n`;
 }
 
@@ -453,29 +439,7 @@ function solutionQualityReport({
   };
 }
 
-function solutionQualityFindings(options) {
-  return solutionQualityReport(options).findings;
-}
-
-function selectDeclaredAuthorities(profileDir, authorityFiles = []) {
-  const selected = [];
-  for (const relative of authorityFiles) {
-    if (typeof relative !== 'string' || path.isAbsolute(relative) || relative.split(/[\\/]/).includes('..')) {
-      throw new Error(`invalid profile authority file: ${relative}`);
-    }
-    if (relative.split(/[\\/]/)[0] === 'screens') {
-      throw new Error(`profile authority file must not be a screen template: ${relative}`);
-    }
-    const absolute = path.join(profileDir, relative);
-    if (!fs.existsSync(absolute) || !fs.statSync(absolute).isFile()) {
-      throw new Error(`declared profile authority file does not exist: ${relative}`);
-    }
-    selected.push(contextEntry(profileDir, absolute));
-  }
-  return selected;
-}
-
-function selectAuthorities({ profileDir, skillDir, kind, authorityFiles = [] }) {
+function selectAuthorities({ profileDir, skillDir, kind }) {
   const candidates = [
     path.join(profileDir, 'PROFILE.md'),
     path.join(profileDir, 'design-system', 'tokens.css'),
@@ -486,10 +450,7 @@ function selectAuthorities({ profileDir, skillDir, kind, authorityFiles = [] }) 
   const defaults = [...new Set(candidates)]
     .filter((file) => fs.existsSync(file))
     .map((file) => contextEntry(profileDir, file));
-  return [...new Map(
-    [...defaults, ...selectDeclaredAuthorities(profileDir, authorityFiles)]
-      .map((entry) => [entry.absolute, entry]),
-  ).values()];
+  return defaults;
 }
 
 function selectScreenCorpus(profileDir, primaryTemplate = null) {
@@ -699,26 +660,16 @@ function parseCodexUsage(raw) {
 }
 
 module.exports = {
-  CONTRACT_FILENAME,
   CONTRACT_VERSION,
-  CONTEXT_FILENAME,
-  DESIGN_CONTEXT_FILENAME,
-  RESULT_FILENAME,
-  SELECTION_FILENAME,
-  SELECTION_STYLES_FILENAME,
-  USAGE_FILENAME,
-  WORKER_BRIEF_FILENAME,
+  PROFILE_CONTRACT_VERSION,
   assembleDocument,
   assertScreenFragment,
-  classTokenCount,
   compactDesignContext,
   cssVariableDefinitions,
   extractTemplateParts,
-  fragmentNames,
   initialCaptions,
   initialScreen,
   solutionScreen,
-  solutionQualityFindings,
   solutionQualityReport,
   unresolvedCssVariables,
   loadWorkflowContracts,
@@ -726,12 +677,9 @@ module.exports = {
   parseCodexUsage,
   presentationContent,
   readJson,
-  readProfileConfig,
   resolveRun,
   safeTemplateName,
-  safeStageName,
   selectAuthorities,
-  selectDeclaredAuthorities,
   selectScreenCorpus,
   sha256File,
   screenSegments,

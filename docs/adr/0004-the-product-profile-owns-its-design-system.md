@@ -1,6 +1,6 @@
 # The product profile owns its design system
 
-The selected product profile holds everything specific to one product — tokens, component styles, the screen corpus, product rules, product knowledge, workflow contracts, passes, and deterministic product tools. Switching product means replacing the profile as a unit.
+The selected product profile holds everything specific to one product — tokens, component styles, the screen corpus, product rules, workflow contracts, passes, and deterministic product tools. Switching product means replacing the profile as a unit.
 
 The non-obvious part is that **`profile/design-system/components.css` belongs to the profile**, despite looking shared. Its 48 class names are generic (`btn`, `card`, `page`, `tabbar`), which invites a future maintainer to hoist it into shared machinery. Do not. The names are generic; the design decisions are not:
 

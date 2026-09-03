@@ -64,7 +64,6 @@ async function stopServer(child) {
 function createFixtureProfile(projectDir) {
   const profileDir = path.join(projectDir, 'wld-design-profile');
   fs.mkdirSync(path.join(profileDir, 'design-system'), { recursive: true });
-  fs.mkdirSync(path.join(profileDir, 'knowledge'), { recursive: true });
   fs.mkdirSync(path.join(profileDir, 'quality'), { recursive: true });
   fs.mkdirSync(path.join(profileDir, 'screens'), { recursive: true });
   fs.writeFileSync(path.join(profileDir, 'PROFILE.md'), `---
@@ -107,19 +106,16 @@ tokenPrefix: fixture
   border: 1px solid var(--fixture-divider);
 }
 `);
-  fs.writeFileSync(path.join(profileDir, 'knowledge/guidance.md'), '# Fixture guidance\n\nPreserve the required disclosure.\n');
   fs.writeFileSync(path.join(profileDir, 'quality/workflow-contracts.json'), `${JSON.stringify({
-    version: 3,
+    version: 4,
     templates: {
       'decision.html': {
-        authorityFiles: ['knowledge/guidance.md'],
         requiredTextPerScreen: ['Required disclosure'],
         requiredAssetsPerScreen: [],
         brandIdentitySelectors: ['.brand-hero'],
         diversitySelectors: ['.decision-summary', '.performance-evidence', '.risk-evidence'],
       },
       'reference.html': {
-        authorityFiles: [],
         requiredTextPerScreen: ['Reference-only account value'],
         requiredAssetsPerScreen: [],
         brandIdentitySelectors: [],
@@ -183,7 +179,6 @@ try {
   assert.ok(prepared.contextSources.every((source) => !source.absolute.includes('SKILL.md')));
   assert.equal(prepared.contextSources[0].role, 'instructions');
   assert.equal(fs.realpathSync(prepared.contextSources[0].absolute), fs.realpathSync(path.join(workflowDir, 'worker-brief.md')));
-  assert.ok(prepared.contextSources.some((source) => source.absolute.endsWith('/knowledge/guidance.md') && source.role === 'authority'));
   const primaryContext = prepared.contextSources.find((source) => source.primary);
   assert.ok(primaryContext.absolute.endsWith('/screens/decision.html'));
   assert.equal(primaryContext.role, 'content-authority');
@@ -218,6 +213,7 @@ try {
   assert.match(brief, /screens\/reference\.html/);
   assert.doesNotMatch(brief, /Every screen must retain:[^\n]*Reference-only account value/);
   const preparedContract = JSON.parse(fs.readFileSync(path.join(workflowDir, 'generation-contract.json'), 'utf8'));
+  assert.equal(preparedContract.version, 4);
   assert.equal(preparedContract.primarySourceRole, 'content-authority');
   assert.deepEqual(preparedContract.referenceTemplates, ['screens/reference.html']);
   assert.ok(fs.existsSync(path.join(fragments, 'solutions.base.css')));
@@ -342,7 +338,6 @@ try {
   assert.equal(exploreContract.brandMode, 'explore');
   assert.match(fs.readFileSync(path.join(exploreDir, 'worker-brief.md'), 'utf8'), /Brand mode: `explore`/);
 
-  const selectedScreen = fs.readFileSync(path.join(fragments, 'solutions.screen-2.html'), 'utf8');
   const selected = run(['select', ...common, '--choice', '2']);
   assert.equal(selected.status, 'selected');
   assert.equal(selected.choice, 2);
@@ -419,40 +414,29 @@ try {
   assert.equal(blankValidation.status, 'passed');
   run(['select', ...blankComposeCommon, '--choice', '2']);
 
-  const blankFinalCommon = ['--run-dir', info.runDir, '--stage', 'blank-page'];
-  const blankPromoted = run([
-    'prepare', ...blankFinalCommon,
-    '--kind', 'screen',
-    '--output', 'blank-page.html:1',
-    '--from-stage', 'blank-page-solutions',
+  const previewCommon = ['--run-dir', info.runDir, '--stage', 'profile-preview'];
+  const preview = run([
+    'prepare', ...previewCommon,
+    '--kind', 'screen', '--template', 'decision.html', '--output', 'preview.html:1',
   ]);
-  assert.equal(blankPromoted.contextSources.length, 1);
-  assert.equal(blankPromoted.contextSources[0].role, 'instructions');
-  run(['assemble', ...blankFinalCommon]);
-  const blankFinalValidation = run(['validate', ...blankFinalCommon]);
-  assert.equal(blankFinalValidation.status, 'passed');
+  assert.equal(preview.status, 'prepared');
+  assert.equal(preview.outputs[0].screenCount, 1);
+  run(['assemble', ...previewCommon]);
+  const previewValidation = run(['validate', ...previewCommon]);
+  assert.equal(previewValidation.status, 'passed');
 
-  const finalCommon = ['--run-dir', info.runDir, '--stage', 'decision-detail'];
-  const promoted = run([
-    'prepare', ...finalCommon,
-    '--kind', 'screen',
-    '--template', 'decision.html',
-    '--output', 'decision-detail.html:1',
+  const obsoleteFlow = run([
+    'prepare', '--run-dir', info.runDir, '--stage', 'obsolete-flow',
+    '--kind', 'flow', '--output', 'flow.html:2',
+  ], 2);
+  assert.match(obsoleteFlow.message, /--kind must be solutions or screen/);
+
+  const obsoletePromotion = run([
+    'prepare', '--run-dir', info.runDir, '--stage', 'obsolete-promotion',
+    '--kind', 'screen', '--template', 'decision.html', '--output', 'decision-detail.html:1',
     '--from-stage', 'solutions',
-  ]);
-  assert.equal(promoted.contextSources.length, 1);
-  assert.equal(
-    fs.realpathSync(promoted.contextSources[0].absolute),
-    fs.realpathSync(path.join(info.stateDir, 'workflow/stages/decision-detail/worker-brief.md')),
-  );
-  assert.ok(promoted.contextBytes < 5_000, `promoted context was ${promoted.contextBytes} bytes`);
-  const promotedScreen = path.join(info.stateDir, 'workflow/stages/decision-detail/fragments/decision-detail.screen-1.html');
-  assert.equal(fs.readFileSync(promotedScreen, 'utf8'), selectedScreen);
-  run(['assemble', ...finalCommon]);
-  const promotedValidation = run(['validate', ...finalCommon]);
-  assert.equal(promotedValidation.status, 'passed');
-  const selectedFinal = run(['select', ...finalCommon, '--choice', '1']);
-  assert.equal(selectedFinal.status, 'selected');
+  ], 2);
+  assert.match(obsoletePromotion.message, /unknown argument: --from-stage/);
 
   const interactive = run(['report', ...common]);
   assert.equal(interactive.executionMode, 'interactive');

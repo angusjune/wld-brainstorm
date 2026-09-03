@@ -1,8 +1,7 @@
 {
-  "version": 3,
+  "version": 4,
   "templates": {
     "个人中心.html": {
-      "authorityFiles": [],
       "requiredTextPerScreen": [
         "借钱须知",
         "实际可借以当次借款审批为准"
@@ -18,7 +17,6 @@
       "diversitySelectors": []
     },
     "个人中心-有借款.html": {
-      "authorityFiles": [],
       "requiredTextPerScreen": [
         "借钱须知",
         "实际可借以当次借款审批为准",
@@ -38,7 +36,6 @@
       ]
     },
     "个人中心-双offer.html": {
-      "authorityFiles": [],
       "requiredTextPerScreen": [
         "借钱须知",
         "实际可借以当次借款审批为准",
@@ -57,7 +54,6 @@
       ]
     },
     "个人中心-单offer.html": {
-      "authorityFiles": [],
       "requiredTextPerScreen": [
         "借钱须知",
         "实际可借以当次借款审批为准"
@@ -73,11 +69,6 @@
       "diversitySelectors": []
     },
     "输入金额.html": {
-      "authorityFiles": [
-        "knowledge/README.md",
-        "knowledge/memory-cache/product-patterns.yaml",
-        "knowledge/memory-cache/common-pitfalls.yaml"
-      ],
       "requiredTextPerScreen": [
         "协议相关",
         "按日计息，次日起可提前还，免违约金",
@@ -96,7 +87,6 @@
       ]
     },
     "提前还清.html": {
-      "authorityFiles": [],
       "requiredTextPerScreen": [
         "全选",
         "总计",
@@ -112,7 +102,6 @@
       ]
     },
     "本期应还.html": {
-      "authorityFiles": [],
       "requiredTextPerScreen": [
         "自动还款"
       ],
@@ -124,7 +113,6 @@
       ]
     },
     "收银台.html": {
-      "authorityFiles": [],
       "requiredTextPerScreen": [
         "银行卡还款",
         "转账还款",
@@ -143,7 +131,6 @@
       ]
     },
     "借款详情.html": {
-      "authorityFiles": [],
       "requiredTextPerScreen": [
         "还款中"
       ],
@@ -155,7 +142,6 @@
       ]
     },
     "欢迎页.html": {
-      "authorityFiles": [],
       "requiredTextPerScreen": [
         "本服务由微众银行提供",
         "查看额度"
@@ -170,7 +156,6 @@
       ]
     },
     "更换还款卡.html": {
-      "authorityFiles": [],
       "requiredTextPerScreen": [
         "每月还款日优先从该卡自动还款",
         "当前还款卡",
@@ -189,7 +174,6 @@
       ]
     },
     "我的Tab.html": {
-      "authorityFiles": [],
       "requiredTextPerScreen": [
         "借还记录",
         "更换还款卡",
@@ -206,7 +190,6 @@
       ]
     },
     "逾期.html": {
-      "authorityFiles": [],
       "requiredTextPerScreen": [
         "逾期信息已上报人行征信",
         "本服务由微众银行提供",

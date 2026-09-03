@@ -7,11 +7,13 @@ import { spawnSync } from 'node:child_process';
 
 import workflow from './lib/workflow-contract.cjs';
 import browser from './lib/browser-contract.cjs';
+import profileSelection from './lib/profile-selection.cjs';
 import telemetry from './lib/session-telemetry.cjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SKILL_DIR = path.resolve(__dirname, '..');
 const PAGE_TEMPLATE = path.join(SKILL_DIR, 'assets', 'page-template.html');
+const { readProfileConfig } = profileSelection;
 const { appendSessionEvent, EVENTS } = telemetry;
 const {
   assembleDocument,
@@ -27,11 +29,9 @@ const {
   parseCodexUsage,
   presentationContent,
   readJson,
-  readProfileConfig,
   resolveRun,
   safeTemplateName,
   selectAuthorities,
-  selectDeclaredAuthorities,
   selectScreenCorpus,
   sha256File,
   solutionScreen,
@@ -45,7 +45,7 @@ const {
 
 function parseArgs(argv) {
   const command = argv[0];
-  const options = { outputs: [], fromStages: [] };
+  const options = { outputs: [] };
   for (let index = 1; index < argv.length; index += 1) {
     const arg = argv[index];
     if (arg === '--run-dir') options.runDir = argv[++index];
@@ -59,8 +59,7 @@ function parseArgs(argv) {
       const split = value.lastIndexOf(':');
       if (split < 1) throw new Error('--output must be <file.html>:<screen-count>');
       options.outputs.push({ file: value.slice(0, split), screenCount: Number(value.slice(split + 1)) });
-    } else if (arg === '--from-stage') options.fromStages.push(argv[++index]);
-    else if (arg === '--choice') options.choice = Number(argv[++index]);
+    } else if (arg === '--choice') options.choice = Number(argv[++index]);
     else if (arg === '--codex-events') options.codexEvents = argv[++index];
     else if (arg === '--chrome') options.chrome = argv[++index];
     else if (arg === '--allow-browser-unavailable') options.allowBrowserUnavailable = true;
@@ -73,7 +72,7 @@ function parseArgs(argv) {
 
 function usage() {
   return `Usage:
-  node scripts/workflow.mjs prepare --run-dir <run> --stage <name> --kind <solutions|screen|flow> --output <file.html>:<count> [--approach <rework|compose>] [--brand-mode <preserve|explore>] [--template <profile-screen.html>] [--output ...] [--from-stage <selected-stage>]
+  node scripts/workflow.mjs prepare --run-dir <run> --stage <name> --kind <solutions|screen> --output <file.html>:<count> [--approach <rework|compose>] [--brand-mode <preserve|explore>] [--template <profile-screen.html>] [--output ...]
   node scripts/workflow.mjs select --run-dir <run> --stage <name> --choice <1-based-index>
   node scripts/workflow.mjs assemble --run-dir <run> --stage <name>
   node scripts/workflow.mjs validate --run-dir <run> --stage <name> [--chrome <path>] [--allow-browser-unavailable]
@@ -138,24 +137,9 @@ function assertImmutableFragments(paths, output) {
   }
 }
 
-function loadSelection(runDir, stage) {
-  const source = loadPrepared(runDir, stage);
-  if (!fs.existsSync(source.paths.selectionFile)) throw new Error(`workflow stage ${source.paths.stage} has no selected direction`);
-  const selection = readJson(source.paths.selectionFile, `workflow selection ${source.paths.stage}`);
-  if (selection.version !== CONTRACT_VERSION || selection.stage !== source.paths.stage) {
-    throw new Error(`workflow selection ${source.paths.stage} is invalid`);
-  }
-  for (const item of [selection.screen, selection.styles]) {
-    if (!item || !fs.existsSync(item.absolute) || sha256File(item.absolute) !== item.sha256) {
-      throw new Error(`selected direction changed after selection: ${item?.file || 'unknown source'}`);
-    }
-  }
-  return { ...source, selection };
-}
-
 function stageBrief({
   paths, kind, approach, template, outputs, authorities, primary, primaryRole, references,
-  inherited, requiredText, requiredAssets, brandMode, brandIdentitySelectors, diversitySelectors,
+  requiredText, requiredAssets, brandMode, brandIdentitySelectors, diversitySelectors,
 }) {
   const templateLabel = template || 'none — compose a profile-grounded new page';
   const lines = [
@@ -163,15 +147,6 @@ function stageBrief({
     `Stage: \`${paths.stage}\` · kind: \`${kind}\` · template: \`${templateLabel}\``, '',
     'Treat this file as the complete mechanical contract for this worker. Use the task in the dispatch prompt for design intent.', '',
   ];
-  if (inherited.length) {
-    const directions = inherited.map((item) => (
-      `choice ${item.selection.choice} from \`${item.paths.stage}\` — ${item.selection.caption.title}: ${item.selection.caption.subtitle}`
-    ));
-    lines.push(
-      `Selected direction${directions.length === 1 ? '' : 's'}: ${directions.join(' · ')}`, '',
-      'The editable fragments are seeded from those choices when their template matches. Preserve their product facts, legal copy, components, and visual language.', '',
-    );
-  }
   if (primary) {
     lines.push(
       primaryRole === 'content-authority'
@@ -230,7 +205,7 @@ function stageBrief({
 function prepare(options) {
   const started = performance.now();
   if (!options.runDir || !options.stage || !options.kind) throw new Error('prepare requires --run-dir, --stage, and --kind');
-  if (!['solutions', 'screen', 'flow'].includes(options.kind)) throw new Error('--kind must be solutions, screen, or flow');
+  if (!['solutions', 'screen'].includes(options.kind)) throw new Error('--kind must be solutions or screen');
   if (options.kind === 'solutions' && !['rework', 'compose'].includes(options.approach)) {
     throw new Error('solutions prepare requires --approach rework or compose');
   }
@@ -239,9 +214,7 @@ function prepare(options) {
   const brandMode = options.brandMode || 'preserve';
   if (!['preserve', 'explore'].includes(brandMode)) throw new Error('--brand-mode must be preserve or explore');
   if (!options.template && options.approach === 'rework') throw new Error('rework requires --template');
-  if (!options.template && options.kind !== 'solutions' && options.fromStages.length === 0) {
-    throw new Error('prepare without --template requires compose solutions or --from-stage');
-  }
+  if (!options.template && options.kind !== 'solutions') throw new Error('screen prepare requires --template');
   const { paths, info, profileDir } = resolveRun(options.runDir, options.stage);
   if (fs.existsSync(paths.contractFile)) throw new Error('workflow is already prepared for this run');
   const template = options.template ? safeTemplateName(options.template) : null;
@@ -251,7 +224,6 @@ function prepare(options) {
   if (templateFile && !fs.existsSync(templateFile)) throw new Error(`template is not in the active profile: ${template}`);
   const contracts = loadWorkflowContracts(profileDir);
   const templateContract = template ? contracts.payload.templates[template] : {
-    authorityFiles: [],
     requiredTextPerScreen: [],
     requiredAssetsPerScreen: [],
     brandIdentitySelectors: [],
@@ -263,9 +235,6 @@ function prepare(options) {
   const source = templateFile
     ? extractTemplateParts(fs.readFileSync(templateFile, 'utf8'))
     : { content: '', styles: '' };
-  const inherited = options.fromStages.map((stage) => loadSelection(paths.runDir, stage));
-  if (inherited.length && options.kind === 'solutions') throw new Error('a solutions stage cannot inherit a selected direction');
-  const canPromote = inherited.length === 1 && (inherited[0].contract.template || null) === template;
   const rework = options.kind === 'solutions' && options.approach === 'rework';
   const tokenFiles = [
     path.join(profileDir, 'design-system', 'tokens.css'),
@@ -279,25 +248,16 @@ function prepare(options) {
   fs.mkdirSync(paths.screenDir, { recursive: true });
   for (const output of outputs) {
     for (const [index, name] of output.fragments.screens.entries()) {
-      const seed = inherited[index] || (inherited.length === 1 ? inherited[0] : null);
-      const initial = seed && (canPromote || options.kind === 'flow')
-        ? fs.readFileSync(seed.selection.screen.absolute, 'utf8')
-        : rework
-          ? solutionScreen(source.content, index, profileConfig.pageClass)
-          : initialScreen(source.content, index, {
-            scaffoldOnly: options.kind === 'solutions' && output.screenCount > 1,
-            pageClass: profileConfig.pageClass,
-          });
+      const initial = rework
+        ? solutionScreen(source.content, index, profileConfig.pageClass)
+        : initialScreen(source.content, index, {
+          scaffoldOnly: options.kind === 'solutions' && output.screenCount > 1,
+          pageClass: profileConfig.pageClass,
+        });
       fs.writeFileSync(path.join(paths.fragmentDir, name), initial);
     }
-    const captions = initialCaptions(output.screenCount).map((caption, index) => {
-      const seed = inherited[index] || (inherited.length === 1 ? inherited[0] : null);
-      return seed ? seed.selection.caption : caption;
-    });
-    writeJson(path.join(paths.fragmentDir, output.fragments.captions), captions);
-    const styles = canPromote
-      ? fs.readFileSync(inherited[0].selection.styles.absolute, 'utf8')
-      : rework ? '' : source.styles;
+    writeJson(path.join(paths.fragmentDir, output.fragments.captions), initialCaptions(output.screenCount));
+    const styles = rework ? '' : source.styles;
     const baseStyles = rework ? source.styles : '';
     fs.writeFileSync(path.join(paths.fragmentDir, output.fragments.baseStyles), `${baseStyles.trim()}\n`);
     fs.writeFileSync(path.join(paths.fragmentDir, output.fragments.styles), `${styles.trim()}\n`);
@@ -305,9 +265,7 @@ function prepare(options) {
     output.baseStylesSha256 = sha256File(path.join(paths.fragmentDir, output.fragments.baseStyles));
   }
   let authorities;
-  if (canPromote) {
-    authorities = [];
-  } else if (rework) {
+  if (rework) {
     writeJson(paths.designContextFile, compactDesignContext({
       template,
       sourceContent: source.content,
@@ -336,7 +294,6 @@ function prepare(options) {
           bytes: fs.statSync(file).size,
           sha256: sha256File(file),
         })),
-      ...selectDeclaredAuthorities(profileDir, templateContract.authorityFiles || []),
     ];
     authorities = [...new Map(reworkContext.map((entry) => [entry.absolute, entry])).values()];
   } else {
@@ -344,34 +301,21 @@ function prepare(options) {
       profileDir,
       skillDir: SKILL_DIR,
       kind: options.kind,
-      authorityFiles: templateContract.authorityFiles || [],
     });
   }
-  if (!canPromote) {
-    for (const item of inherited) {
-      authorities.push(item.selection.screen, item.selection.styles, {
-        file: path.relative(profileDir, item.paths.selectionFile).replaceAll(path.sep, '/'),
-        absolute: item.paths.selectionFile,
-        bytes: fs.statSync(item.paths.selectionFile).size,
-        sha256: sha256File(item.paths.selectionFile),
-      });
-    }
-  }
-  const corpus = canPromote
-    ? { primary: null, references: [] }
-    : selectScreenCorpus(profileDir, template);
+  const corpus = selectScreenCorpus(profileDir, template);
   const primaryRole = corpus.primary && options.kind === 'solutions' && options.approach === 'compose'
     ? 'design-reference'
     : corpus.primary ? 'content-authority' : null;
-  const requiredText = options.kind === 'flow' ? [] : templateContract.requiredTextPerScreen || [];
-  const requiredAssets = options.kind === 'flow' ? [] : templateContract.requiredAssetsPerScreen || [];
+  const requiredText = templateContract.requiredTextPerScreen || [];
+  const requiredAssets = templateContract.requiredAssetsPerScreen || [];
   const brandIdentitySelectors = options.kind === 'solutions'
     ? templateContract.brandIdentitySelectors || [] : [];
   const diversitySelectors = options.kind === 'solutions'
     ? templateContract.diversitySelectors || [] : [];
   fs.writeFileSync(paths.workerBriefFile, stageBrief({
     paths, kind: options.kind, approach: options.approach, template, outputs, authorities,
-    primary: corpus.primary, primaryRole, references: corpus.references, inherited,
+    primary: corpus.primary, primaryRole, references: corpus.references,
     requiredText, requiredAssets, brandMode, brandIdentitySelectors, diversitySelectors,
   }));
   const context = [{
@@ -388,14 +332,6 @@ function prepare(options) {
   );
   const uniqueContext = [...new Map(context.map((entry) => [entry.absolute, entry])).values()];
   const sources = uniqueContext.map((entry) => ({ ...entry }));
-  if (canPromote) {
-    for (const item of [inherited[0].selection.screen, inherited[0].selection.styles, {
-      file: path.relative(paths.runDir, inherited[0].paths.selectionFile).replaceAll(path.sep, '/'),
-      absolute: inherited[0].paths.selectionFile,
-      bytes: fs.statSync(inherited[0].paths.selectionFile).size,
-      sha256: sha256File(inherited[0].paths.selectionFile),
-    }]) sources.push({ ...item, role: 'promotion-source' });
-  }
   if (templateFile && !sources.some((entry) => entry.absolute === templateFile)) {
     sources.push({
       file: `screens/${template}`,
@@ -452,11 +388,6 @@ function prepare(options) {
     brandIdentitySelectors,
     diversitySelectors,
     knownCssVariables,
-    inheritedFrom: inherited.map((item) => ({
-      stage: item.paths.stage,
-      choice: item.selection.choice,
-      promoted: canPromote,
-    })),
     outputs,
     sources,
     contextManifest: path.relative(paths.workflowDir, paths.contextFile),
@@ -554,7 +485,7 @@ function assemble(options) {
     if (contract.kind === 'solutions' && captions.filter((caption) => caption.recommended).length !== 1) {
       throw new Error(`${output.file} captions must recommend exactly one option`);
     }
-    const content = presentationContent(screens, captions, { flow: contract.kind === 'flow' });
+    const content = presentationContent(screens, captions);
     const html = assembleDocument(
       pageTemplate,
       content,
@@ -626,7 +557,7 @@ async function validate(options) {
       const captions = validateCaptions(readJson(captionsFile, `${output.file} captions`), output.screenCount);
       expected = assembleDocument(
         pageTemplate,
-        presentationContent(screens, captions, { flow: contract.kind === 'flow' }),
+        presentationContent(screens, captions),
         outputStyles(paths, output),
       );
     } catch (error) {
