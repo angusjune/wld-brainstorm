@@ -131,7 +131,62 @@ async function inspectPage({ url, pageClass, expectedScreens, chromePath, screen
       const phones = exactClass('phone-mockup');
       const phoneScreens = exactClass('phone-screen');
       const pages = exactClass(${JSON.stringify(pageClass)});
+
+      // Coarse "how does this screen read at a glance" signature, measured in
+      // the first viewport of each phone. Two options that match on every field
+      // present the same layout even when their markup differs.
+      const band = (value) => Math.round(value / 60);
+      const signature = (root) => {
+        const rect = root.getBoundingClientRect();
+        const inFirstViewport = (element) => {
+          const box = element.getBoundingClientRect();
+          return box.top - rect.top < rect.height && box.width > 0 && box.height > 0;
+        };
+        let focalPx = 0;
+        let focalTop = 0;
+        let actionTop = -1;
+        let actionArea = 0;
+        let surfaces = 0;
+        for (const element of root.querySelectorAll('*')) {
+          const style = getComputedStyle(element);
+          if (style.display === 'none' || style.visibility === 'hidden') continue;
+          if (!inFirstViewport(element)) continue;
+          const box = element.getBoundingClientRect();
+          const ownText = [...element.childNodes]
+            .filter((node) => node.nodeType === 3)
+            .map((node) => node.textContent.trim())
+            .join('');
+          if (ownText) {
+            const size = parseFloat(style.fontSize) || 0;
+            if (size > focalPx) {
+              focalPx = size;
+              focalTop = box.top - rect.top;
+            }
+          }
+          const parentStyle = element.parentElement ? getComputedStyle(element.parentElement) : null;
+          if (parentStyle && style.backgroundColor !== parentStyle.backgroundColor
+            && style.backgroundColor !== 'rgba(0, 0, 0, 0)') {
+            surfaces += 1;
+          }
+          const isAction = element.tagName === 'BUTTON'
+            || style.cursor === 'pointer'
+            || /(^|\s)[\w-]*btn[\w-]*(\s|$)/.test(element.className || '');
+          if (isAction && box.width * box.height > actionArea) {
+            actionArea = box.width * box.height;
+            actionTop = box.top - rect.top;
+          }
+        }
+        return {
+          focalPx: Math.round(focalPx / 2) * 2,
+          focalBand: band(focalTop),
+          actionBand: actionTop < 0 ? -1 : band(actionTop),
+          surfaces,
+          blocks: root.children.length,
+        };
+      };
+
       return {
+        screenSignatures: pages.map(signature),
         characterSet: document.characterSet,
         title: document.title,
         phones: phones.map((element) => {

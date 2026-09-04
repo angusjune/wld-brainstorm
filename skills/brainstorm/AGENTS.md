@@ -35,7 +35,8 @@ brainstorm/
 - `assets/frame.css`：展示框架、手机 mockup、gallery 和 reset；由预览服务自动链接，不要复制进生成页面。
 - `assets/live-reload.js`：浏览器端 SSE 热更新客户端；由预览服务注入。
 - `assets/annotate.js`：浏览器端点选批注客户端；由预览服务注入。
-- `references/solution-archetypes.md`：三方案发散策略。
+- `references/archetypes.json`：三方案发散的机器可读 archetype 目录与多样性规则；`workflow.mjs prepare` 直接读取并强制执行。产品档案可用 `profile/quality/archetypes.json` 按 id 合并覆盖，但不得重新声明 axes 词表。
+- `references/solution-archetypes.md`：说明该目录如何运作，以及 caption 格式。
 - `references/setup-profile.md`：维护者完整新建或替换内置产品档案时使用的逐步交互向导；用户工作区的复制与增量模板由同级 `setup-profile` Skill 负责。
 - `references/branches/push-to-figma.md`：所有产品和平台共用的 Push to Figma 分支。
 - `profile/PROFILE.md`：产品档案入口；frontmatter 给脚本读，正文给 Agent 读。
@@ -43,7 +44,7 @@ brainstorm/
 - `profile/screens/`：生产页面模板语料，是生成质量的主要来源；authoring worker 将其作为完整、只读的应用级设计参考语料。
 - `profile/design-system/`：token、组件样式和图标。
 - `profile/quality/`：产品生成契约、规则、passes 和确定性工具。
-- `profile/quality/workflow-contracts.json`：每个模板逐屏必须保留的文本/资源不变量与设计锚点；模板清单必须一一对应。
+- `profile/quality/workflow-contracts.json`：每个模板逐屏必须保留的文本/资源不变量与设计锚点；模板清单必须一一对应。每个模板还用 `baselineAxes` 声明它自身所处的 archetype 坐标，`prepare` 在 rework 时据此排除「模板本来就是这个方向」的 archetype。
 - `platforms/<platform>/chrome.html`：该平台的预览外壳。
 
 ## 脚本职责
@@ -95,6 +96,7 @@ brainstorm/
    - `profile/quality/passes/` 定义生成前的产品校验步骤。
    - `profile/quality/rules.mjs` 是可选 QA rule pack；不需要时直接删除，不要修改通用 QA gate 来绕过旧规则。
    - `profile/quality/tools/` 与 pass 一起替换，删除不再使用的计算器或数据文件。
+   - `profile/quality/archetypes.json` 是可选的产品 archetype 扩展：按 id 覆盖共享条目或新增产品专属方向。不需要时直接删除；不要为此修改 `references/archetypes.json`。数值区间（字号比例、间距带）只属于产品档案，共享目录里不放。
 5. 处理产品分支。
    - 产品专属 Step 5 分支文档放进 `profile/branches/`，并按展示顺序写入 `PROFILE.md` 的 Branches 表。
    - 没有产品分支时删除整个目录并让 Branches 表保持空白；共享分支不受影响。

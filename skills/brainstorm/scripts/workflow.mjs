@@ -8,12 +8,14 @@ import { spawnSync } from 'node:child_process';
 import workflow from './lib/workflow-contract.cjs';
 import browser from './lib/browser-contract.cjs';
 import profileSelection from './lib/profile-selection.cjs';
+import archetypeCatalog from './lib/archetypes.cjs';
 import telemetry from './lib/session-telemetry.cjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SKILL_DIR = path.resolve(__dirname, '..');
 const PAGE_TEMPLATE = path.join(SKILL_DIR, 'assets', 'page-template.html');
 const { readProfileConfig } = profileSelection;
+const { archetypeBriefLines, assignArchetypes, loadArchetypes } = archetypeCatalog;
 const { appendSessionEvent, EVENTS } = telemetry;
 const {
   assembleDocument,
@@ -39,6 +41,7 @@ const {
   unresolvedCssVariables,
   validateDocument,
   validateCaptions,
+  visualOverlapFindings,
   workflowPaths,
   writeJson,
 } = workflow;
@@ -53,6 +56,8 @@ function parseArgs(argv) {
     else if (arg === '--kind') options.kind = argv[++index];
     else if (arg === '--approach') options.approach = argv[++index];
     else if (arg === '--brand-mode') options.brandMode = argv[++index];
+    else if (arg === '--diversity-mode') options.diversityMode = argv[++index];
+    else if (arg === '--archetype') (options.archetypes ||= []).push(argv[++index]);
     else if (arg === '--template') options.template = argv[++index];
     else if (arg === '--output') {
       const value = argv[++index];
@@ -72,7 +77,7 @@ function parseArgs(argv) {
 
 function usage() {
   return `Usage:
-  node scripts/workflow.mjs prepare --run-dir <run> --stage <name> --kind <solutions|screen> --output <file.html>:<count> [--approach <rework|compose>] [--brand-mode <preserve|explore>] [--template <profile-screen.html>] [--output ...]
+  node scripts/workflow.mjs prepare --run-dir <run> --stage <name> --kind <solutions|screen> --output <file.html>:<count> [--approach <rework|compose>] [--brand-mode <preserve|explore>] [--diversity-mode <ux|visual|mixed>] [--archetype <id> ...] [--template <profile-screen.html>] [--output ...]
   node scripts/workflow.mjs select --run-dir <run> --stage <name> --choice <1-based-index>
   node scripts/workflow.mjs assemble --run-dir <run> --stage <name>
   node scripts/workflow.mjs validate --run-dir <run> --stage <name> [--chrome <path>] [--allow-browser-unavailable]
@@ -140,6 +145,7 @@ function assertImmutableFragments(paths, output) {
 function stageBrief({
   paths, kind, approach, template, outputs, authorities, primary, primaryRole, references,
   requiredText, requiredAssets, brandMode, brandIdentitySelectors, diversitySelectors,
+  archetypeAssignment,
 }) {
   const templateLabel = template || 'none — compose a profile-grounded new page';
   const lines = [
@@ -169,6 +175,7 @@ function stageBrief({
     '',
     'Reference screens are precedent, not mandatory ingredients. Borrow, combine, or adapt whichever patterns improve this task. Their business values, legal copy, assets, and actions become requirements only when the user intent or an authoritative source independently requires them.',
   );
+  if (archetypeAssignment) lines.push(...archetypeBriefLines(archetypeAssignment));
   lines.push('', 'Edit exactly these prepared files:', '');
   for (const output of outputs) {
     for (const name of output.fragments.screens) lines.push(`- \`${path.join(paths.fragmentDir, name)}\``);
@@ -213,6 +220,10 @@ function prepare(options) {
   if (options.brandMode && options.kind !== 'solutions') throw new Error('--brand-mode is only valid for solutions');
   const brandMode = options.brandMode || 'preserve';
   if (!['preserve', 'explore'].includes(brandMode)) throw new Error('--brand-mode must be preserve or explore');
+  if (options.kind !== 'solutions') {
+    if (options.diversityMode) throw new Error('--diversity-mode is only valid for solutions');
+    if (options.archetypes) throw new Error('--archetype is only valid for solutions');
+  }
   if (!options.template && options.approach === 'rework') throw new Error('rework requires --template');
   if (!options.template && options.kind !== 'solutions') throw new Error('screen prepare requires --template');
   const { paths, info, profileDir } = resolveRun(options.runDir, options.stage);
@@ -220,6 +231,7 @@ function prepare(options) {
   const template = options.template ? safeTemplateName(options.template) : null;
   const outputs = normalizeOutputs(options.outputs);
   assertOutputOwnership(paths, outputs);
+
   const templateFile = template ? path.join(profileDir, 'screens', template) : null;
   if (templateFile && !fs.existsSync(templateFile)) throw new Error(`template is not in the active profile: ${template}`);
   const contracts = loadWorkflowContracts(profileDir);
@@ -232,6 +244,16 @@ function prepare(options) {
   if (!templateContract) throw new Error(`profile workflow contract does not declare ${template}`);
   const profileConfig = readProfileConfig(profileDir);
   if (!profileConfig.pageClass) throw new Error('active profile does not declare pageClass');
+  let archetypeAssignment = null;
+  if (options.kind === 'solutions' && outputs[0].screenCount > 1) {
+    archetypeAssignment = assignArchetypes({
+      catalog: loadArchetypes({ skillDir: SKILL_DIR, profileDir }),
+      count: outputs[0].screenCount,
+      diversityMode: options.diversityMode || 'mixed',
+      requested: options.archetypes || [],
+      baselineAxes: options.approach === 'rework' ? templateContract.baselineAxes || null : null,
+    });
+  }
   const source = templateFile
     ? extractTemplateParts(fs.readFileSync(templateFile, 'utf8'))
     : { content: '', styles: '' };
@@ -256,7 +278,10 @@ function prepare(options) {
         });
       fs.writeFileSync(path.join(paths.fragmentDir, name), initial);
     }
-    writeJson(path.join(paths.fragmentDir, output.fragments.captions), initialCaptions(output.screenCount));
+    writeJson(
+      path.join(paths.fragmentDir, output.fragments.captions),
+      initialCaptions(output.screenCount, archetypeAssignment ? archetypeAssignment.archetypes : null),
+    );
     const styles = rework ? '' : source.styles;
     const baseStyles = rework ? source.styles : '';
     fs.writeFileSync(path.join(paths.fragmentDir, output.fragments.baseStyles), `${baseStyles.trim()}\n`);
@@ -317,6 +342,7 @@ function prepare(options) {
     paths, kind: options.kind, approach: options.approach, template, outputs, authorities,
     primary: corpus.primary, primaryRole, references: corpus.references,
     requiredText, requiredAssets, brandMode, brandIdentitySelectors, diversitySelectors,
+    archetypeAssignment,
   }));
   const context = [{
     file: `state/workflow/stages/${paths.stage}/${path.basename(paths.workerBriefFile)}`,
@@ -372,6 +398,18 @@ function prepare(options) {
     kind: options.kind,
     approach: options.approach || null,
     brandMode: options.kind === 'solutions' ? brandMode : null,
+    diversityMode: archetypeAssignment ? archetypeAssignment.diversityMode : null,
+    archetypes: archetypeAssignment
+      ? archetypeAssignment.archetypes.map((entry) => ({
+        id: entry.id,
+        name: entry.name,
+        mode: entry.mode,
+        axes: entry.axes,
+        source: entry.source,
+      }))
+      : null,
+    archetypeAssignment: archetypeAssignment ? archetypeAssignment.assignment : null,
+    baselineAxes: archetypeAssignment ? archetypeAssignment.baselineAxes || null : null,
     runDir: paths.runDir,
     profile: {
       dir: profileDir,
@@ -434,6 +472,7 @@ function select(options) {
   const captions = validateCaptions(
     readJson(path.join(paths.fragmentDir, output.fragments.captions), `${output.file} captions`),
     output.screenCount,
+    contract.archetypes || null,
   );
   if (!fs.existsSync(screenFile) || !fs.existsSync(stylesFile)) throw new Error('selected direction fragments are incomplete');
   assertScreenFragment(fs.readFileSync(screenFile, 'utf8'), contract.profile.pageClass);
@@ -481,7 +520,7 @@ function assemble(options) {
     }
     const screens = screenFiles.map((file) => fs.readFileSync(file, 'utf8'));
     screens.forEach((screen) => assertScreenFragment(screen, contract.profile.pageClass));
-    const captions = validateCaptions(readJson(captionsFile, `${output.file} captions`), output.screenCount);
+    const captions = validateCaptions(readJson(captionsFile, `${output.file} captions`), output.screenCount, contract.archetypes || null);
     if (contract.kind === 'solutions' && captions.filter((caption) => caption.recommended).length !== 1) {
       throw new Error(`${output.file} captions must recommend exactly one option`);
     }
@@ -554,7 +593,7 @@ async function validate(options) {
     try {
       screens = screenFiles.map((file) => fs.readFileSync(file, 'utf8'));
       screens.forEach((screen) => assertScreenFragment(screen, contract.profile.pageClass));
-      const captions = validateCaptions(readJson(captionsFile, `${output.file} captions`), output.screenCount);
+      const captions = validateCaptions(readJson(captionsFile, `${output.file} captions`), output.screenCount, contract.archetypes || null);
       expected = assembleDocument(
         pageTemplate,
         presentationContent(screens, captions),
@@ -629,6 +668,10 @@ async function validate(options) {
       for (const message of check.findings) findings.push({ code: 'browser-contract', file: check.file, message });
     } else if (check.status === 'unavailable' && !options.allowBrowserUnavailable) {
       findings.push({ code: 'browser-unavailable', file: check.file, message: check.reason });
+    }
+    if (check.metrics && contract.archetypes) {
+      findings.push(...visualOverlapFindings(contract.archetypes, check.metrics.screenSignatures)
+        .map((finding) => ({ ...finding, file: check.file })));
     }
   }
   const result = {

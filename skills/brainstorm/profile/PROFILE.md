@@ -101,32 +101,6 @@ The values live in `profile/design-system/tokens.css` and the CSS lives in `prof
 - **Status icons:** 60×60 gold circles; icon tint is black (`rgba(0,0,0,0.9)`).
 - **Buttons loading:** text becomes invisible and the spinner appears centered — never text + spinner together.
 
-### Canonical CTA forms
-
-Each screen ships a CTA form that visual variants must not swap:
-
-- `个人中心` — the 84px gold circle 借钱 button
-- `个人中心-双offer` — two side-by-side offer cards, each with its own small gold 借钱 button
-- `输入金额` — the full-width gold pill 下一步, in the template's own position
-- `收银台`, `更换还款卡` — CTA centered directly below the content
-- `提前还清` — the only screen using a fixed bottom action bar
-
-When content ends high on the screen, the CTA sits right after it. A CTA pinned to the bottom behind an empty region is a defect.
-
-### Preview chrome
-
-Use the placeholder from the production template:
-
-```html
-<preview-chrome variant="home" title="微粒贷"></preview-chrome>
-<preview-chrome variant="inner" title="提前还清借款"></preview-chrome>
-<preview-chrome variant="home" title="微粒贷" nav-bg="var(--wld-bg)"></preview-chrome>  <!-- 逾期: navbar matches the grey page -->
-```
-
-Home screens keep the 借钱 / 我的 tab bar. The home offer states use `#FFFFFF` for `.wld-page` and the navbar; the overdue home state and every inner/detail screen use the default `#F5F5F5`. Check the template being copied for the exact combination.
-
-Never hand-write status bar, navbar, capsule, or back-arrow markup. The server expands the placeholder. This chrome is presentation only — it is not WLD production code.
-
 ### Screen-specific styles
 
 多个生产模板共用的样式放在 `profile/design-system/components.css`；仅属于单个页面的样式保留在模板底部的 `<style>` 中（例如 `.wld-loan-amount`）。改造模板时必须同时保留其局部样式；同一方案页只保留一份局部 CSS，禁止为每个方案重复复制。

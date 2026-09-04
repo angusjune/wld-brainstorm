@@ -32,7 +32,8 @@ Resolve this skill directory as `skillDir` and the current project root as `proj
 The profile's screen table lists every production template on disk, and `npm run validate` checks the two against each other in both directions.
 
 **Brainstorm-specific references**:
-- `references/solution-archetypes.md` — UX and visual exploration archetypes for diversifying 3-solution sets
+- `references/archetypes.json` — the machine-readable solution archetype catalog and the diversity rule `prepare` enforces
+- `references/solution-archetypes.md` — how that catalog works, and the caption format
 - `references/branches/push-to-figma.md` — Shared Push to Figma branch
 
 ---
@@ -48,6 +49,8 @@ node "<skill-dir>/scripts/workflow.mjs" prepare \
   --kind solutions \
   --approach "<rework|compose>" \
   [--brand-mode "<preserve|explore>"] \
+  [--diversity-mode "<ux|visual|mixed>"] \
+  [--archetype "<id>" --archetype "<id>" --archetype "<id>"] \
   [--template "<production-template.html>"] \
   --output "solutions.html:3"
 ```
@@ -68,7 +71,7 @@ Run each authoring stage in a fresh context. Dispatch a worker with the user's s
 
 The authoring worker makes one coherent edit pass, runs no commands, and emits no progress narration. The parent owns user interaction, stage preparation, profile passes, assembly, validation, repair, reporting, selection, and handoffs.
 
-Edit only the files named editable by `worker-brief.md`. Each screen fragment owns exactly one profile `pageClass` root and must never contain gallery, phone, or caption wrappers; assembly owns those boundaries. Caption JSON is plain text plus an optional boolean `recommended`; style fragments are CSS only. Never edit `screenDir/*.html`, `assets/page-template.html`, production `.base.css`, or generation/context contracts. The parent is the only actor that assembles. Assembly is the only writer of `screenDir/*.html`; it verifies all selected sources are unchanged and injects the fragments into the canonical page scaffold. Direct screen edits are drift and validation blocks them.
+Edit only the files named editable by `worker-brief.md`. Each screen fragment owns exactly one profile `pageClass` root and must never contain gallery, phone, or caption wrappers; assembly owns those boundaries. Caption JSON is plain text plus an optional boolean `recommended` and the `archetype` id `prepare` assigned to that option; style fragments are CSS only. Never edit `screenDir/*.html`, `assets/page-template.html`, production `.base.css`, or generation/context contracts. The parent is the only actor that assembles. Assembly is the only writer of `screenDir/*.html`; it verifies all selected sources are unchanged and injects the fragments into the canonical page scaffold. Direct screen edits are drift and validation blocks them.
 
 **Finishing cycle:** Once a stage's editable fragments are ready, the parent reads only the pass documents declared in the active profile's Passes table and applies them to the fragments in table order. Then assemble and run the terminal contract:
 
@@ -77,7 +80,7 @@ node "<skill-dir>/scripts/workflow.mjs" assemble --run-dir "<runDir>" --stage "<
 node "<skill-dir>/scripts/workflow.mjs" validate --run-dir "<runDir>" --stage "<stage>"
 ```
 
-Before validation, ensure the preview server is still running at the saved `url`; if not, resume the same run as described in Step 2. `validate` checks deterministic assembly, canonical shell, screen counts, per-screen required content/assets, diversity, brand identity anchors, unresolved CSS variables, the profile QA gate, rendered counts and dimensions, preview-chrome expansion, horizontal overflow, runtime exceptions, and UTF-8 rendering. It also captures each output in the stage's `renders/` directory. Browser unavailability is blocking in production; `--allow-browser-unavailable` exists only for nonvisual automated tests.
+Before validation, ensure the preview server is still running at the saved `url`; if not, resume the same run as described in Step 2. `validate` checks deterministic assembly, canonical shell, screen counts, per-screen required content/assets, diversity, brand identity anchors, unresolved CSS variables, the profile QA gate, rendered counts and dimensions, preview-chrome expansion, horizontal overflow, runtime exceptions, and UTF-8 rendering. It also measures each rendered screen's layout signature and blocks a visual option that reads identically to a ux option — the declared archetype rule cannot separate those, because a visual archetype inherits both axes. It also captures each output in the stage's `renders/` directory. Browser unavailability is blocking in production; `--allow-browser-unavailable` exists only for nonvisual automated tests.
 
 Inspect every captured screenshot for correct platform chrome, visible and well-spaced phones, readable unclipped text and captions, profile-compliant colour and product laws, and interactions or motion that preserve layout and performance. The cycle passes only when `validate` returns `status: "passed"` and screenshot review finds no issue. If the first cycle blocks, dispatch at most one fresh repair worker with only the editable fragment paths and findings; a `rework` repair may edit screen fragments, captions, and variant CSS but not production base CSS. Run the cycle again. After the second cycle, stop retrying and surface any remaining findings.
 
@@ -195,7 +198,7 @@ Run `workflow.mjs prepare` with `--stage solutions --kind solutions --approach r
 
 ### Step 4: Explore 3 Design Directions
 
-The `compose` context includes `references/solution-archetypes.md`; the compact `rework` context embeds its diversity and brand-surface contracts. Choose a diversity mode from the user's wording:
+`prepare` assigns one archetype from `references/archetypes.json` to each option and writes the assignment into `worker-brief.md`, so the worker receives a named direction per option rather than choosing three for itself. In `rework`, it also drops any archetype the template already is, so no option spends its slot reproducing the screen the user already has; pass `--archetype` explicitly to take one anyway. Choose a diversity mode from the user's wording and pass it as `--diversity-mode`:
 
 | Mode | Use when | Required diversity |
 |------|----------|--------------------|
@@ -207,12 +210,14 @@ Unless the user is explicitly exploring visual direction, the options must not d
 
 **Visual-mode invariants:** With a production template, every visual variant keeps its canonical CTA form, preview chrome, tab bar, legal/rate/disclaimer text, and data values unchanged. Without a template, take those invariants from the profile's product laws and closest declared component patterns. Each caption's "What changes" names exactly what varies; everything else stays at its grounded baseline.
 
-In `rework`, keep production `.base.css` immutable and edit all three seeded screen fragments. Each option must retain every prepared requirement and declared anchor while using a distinct DOM composition; anchor order is diagnostic evidence, not a prescribed source of variety. Follow the selected brand mode and write additive rules below `.brainstorm-option-1`, `.brainstorm-option-2`, and `.brainstorm-option-3`. In `compose`, replace the prepared page-root placeholders with three intentional alternatives grounded in the closest analogue when present, the authoritative product/design sources, and useful patterns from the supplied app screen corpus. In either approach, use the profile's exact `pageClass`, write captions with exactly one `recommended: true`, add no presentation wrappers, and preserve working production classes.
+In `rework`, keep production `.base.css` immutable and edit all three seeded screen fragments. Each option must retain every prepared requirement and declared anchor while using a distinct DOM composition; anchor order is diagnostic evidence, not a prescribed source of variety. Follow the selected brand mode and write additive rules below `.brainstorm-option-1`, `.brainstorm-option-2`, and `.brainstorm-option-3`. In `compose`, replace the prepared page-root placeholders with three intentional alternatives grounded in the closest analogue when present, the authoritative product/design sources, and useful patterns from the supplied app screen corpus. In either approach, use the profile's exact `pageClass`, write captions with exactly one `recommended: true` and each option's assigned `archetype` id unchanged, add no presentation wrappers, and preserve working production classes.
 
-Caption each solution with its intent:
+Caption each solution with its intent, naming the assigned archetype in the title:
 - UX mode: `Hypothesis` + `Tradeoff`
 - Visual mode: `Visual hypothesis` + `What changes`
 - Mixed mode: label which options are UX variants and which one is visual
+
+Each caption's `archetype` field is seeded by `prepare` and must not be edited. `assemble` and `validate` reject a caption whose archetype drifts from its assignment, so an option that cannot honour its archetype is a signal to re-prepare with a different `--archetype` set, not to relabel the caption.
 
 **Writing direction for the solutions worker:** Words are design material, not decoration. Use only copy that helps someone understand or navigate the experience. Apply these rules during the worker's single coherent edit pass to every screen in `solutions.html`:
 1. Treat the prepared template invariants and product laws as must-keep. Reference-screen content is not a constraint unless the user intent or selected template independently requires it.

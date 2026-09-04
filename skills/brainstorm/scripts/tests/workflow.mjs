@@ -223,12 +223,21 @@ try {
       title: caption.title.replace('待命名', '证据优先'),
       subtitle: caption.subtitle.replaceAll('待填写', '保留真实数据并强化风险决策'),
       recommended: index === 1,
+      archetype: caption.archetype,
     }));
+  assert.deepEqual(
+    captions.map((caption) => caption.archetype),
+    preparedContract.archetypes.map((entry) => entry.id),
+    'prepare must seed each caption with its assigned archetype',
+  );
   fs.writeFileSync(captionsFile, `${JSON.stringify(captions, null, 2)}\n`);
   fs.writeFileSync(path.join(fragments, 'solutions.styles.css'), `
 .brainstorm-option-1 .decision-summary { border: 1px solid var(--fixture-divider); }
 .brainstorm-option-2 .performance-evidence { border: 1px solid var(--fixture-divider); }
 .brainstorm-option-3 .risk-evidence { box-shadow: 0 0 0 2px var(--fixture-divider); }
+.brainstorm-option-3 .decision-summary,
+.brainstorm-option-3 .performance-evidence,
+.brainstorm-option-3 .risk-evidence { background: transparent; }
 `);
 
   const topLevelBodyChild = (text, classToken) => {
@@ -396,17 +405,28 @@ try {
   ].entries()) {
     const file = path.join(blankComposeFragments, name);
     assert.match(fs.readFileSync(file, 'utf8'), new RegExp(`WORKFLOW_SCREEN_${index + 1}`));
+    // Three intentional alternatives, not three copies: the compose path is
+    // meant to produce distinct layouts, and the visual-overlap check reads
+    // the rendered signature rather than the markup.
+    const composed = [
+      '<section class="decision-summary" style="font-size: 32px">新页面方案 1</section>',
+      '<section class="decision-summary">新页面方案 2</section><section class="risk-evidence">补充</section>',
+      '<section style="background: transparent">新页面方案 3</section>',
+    ][index];
     fs.writeFileSync(file, `<div class="fixture-page">
   <preview-chrome variant="inner" title="新页面"></preview-chrome>
-  <main class="fixture-page-body"><section>新页面方案 ${index + 1}</section></main>
+  <main class="fixture-page-body">${composed}</main>
 </div>\n`);
   }
+  const blankCaptionsFile = path.join(blankComposeFragments, 'blank-page-solutions.captions.json');
+  const blankArchetypes = JSON.parse(fs.readFileSync(blankCaptionsFile, 'utf8'))
+    .map((caption) => caption.archetype);
   fs.writeFileSync(
-    path.join(blankComposeFragments, 'blank-page-solutions.captions.json'),
+    blankCaptionsFile,
     `${JSON.stringify([
-      { title: '方案 A', subtitle: '全新页面方向 A', recommended: false },
-      { title: '方案 B', subtitle: '全新页面方向 B', recommended: true },
-      { title: '方案 C', subtitle: '全新页面方向 C', recommended: false },
+      { title: '方案 A', subtitle: '全新页面方向 A', recommended: false, archetype: blankArchetypes[0] },
+      { title: '方案 B', subtitle: '全新页面方向 B', recommended: true, archetype: blankArchetypes[1] },
+      { title: '方案 C', subtitle: '全新页面方向 C', recommended: false, archetype: blankArchetypes[2] },
     ], null, 2)}\n`,
   );
   run(['assemble', ...blankComposeCommon]);
