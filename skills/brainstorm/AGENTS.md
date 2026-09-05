@@ -23,7 +23,7 @@ brainstorm/
 ├── AGENTS.md                # 本维护指南
 ├── package.json             # 维护命令入口
 ├── assets/                  # 通用展示资源；预览服务自动注入
-├── references/              # 按需读取的通用方法与分支说明
+├── references/              # 按需读取的通用方法与档案维护说明
 ├── scripts/                 # 通用运行、检查、遥测和自测脚本
 ├── profile/                 # 内置默认产品档案
 ├── platforms/               # 平台包；由 PROFILE.md 的 platform 选择
@@ -37,7 +37,6 @@ brainstorm/
 - `assets/annotate.js`：浏览器端点选批注客户端；由预览服务注入。
 - `references/solution-archetypes.md`：三方案发散策略。
 - `references/setup-profile.md`：维护者完整新建或替换内置产品档案时使用的逐步交互向导；用户工作区的复制与增量模板由同级 `setup-profile` Skill 负责。
-- `references/branches/push-to-figma.md`：所有产品和平台共用的 Push to Figma 分支。
 - `profile/PROFILE.md`：产品档案入口；frontmatter 给脚本读，正文给 Agent 读。
 - `profile/branches/`：可选的产品专属 Step 5 分支；必须在 `PROFILE.md` 的 Branches 表中声明。
 - `profile/screens/`：生产页面模板语料，是生成质量的主要来源；authoring worker 将其作为完整、只读的应用级设计参考语料。
@@ -97,7 +96,7 @@ brainstorm/
    - `profile/quality/tools/` 与 pass 一起替换，删除不再使用的计算器或数据文件。
 5. 处理产品分支。
    - 产品专属 Step 5 分支文档放进 `profile/branches/`，并按展示顺序写入 `PROFILE.md` 的 Branches 表。
-   - 没有产品分支时删除整个目录并让 Branches 表保持空白；共享分支不受影响。
+   - 没有产品分支时删除整个目录并让 Branches 表保持空白；用户仍可继续反馈迭代。
    - 新增或删除产品分支不应修改 `SKILL.md`。
 6. 不要为换产品修改 `SKILL.md`、`scripts/`、`assets/` 或 `references/`。如果新产品暴露的是通用缺陷，单独修通用机制，并确认没有加入产品事实。
 

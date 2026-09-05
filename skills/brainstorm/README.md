@@ -1,6 +1,6 @@
 # Brainstorm 设计 Skill
 
-用于移动端界面头脑风暴：澄清需求、生成并比较三种方向，并通过本地预览与点选批注持续迭代；选定方向后可推送 Figma 或交给产品档案声明的后续分支。
+用于移动端界面头脑风暴：澄清需求、生成并比较三种方向，并通过本地预览与点选批注持续迭代；选定方向后可交给产品档案声明的后续分支。
 
 Skill 内置一份可直接运行的产品档案。项目根目录存在 `wld-design-profile/` 时优先使用该工作区档案，否则使用内置 `profile/`；一次运行始终只使用一份档案，不会混合两者。
 
@@ -21,7 +21,7 @@ brainstorm/
 ├── SKILL.md                 # Agent 执行的通用方法
 ├── agents/openai.yaml       # Skill 展示信息
 ├── assets/                  # 页面壳、预览样式、热更新与批注客户端
-├── references/              # 方案发散方法与共享分支
+├── references/              # 方案发散方法与档案维护说明
 ├── scripts/                 # 预览、workflow、QA、遥测和验证
 ├── platforms/               # 平台预览外壳
 └── profile/                 # 内置默认产品档案
@@ -40,7 +40,7 @@ brainstorm/
 3. Agent 只编辑 brief 声明的 fragments；`assemble` 使用 `assets/page-template.html` 确定性组装完整 HTML。
 4. `validate` 检查页面壳、必需文案与资源、方案差异、CSS 变量、产品 QA、浏览器布局和截图。
 5. 用户选择方案后，`select` 写入紧凑 handoff；Brainstorm 到此停止扩展页面或流程。
-6. 用户可继续修改同一组三方案，或选择共享 Push to Figma 和产品档案声明的后续分支。
+6. 用户可继续修改同一组三方案，或选择产品档案声明的后续分支。
 
 预览页右下角可开启点选批注。Agent 修改 fragments、重新组装和验证后，再通过 `scripts/acknowledge-annotations.cjs` 确认本轮实际读取的批注。
 

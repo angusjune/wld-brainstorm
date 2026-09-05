@@ -295,7 +295,6 @@ requiredCopy:
 terminology:
   - canonical: 账户
     avoid: 钱包
-figmaLibrary: none
 inferredItems:
   - value: 每屏只有一个主操作
     confidence: high
@@ -374,7 +373,7 @@ unresolved: []
 
 ### Agent 自动识别产品专属后续分支
 
-搜索产品规范、交付文档和当前产品工具，判断是否存在只有该产品需要的后续分支。共享 Push to Figma 不属于这里。先展示已预填决策：
+搜索产品规范、交付文档和当前产品工具，判断是否存在只有该产品需要的后续分支。先展示已预填决策：
 
 ```yaml
 mode: create

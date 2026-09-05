@@ -52,10 +52,10 @@ function addProfileBranchRow(fixtureRoot, docPath) {
 }
 
 describe('branch document path validation', () => {
-  test('scans shared and profile branch directories recursively', () => {
+  test('scans shared references and profile branch directories recursively', () => {
     const fixtureRoot = makeFixture();
     const docs = [
-      ['references/branches/nested/shared.md', 'scripts/missing-shared-branch.mjs'],
+      ['references/nested/shared.md', 'scripts/missing-shared-reference.mjs'],
       ['profile/branches/nested/product.md', 'scripts/missing-profile-branch.mjs'],
     ];
 

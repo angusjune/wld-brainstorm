@@ -1,11 +1,11 @@
 ---
 name: brainstorm
-description: 用于基于当前产品档案进行移动端 UI 头脑风暴：生成并比较3个方案、迭代反馈，并将选定方向推送到 Figma 或交给档案声明的后续分支。Use when exploring mobile UI directions with the active workspace or bundled product profile.
+description: 用于基于当前产品档案进行移动端 UI 头脑风暴：生成并比较3个方案、迭代反馈，并将选定方向交给档案声明的后续分支。Use when exploring mobile UI directions with the active workspace or bundled product profile.
 ---
 
 # Design Brainstorm
 
-Interactive design exploration for mobile screens. Users describe an idea, compare three directions in phone mockups, iterate with live feedback, then choose a direction for Push to Figma or a profile-declared follow-up branch.
+Interactive design exploration for mobile screens. Users describe an idea, compare three directions in phone mockups, iterate with live feedback, then choose a direction for a profile-declared follow-up branch.
 
 Resolve this skill directory as `skillDir` and the current project root as `projectDir`. The preview server selects `projectDir/wld-design-profile` whenever that directory exists, even when incomplete; otherwise it selects `skillDir/profile`. Save the selected `profileDir` and its diagnostics from the server response. Paths named with the profileDir prefix are under the selected profile; all other relative paths are under `skillDir`.
 
@@ -33,7 +33,6 @@ The profile's screen table lists every production template on disk, and `npm run
 
 **Brainstorm-specific references**:
 - `references/solution-archetypes.md` — UX and visual exploration archetypes for diversifying 3-solution sets
-- `references/branches/push-to-figma.md` — Shared Push to Figma branch
 
 ---
 
@@ -100,7 +99,7 @@ node "<skill-dir>/scripts/workflow.mjs" select \
   --choice <1-based-index>
 ```
 
-`select` hashes the chosen screen, styles, and caption into a compact typed handoff. Feedback keeps editing the same solutions stage; Push to Figma or a profile-declared branch may consume the handoff. Brainstorm does not expand the chosen direction into additional screens or a complete flow.
+`select` hashes the chosen screen, styles, and caption into a compact typed handoff. Feedback keeps editing the same solutions stage; a profile-declared branch may consume the handoff. Brainstorm does not expand the chosen direction into additional screens or a complete flow.
 
 Three stable URL prefixes are mapped by the server: `/profile/` is the selected product profile, `/platform/` is the active platform pack, and `/assets/` is shared machinery. Switching profiles or platforms requires no URL rewrites, although screen content remains profile-specific. The server injects the platform pack's chrome styles, links `assets/frame.css`, and injects `assets/live-reload.js` plus `assets/annotate.js` — do not link or add those yourself.
 
@@ -238,8 +237,7 @@ Tell the user to open the saved `url` to compare. Ask which direction they prefe
 Record the chosen direction with `workflow.mjs select`, then present the available paths in this exact order:
 
 1. **Feedback** — always available. Edit the current stage's fragments, rerun the finishing cycle, and let the browser hot-reload the assembled screen through SSE. Repeat for each new round of user feedback.
-2. **Push to Figma** — always available. Its branch document is `references/branches/push-to-figma.md`.
-3. **Profile branches** — read the optional Branches table in `profileDir/PROFILE.md` and append every declared row in table order. Use the row's Branch value as the display name and its Doc value as the branch document. Resolve a `profile/`-prefixed Doc inside `profileDir`. If the section or table has no rows, append nothing.
+2. **Profile branches** — read the optional Branches table in `profileDir/PROFILE.md` and append every declared row in table order. Use the row's Branch value as the display name and its Doc value as the branch document. Resolve a `profile/`-prefixed Doc inside `profileDir`. If the section or table has no rows, append nothing.
 Assign display letters (`A`, `B`, `C`, …) to the assembled list only when presenting it. Letters are presentation-local and never part of a branch document's identity. Show the description already available from this method or the profile row's Notes text; do not open any branch workflow document yet.
 
 **Critical for Feedback:** Before acting, read `annotationsPath`. For each file, find the greatest numeric ID in the `through` field of its `consumed` entries; annotations for that file with greater IDs are pending. Capture the last pending ID you actually read for each file. Annotations and typed feedback are the same input and may arrive together in one turn. Apply both directly without restating annotations; hot reload is the confirmation. Always edit the SAME solutions-stage fragments for iterative changes. Start a new run only for a different brainstorm request.
@@ -254,4 +252,4 @@ Run it once per edited file that had pending annotations. Never acknowledge an I
 
 For per-screen feedback about preview chrome, change only the `variant` or `title` attributes on `<preview-chrome …>` in that screen's content fragment. Never edit `screenDir/*.html`, `platforms/*/chrome.html`, `assets/page-template.html`, or `assets/frame.css` in response to feedback.
 
-**Critical for non-Feedback branches:** After the user chooses, load only that branch's document. Do not load unselected shared or profile branch workflows into context. If the required input for the selected branch is missing, ask for it in one short message and do not substitute a screenshot-only or text-only deliverable unless that branch explicitly allows it.
+**Critical for profile branches:** After the user chooses, load only that branch's document. Do not load unselected branch workflows into context. If the required input for the selected branch is missing, ask for it in one short message and do not substitute a screenshot-only or text-only deliverable unless that branch explicitly allows it.

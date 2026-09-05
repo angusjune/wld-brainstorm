@@ -147,12 +147,12 @@ Run these in Step 4 during the finishing cycle, before showing anything to the u
 
 ## Branches
 
-This profile declares no additional product branches. A profile that needs product-specific Step 5 paths may create workflow documents under `profile/branches/` and declare them in this optional table:
+This profile declares no product branches. A profile that needs product-specific Step 5 paths may create workflow documents under `profile/branches/` and declare them in this optional table:
 
 | Branch | Doc | Notes |
 |--------|-----|-------|
 
-The branch rows are offered in table order. Keep the table absent or empty when the product contributes no branches; shared branches remain available independently.
+The branch rows are offered in table order. Keep the table absent or empty when the product contributes no branches; Feedback remains available independently.
 
 ---
 
@@ -178,18 +178,6 @@ Use these terms consistently in generated screens and captions. The production t
 | 借据 | Receipt/IOU | Individual loan record |
 | 下一步 | Next step | Continue button |
 | 还款 | Repay | Repayment action |
-
----
-
-## Figma component library
-
-**Production reference:** `figma.com/design/uVpLmK5WAQCUdV5pY0FK82` → node `6:1502` (Reference)
-
-When running the Push to Figma branch, prioritize these existing components before drawing primitives:
-
-`Button 按钮`, `Actions 操作区`, `借钱按钮`, `Input 输入框`, `借款金额输入`, `借款选项`, `Keyboard 键盘`, `Cell 列表项`, `Receipt 借据`, `优惠券`, `Dialog 弹框`, `Drawer 抽屉`, `Header 标题`, `Tabs`, `Tab Bar - 首页 Tab`, `首页主内容`, `首页详情`, `利率条`.
-
-Frames are 375 x 812. Preserve Chinese copy, amounts, rates and agreement text exactly.
 
 ---
 

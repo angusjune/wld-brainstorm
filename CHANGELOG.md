@@ -1,5 +1,11 @@
 # wld-brainstorm
 
+## 2.0.1
+
+### Patch Changes
+
+- Removed push to figma branch
+
 ## 2.0.0
 
 ### Major Changes
