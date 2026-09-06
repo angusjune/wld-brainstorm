@@ -36,9 +36,9 @@ brainstorm/
 ## 工作方式
 
 1. `scripts/serve-preview.cjs` 创建 `wld-design-brainstorms/<时间戳>-<run-label>/`，返回本次运行、档案诊断和预览 URL。
-2. `scripts/workflow.mjs` 的 `prepare` 命令为当前 stage 生成隔离的 worker brief、分角色上下文与可编辑 fragments；任务事实和产品规则属于权威来源，完整生产页面语料作为只读设计参考。
-3. Agent 只编辑 brief 声明的 fragments；`assemble` 使用 `assets/page-template.html` 确定性组装完整 HTML。
-4. `validate` 检查页面壳、必需文案与资源、方案差异、CSS 变量、产品 QA、浏览器布局和截图。
+2. `scripts/workflow.mjs` 的 `prepare` 命令为当前 stage 生成隔离的 worker brief、分角色上下文与可编辑 fragments；两种生成方式都包含档案的设计语言、方案发散方法和完整生产页面语料，并提供档案内可选的视觉参考图。
+3. Agent 先确定三个方向的假设与构图，再编辑 brief 声明的 fragments；`assemble` 使用 `assets/page-template.html` 确定性组装完整 HTML。
+4. `validate` 检查页面壳、必需文案与资源、CSS 变量、产品 QA 和浏览器布局。Agent 根据截图评审方案差异、整屏构图和元素细节，必要时修稿一次，保留修改前后的截图；DOM 差异只作诊断。
 5. 用户选择方案后，`select` 写入紧凑 handoff；Brainstorm 到此停止扩展页面或流程。
 6. 用户可继续修改同一组三方案，或选择产品档案声明的后续分支。
 

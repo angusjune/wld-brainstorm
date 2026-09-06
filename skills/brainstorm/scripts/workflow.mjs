@@ -180,10 +180,10 @@ function stageBrief({
       'The three screen files are editable copies of production markup; the prepared `.base.css` is read-only. Reorder, regroup, merge, or introduce components when that creates a meaningfully different decision model. Use additive CSS scoped under each prepared `.brainstorm-option-N` root.',
       `Brand mode: \`${brandMode}\`.`,
       `Brand identity anchors: ${brandIdentitySelectors.length ? brandIdentitySelectors.join(', ') : 'none declared'}. Keep each anchor present, including required assets and content, while freely changing its layout, typography, spacing, shape, modifier classes, and scoped styling.`,
-      `Structural diversity anchors: ${diversitySelectors.length ? diversitySelectors.join(', ') : 'none declared'}. Keep each declared anchor exactly once per screen. All three DOM compositions must differ. Anchor priority order is reported as diagnostic evidence, not prescribed as the only valid source of variety.`,
+      `Composition landmarks: ${diversitySelectors.length ? diversitySelectors.join(', ') : 'none declared'}. Their DOM order is diagnostic only. Judge variety by the rendered composition and decision model; regroup or replace these containers as useful.`,
       brandMode === 'explore'
-        ? 'Explore the requested brand direction while preserving identity anchors, required assets/content, chrome relationship, canonical CTA form, real values, required actions, and legal copy. New colors are allowed; visual screenshot review decides brand coherence and contrast.'
-        : 'Preserve the production palette, chrome relationship, canonical CTA form, real values, required actions, assets, and legal copy. Use profile CSS variables for colors; every var() reference must resolve or include a fallback.',
+        ? 'Explore the requested brand direction while preserving identity anchors, required assets/content, real values, required actions, and legal copy. New colors are allowed; visual screenshot review decides brand coherence and contrast.'
+        : 'Preserve the production palette, identity anchors, real values, required actions, assets, and legal copy. Use profile CSS variables for colors; every var() reference must resolve or include a fallback. Follow the profile to distinguish product requirements from adaptable production styling.',
     );
   }
   lines.push('', `Every screen must retain: ${requiredText.length ? requiredText.map((value) => JSON.stringify(value)).join(', ') : 'no additional required text'}.`);
@@ -192,7 +192,7 @@ function stageBrief({
     && authorities.some((entry) => entry.file.endsWith('design-system/components.css'))) {
     lines.push(
       '',
-      'Treat the supplied tokens.css and components.css as authoritative. Preserve their semantic mappings, values, usage patterns, and comments instead of reconstructing them from variable names. Use declared tokens and existing component patterns; simplify by removing, merging, or regrouping content rather than inventing smaller type, spacing, or controls.',
+      'Treat the supplied tokens.css and components.css as authoritative sources for existing design values and patterns. Read PROFILE.md for their intent and permitted adaptations. Reuse this vocabulary while composing a coherent screen; scoped styling may adapt production defaults to the selected direction.',
     );
   }
   lines.push('',
@@ -286,14 +286,7 @@ function prepare(options) {
         bytes: fs.statSync(paths.designContextFile).size,
         sha256: sha256File(paths.designContextFile),
       },
-      ...tokenFiles
-        .filter((file) => fs.existsSync(file))
-        .map((file) => ({
-          file: path.relative(profileDir, file).replaceAll(path.sep, '/'),
-          absolute: file,
-          bytes: fs.statSync(file).size,
-          sha256: sha256File(file),
-        })),
+      ...selectAuthorities({ profileDir, skillDir: SKILL_DIR, kind: options.kind }),
     ];
     authorities = [...new Map(reworkContext.map((entry) => [entry.absolute, entry])).values()];
   } else {
@@ -304,6 +297,13 @@ function prepare(options) {
     });
   }
   const corpus = selectScreenCorpus(profileDir, template);
+  const visualReference = path.join(profileDir, 'design-system', 'visual-reference.png');
+  if (fs.existsSync(visualReference)) {
+    corpus.references.push({
+      file: 'design-system/visual-reference.png', absolute: visualReference,
+      bytes: fs.statSync(visualReference).size, sha256: sha256File(visualReference),
+    });
+  }
   const primaryRole = corpus.primary && options.kind === 'solutions' && options.approach === 'compose'
     ? 'design-reference'
     : corpus.primary ? 'content-authority' : null;
@@ -382,7 +382,7 @@ function prepare(options) {
     template,
     templateSha256: templateFile ? sha256File(templateFile) : null,
     primarySourceRole: primaryRole,
-    referenceTemplates: corpus.references.map((entry) => entry.file),
+    referenceTemplates: corpus.references.filter((entry) => entry.file.endsWith('.html')).map((entry) => entry.file),
     requiredTextPerScreen: requiredText,
     requiredAssetsPerScreen: requiredAssets,
     brandIdentitySelectors,

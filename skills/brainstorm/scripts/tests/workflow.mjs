@@ -175,7 +175,6 @@ try {
   assert.equal(prepared.status, 'prepared');
   assert.equal(prepared.outputs.length, 1);
   assert.ok(prepared.contextBytes > 0);
-  assert.ok(prepared.contextBytes < 20_000, `solutions context was ${prepared.contextBytes} bytes`);
   assert.ok(prepared.contextSources.every((source) => !source.absolute.includes('SKILL.md')));
   assert.equal(prepared.contextSources[0].role, 'instructions');
   assert.equal(fs.realpathSync(prepared.contextSources[0].absolute), fs.realpathSync(path.join(workflowDir, 'worker-brief.md')));
@@ -188,6 +187,10 @@ try {
   const componentsContext = prepared.contextSources.find((source) => source.absolute.endsWith('/design-system/components.css'))?.absolute;
   assert.ok(tokensContext, 'rework context must include the authoritative token source');
   assert.ok(componentsContext, 'rework context must include the authoritative component source');
+  for (const suffix of ['/PROFILE.md', '/references/solution-archetypes.md']) {
+    assert.ok(prepared.contextSources.some((source) => source.absolute.endsWith(suffix)),
+      `rework worker must receive design guidance: ${suffix}`);
+  }
   assert.match(fs.readFileSync(tokensContext, 'utf8'), /Supporting text uses this token sparingly/);
   assert.match(fs.readFileSync(tokensContext, 'utf8'), /Cards use the product spacing rhythm/);
   assert.match(fs.readFileSync(componentsContext, 'utf8'), /Product component semantics remain authoritative/);
@@ -415,12 +418,15 @@ try {
   run(['select', ...blankComposeCommon, '--choice', '2']);
 
   const previewCommon = ['--run-dir', info.runDir, '--stage', 'profile-preview'];
+  const visualReference = path.join(temporary, 'wld-design-profile/design-system/visual-reference.png');
+  fs.copyFileSync(path.join(BRAINSTORM_DIR, 'profile/design-system/visual-reference.png'), visualReference);
   const preview = run([
     'prepare', ...previewCommon,
     '--kind', 'screen', '--template', 'decision.html', '--output', 'preview.html:1',
   ]);
   assert.equal(preview.status, 'prepared');
   assert.equal(preview.outputs[0].screenCount, 1);
+  assert.ok(preview.contextSources.some((source) => source.absolute === fs.realpathSync(visualReference) && source.role === 'design-reference'));
   run(['assemble', ...previewCommon]);
   const previewValidation = run(['validate', ...previewCommon]);
   assert.equal(previewValidation.status, 'passed');

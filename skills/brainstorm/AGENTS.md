@@ -36,11 +36,13 @@ brainstorm/
 - `assets/live-reload.js`：浏览器端 SSE 热更新客户端；由预览服务注入。
 - `assets/annotate.js`：浏览器端点选批注客户端；由预览服务注入。
 - `references/solution-archetypes.md`：三方案发散策略。
+- `references/design-review.md`：渲染后的整组差异、整屏构图和元素细节评审；复用一次修稿机会。
 - `references/setup-profile.md`：维护者完整新建或替换内置产品档案时使用的逐步交互向导；用户工作区的复制与增量模板由同级 `setup-profile` Skill 负责。
 - `profile/PROFILE.md`：产品档案入口；frontmatter 给脚本读，正文给 Agent 读。
 - `profile/branches/`：可选的产品专属 Step 5 分支；必须在 `PROFILE.md` 的 Branches 表中声明。
 - `profile/screens/`：生产页面模板语料，是生成质量的主要来源；authoring worker 将其作为完整、只读的应用级设计参考语料。
 - `profile/design-system/`：token、组件样式和图标。
+- `profile/design-system/visual-reference.png`：可选的生产页面视觉参考并排图；生成上下文将其作为只读设计参考，产品档案正文说明借鉴点。相关模板或样式改变后重新截图。
 - `profile/quality/`：产品生成契约、规则、passes 和确定性工具。
 - `profile/quality/workflow-contracts.json`：每个模板逐屏必须保留的文本/资源不变量与设计锚点；模板清单必须一一对应。
 - `platforms/<platform>/chrome.html`：该平台的预览外壳。

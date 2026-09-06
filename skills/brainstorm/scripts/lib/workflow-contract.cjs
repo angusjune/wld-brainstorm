@@ -299,7 +299,7 @@ function compactDesignContext({
     cssVariables: knownCssVariables,
     variants: Array.from({ length: screenCount }, (_, index) => `.brainstorm-option-${index + 1}`),
     variationContract: [
-      'Create three structurally distinct information-priority treatments by editing the seeded DOM and additive CSS.',
+      'Create three useful alternatives whose differences are evident in the rendered screens or interactions.',
       'Scope every rule below one variant selector.',
       'Reorder, regroup, merge, or introduce components when that improves the decision model.',
       'Preserve required values, assets, actions, legal text, chrome, and brand identity anchors.',
@@ -352,7 +352,6 @@ function solutionQualityReport({
   brandIdentitySelectors = [],
   diversitySelectors = [],
   knownCssVariables = [],
-  requireDiversityAnchors = true,
   auditColorLiterals = brandMode === 'preserve',
 }) {
   const findings = [];
@@ -391,12 +390,6 @@ function solutionQualityReport({
 
   const priorityFingerprints = [];
   const domFingerprints = screens.map(domStructureFingerprint);
-  if (screens.length > 1 && new Set(domFingerprints).size < screens.length) {
-    findings.push({
-      code: 'solution-structure-variety',
-      message: `expected ${screens.length} distinct DOM compositions; found ${new Set(domFingerprints).size}`,
-    });
-  }
   if (diversitySelectors.length > 0 && screens.length > 1) {
     for (const [index, screen] of screens.entries()) {
       const positions = [];
@@ -412,13 +405,6 @@ function solutionQualityReport({
         }
         if (matches.length !== 1) {
           complete = false;
-          if (requireDiversityAnchors) {
-            findings.push({
-              code: 'solution-structure-anchor',
-              screen: index + 1,
-              message: `screen ${index + 1} must contain exactly one ${selector} diversity anchor; found ${matches.length}`,
-            });
-          }
         } else {
           positions.push({ selector, position: matches[0] });
         }

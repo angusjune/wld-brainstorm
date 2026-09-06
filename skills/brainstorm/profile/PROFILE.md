@@ -69,11 +69,23 @@ Production-accurate HTML in `profile/screens/`, exported from Figma. **This tabl
 
 **Anti-references:** flashy lending apps (red/orange urgency colors, countdown timers, gamified rewards, aggressive promo banners); traditional banking UIs (dense data tables, corporate gradients, stiff formal layouts); anything that creates artificial urgency or emotional pressure around borrowing.
 
+### 视觉参考
+
+生成前查看 `design-system/visual-reference.png`，它是「个人中心」「输入金额」「收银台」生产模板的渲染并排图；相关模板或设计系统更新后应重新截图。
+
+- **个人中心：** 学习标签、金额、圆形操作之间的比例关系，以及单一焦点如何在安静的背景上成立。留白应服务当前任务，无须照搬其高度。
+- **输入金额：** 学习金额输入、优惠、设置行三个信息层级；行内左侧标签与右侧值形成稳定的对齐节奏。
+- **收银台：** 学习金额摘要与支付方式的主次关系，以及选中、未选中选项的清晰区别。卡片和图标的细节可借鉴，操作位置按当前构图判断。
+
+这张图提供视觉尺度和组件关系的依据；页面事实仍以本次任务的主模板和用户要求为准。
+
 ### Principles
+
+Production templates establish the product's visual vocabulary, not a fixed layout for every exploration. Preserve real data, required actions/navigation, disclosures, brand identity anchors, and the calm, trustworthy tone. The sizes, spacing, surfaces, CTA placements, and component treatments below are production defaults: adapt them together when a direction benefits, while preserving legibility, clear states, and usable tap targets. Use scoped CSS rather than changing the source tokens or components.
 
 1. **Every screen should have an action** — the gold accent is the single most powerful visual element. Generally, reserve it for exactly one primary CTA per screen; all other actions use secondary or outline styles. But this rule can be broken if there's a strong reason.
 2. **Hierarchy through opacity, not color** — three opacity levels on black (0.9 / 0.5 / 0.35) create the reading order. Avoid colored text except links (`--wld-info-500`) and promotional highlights (`--wld-emphasis-500` / `--wld-promo-500`).
-3. **Earn every pixel** — no decorative filler. Remove background patterns, "温馨提示" boilerplate, redundant icons, and anything that doesn't help the user decide or act. If text can be shorter, make it shorter (body text ≤15 characters where possible).
+3. **Earn every pixel** — use visual treatment to support hierarchy, comprehension, and a calm character. Remove redundant copy and competing emphasis. Concise text should still explain what the user needs to know.
 4. **WeChat-native context** — mockups keep the presentation-only preview chrome; users should never feel they've left WeChat.
 5. **Calm information density** — enough whitespace to feel calm, enough information to feel confident: 20px card padding, 12px section gaps, 20px page margins. Never cram; never leave screens feeling empty.
 
@@ -101,17 +113,17 @@ The values live in `profile/design-system/tokens.css` and the CSS lives in `prof
 - **Status icons:** 60×60 gold circles; icon tint is black (`rgba(0,0,0,0.9)`).
 - **Buttons loading:** text becomes invisible and the spinner appears centered — never text + spinner together.
 
-### Canonical CTA forms
+### Production CTA patterns
 
-Each screen ships a CTA form that visual variants must not swap:
+Start from the production patterns below. Keep the action and required identity anchor; placement, dimensions, and surrounding composition may adapt to the direction:
 
 - `个人中心` — the 84px gold circle 借钱 button
 - `个人中心-双offer` — two side-by-side offer cards, each with its own small gold 借钱 button
-- `输入金额` — the full-width gold pill 下一步, in the template's own position
+- `输入金额` — the full-width gold pill 下一步
 - `收银台`, `更换还款卡` — CTA centered directly below the content
-- `提前还清` — the only screen using a fixed bottom action bar
+- `提前还清` — a fixed bottom action bar for selection and totals
 
-When content ends high on the screen, the CTA sits right after it. A CTA pinned to the bottom behind an empty region is a defect.
+Place the CTA where its connection to the decision is clearest. A persistent action may suit a longer screen; on a short screen, content-adjacent placement often creates a more balanced composition.
 
 ### Preview chrome
 
@@ -123,7 +135,7 @@ Use the placeholder from the production template:
 <preview-chrome variant="home" title="微粒贷" nav-bg="var(--wld-bg)"></preview-chrome>  <!-- 逾期: navbar matches the grey page -->
 ```
 
-Home screens keep the 借钱 / 我的 tab bar. The home offer states use `#FFFFFF` for `.wld-page` and the navbar; the overdue home state and every inner/detail screen use the default `#F5F5F5`. Check the template being copied for the exact combination.
+Home screens keep the 借钱 / 我的 tab bar. In production, home offer states use `#FFFFFF` for `.wld-page` and the navbar; the overdue home state and inner/detail screens generally use `#F5F5F5`. These surfaces may be recomposed within the palette; keep the navbar and body visually coherent.
 
 Never hand-write status bar, navbar, capsule, or back-arrow markup. The server expands the placeholder. This chrome is presentation only — it is not WLD production code.
 
