@@ -1,8 +1,8 @@
 <img alt="Skills" src="./assets/logo.png" width="128">
 
-# WLD Design 插件
+# WLD Brainstorm 插件
 
-WLD Design 插件包含以下 Skill
+WLD Brainstorm 插件包含以下 Skill
 
 | Skill | 使用场景 |
 |------|--------|
