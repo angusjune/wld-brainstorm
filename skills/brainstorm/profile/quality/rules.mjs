@@ -31,10 +31,10 @@ const PILL_RADIUS_RE = /^(999px|50%|var\(--wld-radius-pill\))$/;
 
 export default {
   severity: {
-    'bg-mismatch': 'error', // inner screen forced to white
+    'bg-mismatch': 'warning', // production surface default; review the rendered composition
     'urgency-copy': 'error', // pressure language is banned in WLD
     'white-on-gold': 'error', // text on gold is always rgba(0,0,0,0.9)
-    'square-button': 'error', // WLD buttons are always pill-shaped
+    'square-button': 'warning', // production shape default; intentional alternatives are allowed
     'multi-gold-cta': 'warning', // >1 gold CTA outside the production dual-offer exception
     'thick-border': 'warning', // borders >= 2px are off-system
     'amount-weight': 'warning', // 44px amounts use weight 500, not 600
@@ -89,11 +89,9 @@ export default {
         const pageSelectorRe = new RegExp(`(^|[\\s,])[.#][\\w-]*${pageClass}`);
         const pageForcedWhite = WHITE_BG_RE.test(screen.openTag)
           || contexts.some((ctx) => ctx.selector && pageSelectorRe.test(ctx.selector) && WHITE_BG_RE.test(ctx.body));
-        // Home screens are not checked: the offer states are white, the overdue
-        // state is the default grey with a navbar to match, and both are
-        // production. Only inner pages have one right answer.
+        // Flag a departure from the inner-screen default for visual review.
         if (variant === 'inner' && pageForcedWhite) {
-          add('bg-mismatch', `screen ${screen.index}: inner screen forces white on .${pageClass} — inner pages keep the default #F5F5F5`, screen.start);
+          add('bg-mismatch', `screen ${screen.index}: white inner-page surface departs from the #F5F5F5 production default; review composition and navbar continuity`, screen.start);
         }
       },
     },
@@ -144,7 +142,7 @@ export default {
         if (!isButtonCtx) return;
         const radiusMatch = ctx.body.match(/border-radius\s*:\s*([^;}]+)/i);
         if (radiusMatch && !PILL_RADIUS_RE.test(radiusMatch[1].trim())) {
-          add('square-button', `button border-radius ${radiusMatch[1].trim()} — WLD buttons are always pill-shaped (999px)`, ctx.start);
+          add('square-button', `button border-radius ${radiusMatch[1].trim()} departs from the pill-shaped production default; review consistency and usability`, ctx.start);
         }
       },
     },

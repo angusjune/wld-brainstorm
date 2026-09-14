@@ -25,6 +25,12 @@
   
   A profile may extend the catalog with `profile/quality/archetypes.json`, merged by id.
 
+## 2.0.1
+
+### Patch Changes
+
+- Removed push to figma branch
+
 ## 2.0.0
 
 ### Major Changes

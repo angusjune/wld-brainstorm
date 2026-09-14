@@ -24,7 +24,7 @@ profile/
 
 1. 重写 `PROFILE.md` frontmatter：`product`、`productName`、`platform`、`pageClass`、`tokenPrefix`。
 2. 替换 `screens/`，并保证模板表与磁盘文件一一对应。
-3. 替换 `design-system/tokens.css`、`components.css` 和产品图标。
+3. 替换 `design-system/tokens.css`、`components.css` 和产品图标；如有 `visual-reference.png`，同步替换或删除，避免旧产品截图残留。
 4. 为每个模板更新 `quality/workflow-contracts.json`，声明必需文案、必需资源、品牌锚点和方案差异锚点。
 5. 重写或删除不属于新产品的 `quality/rules.mjs`、passes 和 tools。
 6. 如需产品专属后续分支，将文档放入 `profile/branches/`，并在 `PROFILE.md` 的 Branches 表中声明；没有分支时不保留空目录。
@@ -36,6 +36,8 @@ profile/
 - 模板引用静态资源时使用 `/profile/`、`/platform/`、`/assets/` 挂载路径。
 - `workflow-contracts.json` 的模板清单必须与 `screens/` 一一对应。
 - `screens/` 中的完整生产页面语料会由 workflow 自动作为只读设计参考提供给 authoring worker；参考页的业务文案、数值和动作不会自动成为当前任务约束。
+- 可选的 `design-system/visual-reference.png` 提供生产页面的视觉参考，在 `PROFILE.md` 中说明借鉴点；相关模板或样式改变后重新截图。
+- 在 `PROFILE.md` 中区分必须保留的产品要求和可调整的生产样式默认值。方案差异锚点只辅助观察构图，不限制容器数量与排列。
 - `quality/rules.mjs` 只写当前产品规则；通用检查属于 `scripts/run-qa-gate.mjs`。
 - 产品事实只存在于档案内。共享 `SKILL.md`、`scripts/`、`assets/` 和 `platforms/` 保持产品中立。
 

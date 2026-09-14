@@ -38,8 +38,18 @@ const repeatedFindings = solutionQualityFindings({
   knownCssVariables: ['--brand-primary'],
 });
 
-assert.ok(repeatedFindings.some((finding) => finding.code === 'solution-structure-variety'));
 assert.ok(repeatedFindings.some((finding) => finding.code === 'variant-color-literal'));
+
+// Shared markup can produce different visual directions; container classes are not UX invariants.
+const visualDirections = solutionQualityReport({
+  sourceContent: source,
+  screens: repeatedScreens.map((html) => html.replace('class="risk-evidence"', 'class="regrouped-evidence"')),
+  styles: '.brainstorm-option-1 main { display: grid; gap: 24px; }',
+  diversitySelectors: selectors,
+});
+assert.deepEqual(visualDirections.findings, []);
+assert.equal(new Set(visualDirections.domFingerprints).size, 1);
+assert.deepEqual(visualDirections.priorityFingerprints, [null, null, null]);
 
 const preservedBrandFindings = solutionQualityFindings({
   sourceContent: source,

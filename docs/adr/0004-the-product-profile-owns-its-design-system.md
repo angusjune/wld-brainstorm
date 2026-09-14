@@ -5,7 +5,7 @@ The selected product profile holds everything specific to one product — tokens
 The non-obvious part is that **`profile/design-system/components.css` belongs to the profile**, despite looking shared. Its 48 class names are generic (`btn`, `card`, `page`, `tabbar`), which invites a future maintainer to hoist it into shared machinery. Do not. The names are generic; the design decisions are not:
 
 - `.wld-tabbar` hardcodes `height: 51px` and `background: rgba(251, 251, 251, 0.85)` — WLD production truth, copied from the real app, not tokens.
-- `.wld-btn` sets `border-radius: var(--wld-radius-pill)`, and the token name asserts the rule. "Buttons: border-radius 999px — always" is a documented WLD law that `qa-gate` raises `square-button` as an *error* on. A product with 8px buttons does not retheme this; it contradicts it.
+- `.wld-btn` sets `border-radius: var(--wld-radius-pill)`: the default shape is a product decision. The profile also decides whether departures are errors or review advice; it currently treats `square-button` as a warning so visual exploration can adapt the production shape.
 - `.wld-btn-circle` exists because WLD has an 84px gold circle CTA. Most products have no such component.
 
 Rethemed by tokens alone, these primitives would carry WLD's design language into a product that does not share it — which is worse than not shipping them, because it looks correct.

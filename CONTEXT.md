@@ -47,7 +47,7 @@ A step run inline during solution and flow generation, before anything is shown 
 _Avoid_: Embedded workflow, filter, post-process, hook
 
 **Branch**:
-A path the user may choose after approving a screen or flow. Shared branches live in `references/branches/`; product branches are declared by the profile and live in `profile/branches/`.
+A path the user may choose after approving a design direction: continue Feedback or follow a product-specific workflow declared by the profile.
 _Avoid_: Embedded workflow, mode, plugin, exporter
 
 ### Design evidence

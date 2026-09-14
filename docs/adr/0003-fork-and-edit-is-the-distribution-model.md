@@ -12,6 +12,6 @@ We rejected arbitrary paths, named profiles, registries, and fallback merging. T
 
 ## Consequences
 
-The skill ships with WLD in the profile slot rather than a neutral demo, because a fork starts from a working example and edits it — an empty slot would make the first run a cliff. This means WLD's production corpus, its bundled PM specs, and a live Figma URL travel with every copy; that exposure was reviewed and accepted as in-scope for this distribution.
+The skill ships with WLD in the profile slot rather than a neutral demo, because a fork starts from a working example and edits it — an empty slot would make the first run a cliff. This means WLD's production corpus and its bundled PM specs travel with every copy; that exposure was reviewed and accepted as in-scope for this distribution.
 
 The fixed seam is the only runtime selection contract. There is no migration or compatibility layer for older directory names.

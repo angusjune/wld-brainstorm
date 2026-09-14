@@ -120,7 +120,7 @@
 
   /* ===== RADII ===== */
 
-  --wld-radius-pill: 999px;    /* Buttons — always */
+  --wld-radius-pill: 999px;    /* Production button shape */
   --wld-radius-card: 12px;     /* Cards */
   --wld-radius-icon: 20px;     /* Round icon containers */
   --wld-radius-sm: 3px;        /* Small elements */

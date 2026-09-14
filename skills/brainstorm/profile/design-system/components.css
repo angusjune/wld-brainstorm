@@ -9,7 +9,7 @@
 
 /* =============================================================================
    BUTTON
-   Shape: ALWAYS border-radius: 999px (pill). Never squared.
+   Production shape: border-radius: 999px (pill). Scoped explorations may adapt it.
    ============================================================================= */
 
 .wld-btn {

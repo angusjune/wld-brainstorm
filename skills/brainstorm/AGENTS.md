@@ -23,7 +23,7 @@ brainstorm/
 ├── AGENTS.md                # 本维护指南
 ├── package.json             # 维护命令入口
 ├── assets/                  # 通用展示资源；预览服务自动注入
-├── references/              # 按需读取的通用方法与分支说明
+├── references/              # 按需读取的通用方法与档案维护说明
 ├── scripts/                 # 通用运行、检查、遥测和自测脚本
 ├── profile/                 # 内置默认产品档案
 ├── platforms/               # 平台包；由 PROFILE.md 的 platform 选择
@@ -37,12 +37,13 @@ brainstorm/
 - `assets/annotate.js`：浏览器端点选批注客户端；由预览服务注入。
 - `references/archetypes.json`：三方案发散的机器可读 archetype 目录与多样性规则；`workflow.mjs prepare` 直接读取并强制执行。产品档案可用 `profile/quality/archetypes.json` 按 id 合并覆盖，但不得重新声明 axes 词表。
 - `references/solution-archetypes.md`：说明该目录如何运作，以及 caption 格式。
+- `references/design-review.md`：渲染后的整组差异、整屏构图和元素细节评审；复用一次修稿机会。
 - `references/setup-profile.md`：维护者完整新建或替换内置产品档案时使用的逐步交互向导；用户工作区的复制与增量模板由同级 `setup-profile` Skill 负责。
-- `references/branches/push-to-figma.md`：所有产品和平台共用的 Push to Figma 分支。
 - `profile/PROFILE.md`：产品档案入口；frontmatter 给脚本读，正文给 Agent 读。
 - `profile/branches/`：可选的产品专属 Step 5 分支；必须在 `PROFILE.md` 的 Branches 表中声明。
 - `profile/screens/`：生产页面模板语料，是生成质量的主要来源；authoring worker 将其作为完整、只读的应用级设计参考语料。
 - `profile/design-system/`：token、组件样式和图标。
+- `profile/design-system/visual-reference.png`：可选的生产页面视觉参考并排图；生成上下文将其作为只读设计参考，产品档案正文说明借鉴点。相关模板或样式改变后重新截图。
 - `profile/quality/`：产品生成契约、规则、passes 和确定性工具。
 - `profile/quality/workflow-contracts.json`：每个模板逐屏必须保留的文本/资源不变量与设计锚点；模板清单必须一一对应。每个模板还用 `baselineAxes` 声明它自身所处的 archetype 坐标，`prepare` 在 rework 时据此排除「模板本来就是这个方向」的 archetype。
 - `platforms/<platform>/chrome.html`：该平台的预览外壳。
@@ -99,7 +100,7 @@ brainstorm/
    - `profile/quality/archetypes.json` 是可选的产品 archetype 扩展：按 id 覆盖共享条目或新增产品专属方向。不需要时直接删除；不要为此修改 `references/archetypes.json`。数值区间（字号比例、间距带）只属于产品档案，共享目录里不放。
 5. 处理产品分支。
    - 产品专属 Step 5 分支文档放进 `profile/branches/`，并按展示顺序写入 `PROFILE.md` 的 Branches 表。
-   - 没有产品分支时删除整个目录并让 Branches 表保持空白；共享分支不受影响。
+   - 没有产品分支时删除整个目录并让 Branches 表保持空白；用户仍可继续反馈迭代。
    - 新增或删除产品分支不应修改 `SKILL.md`。
 6. 不要为换产品修改 `SKILL.md`、`scripts/`、`assets/` 或 `references/`。如果新产品暴露的是通用缺陷，单独修通用机制，并确认没有加入产品事实。
 

@@ -1,11 +1,11 @@
 ---
 name: brainstorm
-description: 用于基于当前产品档案进行移动端 UI 头脑风暴：生成并比较3个方案、迭代反馈，并将选定方向推送到 Figma 或交给档案声明的后续分支。Use when exploring mobile UI directions with the active workspace or bundled product profile.
+description: 用于基于当前产品档案进行移动端 UI 头脑风暴：生成并比较3个方案、迭代反馈，并将选定方向交给档案声明的后续分支。Use when exploring mobile UI directions with the active workspace or bundled product profile.
 ---
 
 # Design Brainstorm
 
-Interactive design exploration for mobile screens. Users describe an idea, compare three directions in phone mockups, iterate with live feedback, then choose a direction for Push to Figma or a profile-declared follow-up branch.
+Interactive design exploration for mobile screens. Users describe an idea, compare three directions in phone mockups, iterate with live feedback, then choose a direction for a profile-declared follow-up branch.
 
 Resolve this skill directory as `skillDir` and the current project root as `projectDir`. The preview server selects `projectDir/wld-design-profile` whenever that directory exists, even when incomplete; otherwise it selects `skillDir/profile`. Save the selected `profileDir` and its diagnostics from the server response. Paths named with the profileDir prefix are under the selected profile; all other relative paths are under `skillDir`.
 
@@ -34,7 +34,7 @@ The profile's screen table lists every production template on disk, and `npm run
 **Brainstorm-specific references**:
 - `references/archetypes.json` — the machine-readable solution archetype catalog and the diversity rule `prepare` enforces
 - `references/solution-archetypes.md` — how that catalog works, and the caption format
-- `references/branches/push-to-figma.md` — Shared Push to Figma branch
+- `references/design-review.md` — Read during the finishing cycle to critique rendered composition, component craft, and the usefulness of the set
 
 ---
 
@@ -65,7 +65,7 @@ For `rework`, choose one brand mode:
 - `preserve` is the default. Keep every profile-declared brand identity anchor, required asset, and required text, but freely change its layout, typography, spacing, shape, modifier classes, and scoped styling. Use resolvable profile CSS variables for colors.
 - `explore` only when the user explicitly asks to explore or change brand identity, palette, or art direction. Keep identity anchors and required product content, but allow new color treatments. The parent must judge brand coherence and contrast from the validation screenshot before showing the work.
 
-`prepare` deterministically writes a generation contract, a self-contained `worker-brief.md`, a role-labeled context manifest, screen fragments, captions, base styles, and editable styles under `state/workflow/stages/<stage>/fragments/`. The returned `workerBriefFile` is the worker's only entry point. Authoritative files carry task facts and product/design laws; production templates outside the primary source are read-only design references.
+`prepare` deterministically writes a generation contract, a self-contained `worker-brief.md`, a role-labeled context manifest, screen fragments, captions, base styles, and editable styles under `state/workflow/stages/<stage>/fragments/`. The returned `workerBriefFile` is the worker's entry point. Both approaches include the profile's design language, design system, and solution archetypes. Authoritative files carry task facts and product/design laws; production templates outside the primary source are read-only design references.
 
 Run each authoring stage in a fresh context. Dispatch a worker with the user's stage-local intent and `workerBriefFile`; the worker reads that brief, then only the files it names. The brief exposes the active profile's complete screen corpus so the worker can borrow, combine, and adapt proven app patterns without treating reference-screen content as task requirements. The worker must not read this `SKILL.md`, the parent transcript, another stage, assembled reference HTML, or undeclared profile material.
 
@@ -80,9 +80,9 @@ node "<skill-dir>/scripts/workflow.mjs" assemble --run-dir "<runDir>" --stage "<
 node "<skill-dir>/scripts/workflow.mjs" validate --run-dir "<runDir>" --stage "<stage>"
 ```
 
-Before validation, ensure the preview server is still running at the saved `url`; if not, resume the same run as described in Step 2. `validate` checks deterministic assembly, canonical shell, screen counts, per-screen required content/assets, diversity, brand identity anchors, unresolved CSS variables, the profile QA gate, rendered counts and dimensions, preview-chrome expansion, horizontal overflow, runtime exceptions, and UTF-8 rendering. It also measures each rendered screen's layout signature and blocks a visual option that reads identically to a ux option — the declared archetype rule cannot separate those, because a visual archetype inherits both axes. It also captures each output in the stage's `renders/` directory. Browser unavailability is blocking in production; `--allow-browser-unavailable` exists only for nonvisual automated tests.
+Before validation, ensure the preview server is still running at the saved `url`; if not, resume the same run as described in Step 2. `validate` checks deterministic assembly, canonical shell, screen counts, per-screen required content/assets, diversity, brand identity anchors, unresolved CSS variables, the profile QA gate, rendered counts and dimensions, preview-chrome expansion, horizontal overflow, runtime exceptions, and UTF-8 rendering. It also measures each rendered screen's layout signature and blocks a visual option that reads identically to a ux option — the declared archetype rule cannot separate those, because a visual archetype inherits both axes. DOM composition and landmark order otherwise remain diagnostics, not measures of design quality. It also captures each output in the stage's `renders/` directory. Browser unavailability is blocking in production; `--allow-browser-unavailable` exists only for nonvisual automated tests.
 
-Inspect every captured screenshot for correct platform chrome, visible and well-spaced phones, readable unclipped text and captions, profile-compliant colour and product laws, and interactions or motion that preserve layout and performance. The cycle passes only when `validate` returns `status: "passed"` and screenshot review finds no issue. If the first cycle blocks, dispatch at most one fresh repair worker with only the editable fragment paths and findings; a `rework` repair may edit screen fragments, captions, and variant CSS but not production base CSS. Run the cycle again. After the second cycle, stop retrying and surface any remaining findings.
+Read `references/design-review.md` and inspect the rendered set, each whole screen, and important component details. Save the concrete findings in the stage's `design-review.md`. When there are mechanical failures or worthwhile visual improvements, keep the first screenshot as `renders/<output>.before-review.png` and dispatch one fresh revision worker with `workerBriefFile`, the screenshots, and the highest-impact findings. The worker edits the declared fragments; the parent reruns the finishing cycle and checks whether the changes helped. Keep the final screenshots and record remaining limitations. A mechanically valid result may be shown with unresolved aesthetic tradeoffs; avoid repeated polishing without user feedback.
 
 Finish every cycle, passed or blocked, by recording its result:
 
@@ -90,7 +90,7 @@ Finish every cycle, passed or blocked, by recording its result:
 node "<skill-dir>/scripts/workflow.mjs" report --run-dir "<runDir>" --stage "<stage>"
 ```
 
-Show or select only a passed stage. After any later fragment change, restart the finishing cycle.
+Show or select only a stage whose validation passed and whose screenshots have been reviewed. After any later fragment change, restart the finishing cycle.
 
 `report` writes context bytes, stage timings, validation status, artifact hashes, and token fields. Interactive token fields are deliberately `null`; exact token counts are recorded only when a `codex exec --json` event file is supplied with `--codex-events`.
 
@@ -103,7 +103,7 @@ node "<skill-dir>/scripts/workflow.mjs" select \
   --choice <1-based-index>
 ```
 
-`select` hashes the chosen screen, styles, and caption into a compact typed handoff. Feedback keeps editing the same solutions stage; Push to Figma or a profile-declared branch may consume the handoff. Brainstorm does not expand the chosen direction into additional screens or a complete flow.
+`select` hashes the chosen screen, styles, and caption into a compact typed handoff. Feedback keeps editing the same solutions stage; a profile-declared branch may consume the handoff. Brainstorm does not expand the chosen direction into additional screens or a complete flow.
 
 Three stable URL prefixes are mapped by the server: `/profile/` is the selected product profile, `/platform/` is the active platform pack, and `/assets/` is shared machinery. Switching profiles or platforms requires no URL rewrites, although screen content remains profile-specific. The server injects the platform pack's chrome styles, links `assets/frame.css`, and injects `assets/live-reload.js` plus `assets/annotate.js` — do not link or add those yourself.
 
@@ -203,12 +203,12 @@ Run `workflow.mjs prepare` with `--stage solutions --kind solutions --approach r
 | Mode | Use when | Required diversity |
 |------|----------|--------------------|
 | UX Strategy | Unclear product direction, "best way", "how should this work" | Options differ by interaction strategy, information hierarchy, decision model, or state grouping |
-| Visual Exploration | user asks for visual possibilities, style directions, "更有设计感", "换个视觉", or the interaction model is fixed | Options differ primarily in visual treatment, density, rhythm, emphasis, card treatment, or component styling. In `rework`, each option still needs a distinct DOM composition; `compose` options may share structure. |
+| Visual Exploration | user asks for visual possibilities, style directions, "更有设计感", "换个视觉", or the interaction model is fixed | Options differ visibly in composition, density, rhythm, emphasis, surface treatment, or component styling. They may share DOM structure. |
 | Mixed (default) | Intent is unclear | Two UX-meaningful variants + one visual-treatment variant |
 
 Unless the user is explicitly exploring visual direction, the options must not differ only by surface styling. In Visual Exploration mode, style variation is allowed, but each option must name the visual hypothesis and stay within the profile's product laws.
 
-**Visual-mode invariants:** With a production template, every visual variant keeps its canonical CTA form, preview chrome, tab bar, legal/rate/disclaimer text, and data values unchanged. Without a template, take those invariants from the profile's product laws and closest declared component patterns. Each caption's "What changes" names exactly what varies; everything else stays at its grounded baseline.
+**Visual-mode invariants:** Preserve the interaction model, required actions and navigation, legal/rate/disclaimer text, and real data. Use the profile to distinguish identity requirements from production styling defaults. Adapt defaults such as grouping, CTA placement, spacing, and shape when permitted by the profile and useful to the direction. Each caption names the meaningful changes.
 
 In `rework`, keep production `.base.css` immutable and edit all three seeded screen fragments. Each option must retain every prepared requirement and declared anchor while using a distinct DOM composition; anchor order is diagnostic evidence, not a prescribed source of variety. Follow the selected brand mode and write additive rules below `.brainstorm-option-1`, `.brainstorm-option-2`, and `.brainstorm-option-3`. In `compose`, replace the prepared page-root placeholders with three intentional alternatives grounded in the closest analogue when present, the authoritative product/design sources, and useful patterns from the supplied app screen corpus. In either approach, use the profile's exact `pageClass`, write captions with exactly one `recommended: true` and each option's assigned `archetype` id unchanged, add no presentation wrappers, and preserve working production classes.
 
@@ -225,10 +225,10 @@ Each caption's `archetype` field is seeded by `prepare` and must not be edited. 
    - The user does not need it to complete the task.
    - The text says something already obvious from nearby UI.
    - It competes with the one focal action or one focal number.
-   - It is decorative rather than functional.
+   - It adds visual noise without improving hierarchy, comprehension, or the profile's intended character.
    - It can merge cleanly with an adjacent label, value, or row.
 3. Never remove product rules, legal/compliance text, error states, navigation, selected user data, status indicators, tap targets, or the primary CTA.
-4. Re-read the fragments and make sure they still follow the selected grounding: the template's CTA form, background, chrome, and tab bar when one exists; otherwise the profile's product laws and closest declared component patterns.
+4. Re-read the fragments for product requirements and a coherent design language. Use the corpus as precedent for craft, with composition chosen for this task.
 
 **Make it feel real with light interaction.** Where a direction has a natural tap — open a popup, expand an option group, switch a tab, toggle a filter, step a carousel — wire it up so the user can test the idea rather than infer it from a static screen. Prefer pure CSS (`:checked` checkbox/radio hack, `:target` popovers, `<details>`, `@keyframes`), reach for minimal native JS only when CSS falls short. Encouraged, not required: add it when it aids understanding, never as decoration. Keep any motion short and contained inside the phone frame.
 
@@ -243,8 +243,7 @@ Tell the user to open the saved `url` to compare. Ask which direction they prefe
 Record the chosen direction with `workflow.mjs select`, then present the available paths in this exact order:
 
 1. **Feedback** — always available. Edit the current stage's fragments, rerun the finishing cycle, and let the browser hot-reload the assembled screen through SSE. Repeat for each new round of user feedback.
-2. **Push to Figma** — always available. Its branch document is `references/branches/push-to-figma.md`.
-3. **Profile branches** — read the optional Branches table in `profileDir/PROFILE.md` and append every declared row in table order. Use the row's Branch value as the display name and its Doc value as the branch document. Resolve a `profile/`-prefixed Doc inside `profileDir`. If the section or table has no rows, append nothing.
+2. **Profile branches** — read the optional Branches table in `profileDir/PROFILE.md` and append every declared row in table order. Use the row's Branch value as the display name and its Doc value as the branch document. Resolve a `profile/`-prefixed Doc inside `profileDir`. If the section or table has no rows, append nothing.
 Assign display letters (`A`, `B`, `C`, …) to the assembled list only when presenting it. Letters are presentation-local and never part of a branch document's identity. Show the description already available from this method or the profile row's Notes text; do not open any branch workflow document yet.
 
 **Critical for Feedback:** Before acting, read `annotationsPath`. For each file, find the greatest numeric ID in the `through` field of its `consumed` entries; annotations for that file with greater IDs are pending. Capture the last pending ID you actually read for each file. Annotations and typed feedback are the same input and may arrive together in one turn. Apply both directly without restating annotations; hot reload is the confirmation. Always edit the SAME solutions-stage fragments for iterative changes. Start a new run only for a different brainstorm request.
@@ -259,4 +258,4 @@ Run it once per edited file that had pending annotations. Never acknowledge an I
 
 For per-screen feedback about preview chrome, change only the `variant` or `title` attributes on `<preview-chrome …>` in that screen's content fragment. Never edit `screenDir/*.html`, `platforms/*/chrome.html`, `assets/page-template.html`, or `assets/frame.css` in response to feedback.
 
-**Critical for non-Feedback branches:** After the user chooses, load only that branch's document. Do not load unselected shared or profile branch workflows into context. If the required input for the selected branch is missing, ask for it in one short message and do not substitute a screenshot-only or text-only deliverable unless that branch explicitly allows it.
+**Critical for profile branches:** After the user chooses, load only that branch's document. Do not load unselected branch workflows into context. If the required input for the selected branch is missing, ask for it in one short message and do not substitute a screenshot-only or text-only deliverable unless that branch explicitly allows it.
