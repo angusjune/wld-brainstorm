@@ -248,6 +248,7 @@ const ROOT_FILES = new Set(['AGENTS.md', 'README.md', 'SKILL.md', 'package.json'
 // as an assertion that every profile carries it.
 const OPTIONAL_MECHANISM_PATHS = new Set([
   'profile/quality/rules.mjs',
+  'profile/quality/archetypes.json',
 ]);
 
 function looksLikeInPackagePath(tok) {

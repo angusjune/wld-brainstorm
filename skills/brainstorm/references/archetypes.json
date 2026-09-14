@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+
+  "_comment": "Shared machinery: names no product, no platform, no profile class. Numeric bands are deliberately absent — they express a product's type and spacing scale, so they belong to a profile. A profile may extend this catalog with profile/quality/archetypes.json using the same schema; entries merge by id and the profile wins on collision.",
+
+  "axes": {
+    "focus": ["single-object", "choice-set", "record-list", "form", "narrative", "hub"],
+    "commitment": ["focal", "inline", "pinned", "deferred"]
+  },
+
+  "rules": {
+    "_comment": "Declared, not measured. Checked before generation starts, from this file alone.",
+    "appliesToMode": "ux",
+    "focus": "distinct-across-all",
+    "commitment": "at-least-two-distinct",
+    "_rationale": "focus must differ for every pair. commitment needs only two distinct values across the set, so one option may carry its difference on focus alone. Without that slack, a screen whose usable commitment values are {inline, pinned, deferred} has exactly three for exactly three options, and the third comes out contrived.",
+    "_visualExemption": "A 'visual' archetype inherits both axes from the baseline and is exempt. Visual-mode invariants govern it instead."
+  },
+
+  "archetypes": [
+    {
+      "id": "object-first",
+      "name": "Object-first",
+      "mode": "ux",
+      "axes": { "focus": "single-object", "commitment": "focal" },
+      "intent": "The one thing the user came for is the whole screen; everything else earns its way back in. Reads sparse.",
+      "moves": [
+        "Promote the focal value to the top of the first viewport at display scale.",
+        "Merge every supporting label into at most one line beneath it.",
+        "Demote all secondary modules below the fold or behind a disclosure.",
+        "Make the primary action adjacent to the focal object, not remote from it."
+      ],
+      "avoid": "Adding a second element at comparable scale — that is choice-set, not object-first.",
+      "requires": { "focalValues": 1 }
+    },
+    {
+      "id": "status-first",
+      "name": "Status-first",
+      "mode": "ux",
+      "axes": { "focus": "single-object", "commitment": "inline" },
+      "intent": "Where the user stands right now is the headline; the action follows from the status rather than competing with it.",
+      "moves": [
+        "Lead with the current state as a single resolved value, not a label plus a chart.",
+        "Put the action directly beneath the status it acts on.",
+        "Let secondary facts sit as one quiet supporting line, not their own module."
+      ],
+      "avoid": "Two competing status values. Pick the one the user acts on.",
+      "requires": { "focalValues": 1 }
+    },
+    {
+      "id": "comparison-first",
+      "name": "Comparison-first",
+      "mode": "ux",
+      "axes": { "focus": "choice-set", "commitment": "inline" },
+      "intent": "The user is choosing, not confirming; make the options weighable side by side.",
+      "moves": [
+        "Split the single path into peer surfaces that share one comparison dimension.",
+        "Align the differing attribute to the same position in every peer so the eye can scan one column.",
+        "Give each peer its own action rather than one shared action below."
+      ],
+      "avoid": "Peers that differ on more than one dimension at once, leaving no single axis to compare along.",
+      "requires": { "peerOptionsInData": 2 }
+    },
+    {
+      "id": "guardrail-first",
+      "name": "Guardrail-first",
+      "mode": "ux",
+      "axes": { "focus": "narrative", "commitment": "deferred" },
+      "intent": "What constrains the user is settled before they can act, so the action carries no surprise.",
+      "moves": [
+        "Raise limits, eligibility, and consequences above the primary action in document order.",
+        "State each constraint as a resolved value, not a link to go read one.",
+        "Let the action stay visually quiet until its preconditions are shown."
+      ],
+      "avoid": "Turning constraints into warning styling. Restraint is the point; alarm is a different product.",
+      "requires": {}
+    },
+    {
+      "id": "ledger-first",
+      "name": "Ledger-first",
+      "mode": "ux",
+      "axes": { "focus": "record-list", "commitment": "deferred" },
+      "intent": "The record set is the screen; the user scans and verifies before any single action matters.",
+      "moves": [
+        "Give the repeating row one scannable rhythm and hold every row to it.",
+        "Align the value the user compares to the same edge in every row.",
+        "Move any summary to a single line above or below the set, never interleaved.",
+        "Let each row own its action instead of hoisting one action for the whole set."
+      ],
+      "avoid": "Decorating rows until the rhythm breaks. Uniformity is what makes a list scannable.",
+      "requires": { "recordRows": 3 }
+    },
+    {
+      "id": "task-first",
+      "name": "Task-first",
+      "mode": "ux",
+      "axes": { "focus": "form", "commitment": "pinned" },
+      "intent": "The input the user came to give is the screen; everything else is confirmation of what that input will do.",
+      "moves": [
+        "Put the input at the top of the first viewport, already focused and ready.",
+        "Collapse every configurable option into one compact group beneath it.",
+        "Keep the commit action reachable without scrolling past the input.",
+        "Show the consequence of the current input as one live line, not a separate module."
+      ],
+      "avoid": "Explaining the form above the form. Let the field and its one hint carry it.",
+      "requires": { "inputFields": 1 }
+    },
+    {
+      "id": "hub-first",
+      "name": "Hub-first",
+      "mode": "ux",
+      "axes": { "focus": "hub", "commitment": "deferred" },
+      "intent": "The screen is a place to leave from; make the destinations legible and equally weighted.",
+      "moves": [
+        "Group destinations by how often they are used, not by internal system category.",
+        "Give every destination the same visual weight unless one is genuinely primary.",
+        "Keep identity or account context to a single compact header.",
+        "Remove any destination the user cannot act on from this state."
+      ],
+      "avoid": "A single dominant tile. That is object-first with links attached.",
+      "requires": { "destinations": 3 }
+    },
+
+    {
+      "id": "quiet-native",
+      "name": "Quiet / native",
+      "mode": "visual",
+      "axes": { "focus": "inherit", "commitment": "inherit" },
+      "intent": "Recede toward the platform's own defaults; let content carry the hierarchy alone. Reads sparse and flat.",
+      "moves": [
+        "Collapse cards into a single continuous surface separated by the profile's hairline divider.",
+        "Remove every radius and shadow not required by an identity anchor.",
+        "Let type scale, not enclosure, mark the sections."
+      ],
+      "avoid": "Changing what is on the screen. Visual archetypes hold structure and vary treatment.",
+      "requires": {}
+    },
+    {
+      "id": "premium-spacious",
+      "name": "Premium / spacious",
+      "mode": "visual",
+      "axes": { "focus": "inherit", "commitment": "inherit" },
+      "intent": "Give the focal content room so it reads as considered rather than crowded.",
+      "moves": [
+        "Increase the space around the focal element more than anywhere else, so the ratio itself creates the hierarchy.",
+        "Reduce the number of visible surfaces, merging adjacent ones that carry related content.",
+        "Let one generous margin replace two separators."
+      ],
+      "avoid": "Uniformly padding everything. That reads as loose, not premium.",
+      "requires": {}
+    },
+    {
+      "id": "data-forward",
+      "name": "Data-forward",
+      "mode": "visual",
+      "axes": { "focus": "inherit", "commitment": "inherit" },
+      "intent": "Let the numbers, dates and terms set the visual rhythm instead of the containers around them.",
+      "moves": [
+        "Raise the numeric values a step in the type scale and drop their labels a step.",
+        "Align numbers on a shared edge so they form a readable column.",
+        "Strip container decoration that competes with the values it holds."
+      ],
+      "avoid": "Turning the screen into a table. Density is the goal; a grid of borders is not.",
+      "requires": {}
+    }
+  ]
+}

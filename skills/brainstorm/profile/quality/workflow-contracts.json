@@ -14,7 +14,11 @@
         ".wld-rate-bar",
         ".wld-btn-circle"
       ],
-      "diversitySelectors": []
+      "diversitySelectors": [],
+      "baselineAxes": {
+        "focus": "single-object",
+        "commitment": "focal"
+      }
     },
     "个人中心-有借款.html": {
       "requiredTextPerScreen": [
@@ -33,7 +37,11 @@
       "diversitySelectors": [
         ".wld-home-credit",
         ".wld-loan-card"
-      ]
+      ],
+      "baselineAxes": {
+        "focus": "single-object",
+        "commitment": "focal"
+      }
     },
     "个人中心-双offer.html": {
       "requiredTextPerScreen": [
@@ -51,7 +59,11 @@
       "diversitySelectors": [
         ".wld-home-credit",
         ".wld-dual-offers"
-      ]
+      ],
+      "baselineAxes": {
+        "focus": "choice-set",
+        "commitment": "inline"
+      }
     },
     "个人中心-单offer.html": {
       "requiredTextPerScreen": [
@@ -66,7 +78,11 @@
         ".wld-rate-bar",
         ".wld-btn-circle"
       ],
-      "diversitySelectors": []
+      "diversitySelectors": [],
+      "baselineAxes": {
+        "focus": "single-object",
+        "commitment": "focal"
+      }
     },
     "输入金额.html": {
       "requiredTextPerScreen": [
@@ -84,7 +100,11 @@
         ".wld-loan-amount",
         ".wld-promo-row",
         ".wld-loan-options"
-      ]
+      ],
+      "baselineAxes": {
+        "focus": "form",
+        "commitment": "pinned"
+      }
     },
     "提前还清.html": {
       "requiredTextPerScreen": [
@@ -99,7 +119,11 @@
       "diversitySelectors": [
         ".wld-repay-card",
         ".wld-repay-action-bar"
-      ]
+      ],
+      "baselineAxes": {
+        "focus": "record-list",
+        "commitment": "pinned"
+      }
     },
     "本期应还.html": {
       "requiredTextPerScreen": [
@@ -110,7 +134,11 @@
       "diversitySelectors": [
         ".wld-repay-summary",
         ".wld-repay-card"
-      ]
+      ],
+      "baselineAxes": {
+        "focus": "record-list",
+        "commitment": "deferred"
+      }
     },
     "收银台.html": {
       "requiredTextPerScreen": [
@@ -128,7 +156,11 @@
       ],
       "diversitySelectors": [
         ".wld-cashier-summary"
-      ]
+      ],
+      "baselineAxes": {
+        "focus": "choice-set",
+        "commitment": "pinned"
+      }
     },
     "借款详情.html": {
       "requiredTextPerScreen": [
@@ -139,7 +171,11 @@
       "diversitySelectors": [
         ".wld-loan-header",
         ".wld-loan-installments"
-      ]
+      ],
+      "baselineAxes": {
+        "focus": "record-list",
+        "commitment": "deferred"
+      }
     },
     "欢迎页.html": {
       "requiredTextPerScreen": [
@@ -153,7 +189,11 @@
       ],
       "diversitySelectors": [
         ".wld-welcome-features"
-      ]
+      ],
+      "baselineAxes": {
+        "focus": "narrative",
+        "commitment": "inline"
+      }
     },
     "更换还款卡.html": {
       "requiredTextPerScreen": [
@@ -171,7 +211,11 @@
       ],
       "diversitySelectors": [
         ".wld-changecard-header"
-      ]
+      ],
+      "baselineAxes": {
+        "focus": "choice-set",
+        "commitment": "inline"
+      }
     },
     "我的Tab.html": {
       "requiredTextPerScreen": [
@@ -187,7 +231,11 @@
       "diversitySelectors": [
         ".wld-me-header",
         ".wld-me-grid"
-      ]
+      ],
+      "baselineAxes": {
+        "focus": "hub",
+        "commitment": "deferred"
+      }
     },
     "逾期.html": {
       "requiredTextPerScreen": [
@@ -208,7 +256,11 @@
         ".wld-overdue-card",
         ".wld-overdue-actions",
         ".wld-overdue-details"
-      ]
+      ],
+      "baselineAxes": {
+        "focus": "single-object",
+        "commitment": "inline"
+      }
     }
   }
 }

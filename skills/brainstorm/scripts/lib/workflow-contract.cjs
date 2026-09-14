@@ -132,6 +132,16 @@ function loadWorkflowContracts(profileDir) {
         throw new Error(`workflow contract ${template}.diversitySelectors must contain simple class selectors`);
       }
     }
+    if (contract.baselineAxes !== undefined) {
+      if (!contract.baselineAxes || typeof contract.baselineAxes !== 'object' || Array.isArray(contract.baselineAxes)) {
+        throw new Error(`workflow contract ${template}.baselineAxes must be an object`);
+      }
+      for (const [axis, value] of Object.entries(contract.baselineAxes)) {
+        if (typeof value !== 'string' || !value) {
+          throw new Error(`workflow contract ${template}.baselineAxes.${axis} must be a non-empty string`);
+        }
+      }
+    }
   }
   return { file, payload };
 }
@@ -193,10 +203,11 @@ function domOutline(sourceContent) {
   return [...new Set(lines)];
 }
 
-function initialCaptions(screenCount) {
+function initialCaptions(screenCount, archetypes = null) {
   return Array.from({ length: screenCount }, (_, index) => ({
     title: screenCount === 1 ? '推荐方向' : `方案 ${String.fromCharCode(65 + index)}: 待命名`,
     subtitle: screenCount === 1 ? '完成用户确认的方向' : 'Hypothesis: 待填写 · Tradeoff: 待填写',
+    ...(archetypes ? { archetype: archetypes[index].id } : {}),
   }));
 }
 
@@ -425,6 +436,34 @@ function solutionQualityReport({
   };
 }
 
+/**
+ * A visual archetype inherits both axes, so the declared diversity rule cannot
+ * separate it from a ux option. This is the one place a rendered measurement is
+ * required: a visual option that matches a ux option on every signature field
+ * presents the same layout, whatever its markup says.
+ */
+function visualOverlapFindings(archetypes, signatures) {
+  const findings = [];
+  if (!Array.isArray(archetypes) || !Array.isArray(signatures)) return findings;
+  if (archetypes.length !== signatures.length) return findings;
+  const same = (left, right) => left && right
+    && Object.keys(left).every((key) => left[key] === right[key]);
+  for (const [index, entry] of archetypes.entries()) {
+    if (entry.mode !== 'visual') continue;
+    for (const [other, peer] of archetypes.entries()) {
+      if (other === index || peer.mode !== 'ux') continue;
+      if (same(signatures[index], signatures[other])) {
+        findings.push({
+          code: 'visual-archetype-overlap',
+          screen: index + 1,
+          message: `screen ${index + 1} (${entry.id}) renders the same layout signature as screen ${other + 1} (${peer.id}); a visual option must read differently from every ux option`,
+        });
+      }
+    }
+  }
+  return findings;
+}
+
 function selectAuthorities({ profileDir, skillDir, kind }) {
   const candidates = [
     path.join(profileDir, 'PROFILE.md'),
@@ -488,9 +527,12 @@ function assertScreenFragment(content, pageClass) {
   if (pages !== 1) throw new Error(`screen fragment must contain exactly one .${pageClass} root; found ${pages}`);
 }
 
-function validateCaptions(value, count) {
+function validateCaptions(value, count, archetypes = null) {
   if (!Array.isArray(value) || value.length !== count) {
     throw new Error(`captions must contain exactly ${count} entries`);
+  }
+  if (archetypes && archetypes.length !== count) {
+    throw new Error(`archetype assignment must cover all ${count} captions`);
   }
   const captions = value.map((caption, index) => {
     if (!caption || typeof caption !== 'object'
@@ -504,10 +546,19 @@ function validateCaptions(value, count) {
     if (caption.recommended !== undefined && typeof caption.recommended !== 'boolean') {
       throw new Error(`caption ${index + 1} recommended must be a boolean`);
     }
+    if (archetypes) {
+      const expected = archetypes[index].id;
+      if (caption.archetype !== expected) {
+        throw new Error(`caption ${index + 1} must declare archetype ${JSON.stringify(expected)}; found ${JSON.stringify(caption.archetype ?? null)}`);
+      }
+    } else if (caption.archetype !== undefined && typeof caption.archetype !== 'string') {
+      throw new Error(`caption ${index + 1} archetype must be a string`);
+    }
     return {
       title: caption.title.trim(),
       subtitle: caption.subtitle.trim(),
       ...(caption.recommended === undefined ? {} : { recommended: caption.recommended }),
+      ...(caption.archetype === undefined ? {} : { archetype: caption.archetype }),
     };
   });
   if (captions.filter((caption) => caption.recommended).length > 1) {
@@ -671,6 +722,7 @@ module.exports = {
   screenSegments,
   validateDocument,
   validateCaptions,
+  visualOverlapFindings,
   workflowPaths,
   writeJson,
 };
